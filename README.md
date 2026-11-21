@@ -1,5 +1,7 @@
 # ticketbench
 
+[![CI](https://github.com/ryczek02/ticketbench/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ryczek02/ticketbench/actions/workflows/ci.yml)
+
 Benchmark of PostgreSQL 17, MariaDB 11.8, MongoDB 8.0 and Valkey 8.1 on a
 ticket reservation workload. A course project for "Zaawansowane technologie
 baz danych" at Politechnika Krakowska, by Łukasz Ryczko and Łukasz Pacholec.
@@ -41,12 +43,12 @@ and troubleshooting. To view it rendered:
 
 ## Repositories
 
-| Repository | Contents |
-|---|---|
-| [ticketbench-contracts](https://github.com/ryczek02/ticketbench-contracts) | gRPC contracts, domain model, deterministic data generator, scenarios, OpenTelemetry setup |
-| [ticketbench-services](https://github.com/ryczek02/ticketbench-services) | `bench-runner` and one gRPC store service per database, conformance tests, binaries, images |
-| [ticketbench-cli](https://github.com/ryczek02/ticketbench-cli) | `tbench`: runs plans, writes CSV, generates LaTeX tables and pgfplots data |
-| [ticketbench-infra](https://github.com/ryczek02/ticketbench-infra) | Docker Compose, collector, Jaeger, Prometheus, Grafana, matrices, Ansible |
+| Repository | CI | Release | Contents |
+|---|---|---|---|
+| [ticketbench-contracts](https://github.com/ryczek02/ticketbench-contracts) | [![CI](https://github.com/ryczek02/ticketbench-contracts/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ryczek02/ticketbench-contracts/actions/workflows/ci.yml) | [![Release](https://img.shields.io/github/v/tag/ryczek02/ticketbench-contracts?sort=semver&label=tag)](https://github.com/ryczek02/ticketbench-contracts/tags) | gRPC contracts, domain model, deterministic data generator, scenarios, OpenTelemetry setup |
+| [ticketbench-services](https://github.com/ryczek02/ticketbench-services) | [![CI](https://github.com/ryczek02/ticketbench-services/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ryczek02/ticketbench-services/actions/workflows/ci.yml) | [![Release](https://img.shields.io/github/v/release/ryczek02/ticketbench-services?sort=semver)](https://github.com/ryczek02/ticketbench-services/releases) | `bench-runner` and one gRPC store service per database, conformance tests, binaries, images |
+| [ticketbench-cli](https://github.com/ryczek02/ticketbench-cli) | [![CI](https://github.com/ryczek02/ticketbench-cli/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ryczek02/ticketbench-cli/actions/workflows/ci.yml) | [![Release](https://img.shields.io/github/v/release/ryczek02/ticketbench-cli?sort=semver)](https://github.com/ryczek02/ticketbench-cli/releases) | `tbench`: runs plans, writes CSV, generates LaTeX tables and pgfplots data |
+| [ticketbench-infra](https://github.com/ryczek02/ticketbench-infra) | [![CI](https://github.com/ryczek02/ticketbench-infra/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/ryczek02/ticketbench-infra/actions/workflows/ci.yml) | | Docker Compose, collector, Jaeger, Prometheus, Grafana, matrices, security overlay, Ansible |
 
 Binaries for linux, darwin and windows (amd64, arm64) are attached to the
 releases of `ticketbench-services` and `ticketbench-cli`. The `edge`
