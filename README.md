@@ -17,6 +17,7 @@ git clone --recursive https://github.com/ryczek02/ticketbench
 cd ticketbench
 ./ticketbench.sh all       # check tools, pull everything from GitHub, start the stack, smoke test
 ./ticketbench.sh bench     # full matrix: 0.5M, 1M and 10M tickets
+./ticketbench.sh security  # TLS and least-privilege roles on 1M tickets
 ./ticketbench.sh report    # tables, plots and report/sprawozdanie.pdf
 ```
 
@@ -29,10 +30,11 @@ and troubleshooting. To view it rendered:
 
 | Path | Contents |
 |---|---|
-| `ticketbench.sh` | One program for everything: `doctor`, `install`, `up`, `smoke`, `bench`, `report`, `down` |
+| `ticketbench.sh` | One program for everything: `doctor`, `install`, `up`, `smoke`, `bench`, `security`, `report`, `down` |
 | `docs/runbook.html` | Runbook in Polish |
 | `report/` | Report in LaTeX (Polish): `sprawozdanie.pdf`, slides `prezentacja.pdf` (Beamer), study notes `podsumowanie.pdf` |
 | `report/data/results/` | Raw results of the run used in the report (CSV, query plans, `meta.json`) |
+| `report/data/security/` | Raw results of the security experiment (TLS and least-privilege roles) |
 | `report/generated/` | Tables, plot data and values produced by `tbench report` from the raw results |
 | `contracts/`, `services/`, `cli/`, `infra/` | Git submodules, one per component repository |
 | `go.work` | Lets the three Go modules build against each other locally |

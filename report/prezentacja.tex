@@ -31,6 +31,7 @@
 \input{generated/macros.tex}
 \input{generated/values.tex}
 \input{generated/plans_values.tex}
+\input{generated/security_values.tex}
 
 \title{Porównanie wydajności relacyjnych i~nierelacyjnych SZBD}
 \subtitle{System rezerwacji biletów: PostgreSQL, MariaDB, MongoDB, Valkey}
@@ -246,6 +247,29 @@
   operacja atomowa) skaluje się lepiej niż kolejka na blokadzie.
 \end{frame}
 
+\begin{frame}{Bezpieczeństwo: TLS i ograniczone role (1 mln biletów)}
+  \small
+  \begin{itemize}
+    \item Konta aplikacyjne z~samym DML (PostgreSQL, MariaDB), rola find/insert/update/remove
+      (MongoDB), użytkownik ACL bez \texttt{@admin}/\texttt{@dangerous} (Valkey); TLS z~własnym CA wszędzie.
+    \item Kolejność ABBA, przebieg rozgrzewkowy, mediany; punkt odniesienia: dwa przebiegi \texttt{base}.
+  \end{itemize}
+  \begin{center}
+  \begin{tabular}{lrrr}
+    \toprule
+    SZBD & rola & TLS & base A/B \\
+    \midrule
+    PostgreSQL & \secpct{postgres}{role}{all} & \secpct{postgres}{tls}{all} & \secnoise{postgres} \\
+    MariaDB & \secpct{mariadb}{role}{all} & \secpct{mariadb}{tls}{all} & \secnoise{mariadb} \\
+    MongoDB & \secpct{mongo}{role}{all} & \secpct{mongo}{tls}{all} & \secnoise{mongo} \\
+    Valkey & \secpct{valkey}{role}{all} & \secpct{valkey}{tls}{all} & \secnoise{valkey} \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  Narzut CRUD mieści się w~zmienności pomiaru. Wyjątek: Valkey przy 100 klientach,
+  \seccval{valkey}{base}{100} $\to$ \seccval{valkey}{tls}{100}\,rez./s z~TLS.
+\end{frame}
+
 \begin{frame}{Weryfikacja hipotez}
   \begin{block}{H1: \HOneVerdict{} (\HOneGrows/\HOneCases{} przypadków)}
     \small Przewaga Valkey nad PostgreSQL przy 10 mln:
@@ -289,6 +313,7 @@
     indeksy, przed/po, EXPLAIN & 15 indeksów, oba warianty, zestawienie planów \\
     testy skalowalności & 1--1000 klientów, 13 strategii \\
     dane półstrukturalne & JSONB, JSON, BSON, JSON w~Valkey, J1--J3 \\
+    analiza bezpieczeństwa & TLS i~role we wszystkich bazach, wpływ na CRUD \\
     automatyzacja & \texttt{ticketbench.sh}, Docker, CI, Ansible, \texttt{tbench report} \\
     hipoteza & H1 zweryfikowana (+ H2) \\
     \bottomrule

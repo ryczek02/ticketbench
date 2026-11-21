@@ -25,6 +25,7 @@ TB_CHANNEL=${TB_CHANNEL:-latest}        # wydanie tbench: latest, edge albo v0.1
 TB_RUNNER_PORT=${TB_RUNNER_PORT:-7070}
 TB_PROJECT=${TB_PROJECT:-ticketbench}   # nazwa projektu docker compose
 TB_SOURCE=${TB_SOURCE:-0}               # 1 = budowanie obrazów i tbench ze źródeł
+TB_SECURITY=${TB_SECURITY:-0}           # 1 = stos z TLS i ograniczonymi użytkownikami
 
 BIN=$TB_HOME/bin
 TBENCH=$BIN/tbench
@@ -41,6 +42,7 @@ have() { command -v "$1" >/dev/null 2>&1; }
 compose() {
   local files=(-f "$INFRA/docker-compose.yml")
   if [ "$TB_SOURCE" = 1 ]; then files+=(-f "$INFRA/docker-compose.dev.yml"); fi
+  if [ "$TB_SECURITY" = 1 ]; then files+=(-f "$INFRA/docker-compose.security.yml"); fi
   TB_VERSION=$TB_VERSION TB_RUNNER_PORT=$TB_RUNNER_PORT docker compose -p "$TB_PROJECT" "${files[@]}" "$@"
 }
 
@@ -232,14 +234,15 @@ EOF
 # ---------------------------------------------------------------- benchmarks
 run_matrix() {
   local config=$1; shift
-  local run
+  local run link=latest
   run=${TB_RUN:-$(date -u +%Y%m%d-%H%M%S)}
+  if [ "$TB_SECURITY" = 1 ]; then run=security-$run; link=security-latest; fi
   local out=$RESULTS/$run
   say "Plan: $config"
   tb plan --config "$config" "$@" | tail -1
   say "Uruchamiam macierz, wyniki: $out"
   tb matrix --config "$config" --out "$out" "$@"
-  ln -sfn "$out" "$RESULTS/latest"
+  ln -sfn "$out" "$RESULTS/$link"
   say "Raport tymczasowy"
   tb report "$out" --out "$out/report"
   ok "tabele i dane wykresów: $out/report"
@@ -251,6 +254,21 @@ cmd_bench() {
   local config=$INFRA/config/matrix.yaml
   if [ "${1:-}" = "--config" ]; then config=$2; shift 2; fi
   run_matrix "$config" "$@"
+}
+
+# security: TLS on every database and least-privilege users (overlay
+# docker-compose.security.yml), then the scenarios and the contention test
+# through the profiles base, role, tls and tls_role.
+cmd_security() {
+  TB_SECURITY=1
+  say "Przełączam stos na wariant z TLS i rolami"
+  if [ "$TB_SOURCE" = 1 ]; then compose build; else compose pull --quiet; fi
+  compose up -d --wait --wait-timeout 300
+  cmd_ping
+  local config=$INFRA/config/security.yaml
+  if [ "${1:-}" = "--config" ]; then config=$2; shift 2; fi
+  run_matrix "$config" "$@"
+  ok "wyniki: $RESULTS/security-latest (dołączane przez: $0 report)"
 }
 
 cmd_contend() { tb contend "$@"; }
@@ -274,9 +292,20 @@ cmd_report() {
       return 0
     fi
   done
-  say "Generuję tabele i wykresy z $run"
+  local sec=""
+  if [ -d "$RESULTS/security-latest" ]; then
+    sec=$(cd "$RESULTS/security-latest" && pwd -P)
+  elif [ -d "$rep/data/security" ]; then
+    sec=$(cd "$rep/data/security" && pwd -P)
+  fi
+  say "Generuję tabele i wykresy z $run${sec:+ i $sec}"
   rm -rf "$rep/generated"
-  tb report "$run" --out "$rep/generated"
+  # shellcheck disable=SC2086 # $sec is one path or empty
+  tb report "$run" ${sec:+"$sec"} --out "$rep/generated"
+  if [ -n "$sec" ] && [ "$sec" != "$(cd "$rep" && pwd -P)/data/security" ]; then
+    rm -rf "$rep/data/security"
+    mkdir -p "$rep/data" && cp -R "$sec" "$rep/data/security"
+  fi
   # Keep the raw results next to the report (unless they already are there).
   if [ "$run" != "$(cd "$rep" && pwd -P)/data/results" ]; then
     rm -rf "$rep/data/results"
@@ -316,6 +345,8 @@ Użycie: $0 <polecenie> [argumenty]
   smoke                krótka macierz (20 tys. biletów, ok. 1 min)
   bench [--config f]   pełna macierz (domyślnie infra/config/matrix.yaml), dodatkowe
                        flagi idą do tbench matrix, np. --sizes 500k,1M --stores postgres
+  security [--config f] wariant z TLS i ograniczonymi rolami (infra/config/security.yaml),
+                       wyniki dołącza później polecenie report
   run ... | contend ...  pojedyncze polecenia tbench (tbench run --help)
   report [katalog]     tabele, wykresy i PDF z wyników (domyślnie results/latest)
   logs [serwis]        logi kontenerów
@@ -336,7 +367,7 @@ main() {
   local cmd=${1:-help}
   [ $# -gt 0 ] && shift
   case "$cmd" in
-    doctor|install|up|ping|status|urls|smoke|bench|run|contend|report|logs|down|destroy|all|help) "cmd_$cmd" "$@" ;;
+    doctor|install|up|ping|status|urls|smoke|bench|security|run|contend|report|logs|down|destroy|all|help) "cmd_$cmd" "$@" ;;
     -h|--help) cmd_help ;;
     *) cmd_help; die "nieznane polecenie: $cmd" ;;
   esac

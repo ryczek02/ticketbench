@@ -1,0 +1,150 @@
+{
+  "run_id": "20261121-232329-c96686",
+  "started": "2026-11-21T23:23:29.253744Z",
+  "ended": "2026-11-21T23:27:20.344005Z",
+  "cli_version": "dev (976371d, 2026-11-21T23:18:37Z, go1.26.2 darwin/arm64)",
+  "runner": "localhost:7070",
+  "stores": [
+    {
+      "Name": "mariadb",
+      "Engine": "mariadb",
+      "ServerVersion": "MariaDB 11.8.9-MariaDB-ubu2404",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    },
+    {
+      "Name": "mongo",
+      "Engine": "mongo",
+      "ServerVersion": "MongoDB 8.0.38",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    },
+    {
+      "Name": "postgres",
+      "Engine": "postgres",
+      "ServerVersion": "PostgreSQL 17.12 (Debian 17.12-1.pgdg13+1)",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    },
+    {
+      "Name": "valkey",
+      "Engine": "valkey",
+      "ServerVersion": "Valkey 8.1.12",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    }
+  ],
+  "config": {
+    "Seed": 42,
+    "Sizes": [
+      1000000
+    ],
+    "Stores": [
+      "postgres",
+      "mariadb",
+      "mongo",
+      "valkey"
+    ],
+    "Scenarios": "all",
+    "Repetitions": 5,
+    "Warmup": 1,
+    "Timeout": 60000000000,
+    "IndexModes": [
+      "off",
+      "on"
+    ],
+    "Explain": true,
+    "Load": {
+      "Workers": 4,
+      "BatchSize": 5000
+    },
+    "Contention": {
+      "Clients": [
+        1,
+        10,
+        100,
+        1000
+      ],
+      "HotTickets": 500,
+      "Rounds": 3,
+      "Strategies": [
+        "all"
+      ],
+      "Sizes": null,
+      "TraceRatio": 0.01
+    },
+    "Overhead": {
+      "Enabled": true,
+      "Size": 500000,
+      "Scenarios": [
+        "R1",
+        "R2",
+        "R4",
+        "U1",
+        "U4",
+        "C4"
+      ],
+      "Repetitions": 30
+    },
+    "Security": {
+      "Enabled": true,
+      "Sizes": null,
+      "Profiles": [
+        "base",
+        "role",
+        "tls",
+        "tls_role"
+      ],
+      "Scenarios": "all",
+      "Repetitions": 5,
+      "Warmup": 1,
+      "Clients": [
+        1,
+        100
+      ],
+      "HotTickets": 500,
+      "Rounds": 3
+    },
+    "Main": false
+  },
+  "segments": [
+    {
+      "name": "postgres-1000000-security",
+      "trace_id": "d31b0f152fdcabbcb7ae75670c712061",
+      "labels": {
+        "phase": "security"
+      },
+      "started": "2026-11-21T23:23:29.28528Z",
+      "ended": "2026-11-21T23:23:41.553503Z"
+    },
+    {
+      "name": "mariadb-1000000-security",
+      "trace_id": "c6beabe139cccde704c2d47514cfde4e",
+      "labels": {
+        "phase": "security"
+      },
+      "started": "2026-11-21T23:23:41.553913Z",
+      "ended": "2026-11-21T23:24:05.238297Z"
+    },
+    {
+      "name": "mongo-1000000-security",
+      "trace_id": "59ab354fe8a6721b620425064a052b25",
+      "labels": {
+        "phase": "security"
+      },
+      "started": "2026-11-21T23:24:05.238607Z",
+      "ended": "2026-11-21T23:25:01.985281Z"
+    },
+    {
+      "name": "valkey-1000000-security",
+      "trace_id": "1a66c62b8680f86d7c2e74305159d4e2",
+      "labels": {
+        "phase": "security"
+      },
+      "started": "2026-11-21T23:25:01.985778Z",
+      "ended": "2026-11-21T23:27:20.344005Z"
+    }
+  ],
+  "host": {
+    "arch": "arm64",
+    "cpus": 10,
+    "hostname": "ukaszs-MacBook-Pro.local",
+    "os": "darwin"
+  }
+}

@@ -1,0 +1,69 @@
+\section{Analiza bezpieczeństwa: TLS i ograniczone role}
+\label{sec:bezpieczenstwo}
+
+%<*sec-metoda>
+Rozdział mierzy wpływ dwóch mechanizmów bezpieczeństwa na operacje CRUD
+i~na rezerwację miejsc przy współbieżności. Pierwszy to szyfrowanie połączenia
+między aplikacją a~bazą (TLS), drugi to praca aplikacji na koncie
+z~minimalnymi uprawnieniami zamiast na koncie administratora. Pomiar
+wykonaliśmy na osobnym stosie (nakładka \texttt{docker-compose.security.yml}),
+na zbiorze 1 mln biletów, z~indeksami.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Konfiguracja bezpieczeństwa w~eksperymencie.}
+\label{tab:sec-konfig}
+\begin{tabular}{>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{6.9cm}>{\raggedright\arraybackslash}p{5.9cm}}
+\toprule
+SZBD & konto aplikacyjne (profil \texttt{role}) & TLS (profil \texttt{tls}) \\
+\midrule
+PostgreSQL & rola \texttt{tb\_app}: \texttt{SELECT}, \texttt{INSERT}, \texttt{UPDATE}, \texttt{DELETE} przez \texttt{ALTER DEFAULT PRIVILEGES}; brak DDL i~własności tabel & \texttt{ssl=on}, klient \texttt{sslmode=verify-full} z~własnym CA \\
+MariaDB & użytkownik \texttt{tb\_app}: te same cztery uprawnienia na \texttt{ticketbench.*} & \texttt{--ssl-cert}, klient weryfikuje CA (\texttt{tls=tb}) \\
+MongoDB & uwierzytelnianie (SCRAM, plik klucza replica setu), rola z~akcjami \texttt{find}, \texttt{insert}, \texttt{update}, \texttt{remove}; bez \texttt{readWrite}, które pozwala usuwać kolekcje i~indeksy & \texttt{tlsMode=allowTLS}, klient \texttt{tls=true} z~CA \\
+Valkey & użytkownik ACL \texttt{tbapp}: tylko prefiksy kluczy modelu (\texttt{w:*}, \texttt{r:*}, \ldots), bez kategorii \texttt{@admin} i~\texttt{@dangerous} (\texttt{FLUSHDB}, \texttt{CONFIG}, \texttt{KEYS}) & osobny port TLS 6380 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Dane ładuje i~indeksy tworzy administrator, tak jak przy wdrożeniu
+produkcyjnym. Następnie te same scenariusze i~test współbieżności (1 i~100
+klientów, 500 spornych miejsc) przechodzą przez cztery profile połączenia:
+\texttt{base} (administrator, bez TLS), \texttt{role}, \texttt{tls}
+i~\texttt{tls\_role}. Przed pomiarem wykonujemy nieliczony przebieg
+rozgrzewkowy wszystkich scenariuszy. Profile mierzymy w~kolejności
+zrównoważonej (\texttt{base}, \texttt{role}, \texttt{tls}, \texttt{tls\_role},
+a~potem odwrotnie), więc każdy profil ma dwa przebiegi po 5 powtórzeń
+w~symetrycznych pozycjach i~liniowy dryf (nagrzewanie pamięci podręcznej,
+przyrost danych) się znosi. Porównujemy mediany czasu po stronie serwisu,
+który mierzy wywołanie sterownika, więc szyfrowanie i~deszyfrowanie TLS są
+wliczone. Narzut grupy operacji to średnia geometryczna ilorazów
+$t_{\mathrm{profil}}/t_{\mathrm{base}}$ po scenariuszach tej grupy.
+
+Przed pomiarem sprawdziliśmy, że ograniczenia działają. Konto aplikacyjne
+dostaje odmowę przy \texttt{DROP TABLE} w~PostgreSQL i~MariaDB, przy usunięciu
+kolekcji w~MongoDB oraz przy \texttt{FLUSHDB} i~dostępie do klucza spoza
+prefiksów w~Valkey (\texttt{NOPERM}). Widoki \texttt{pg\_stat\_ssl}, licznik
+\texttt{Ssl\_accepts} i~lista klientów Valkey potwierdzają, że profile
+\texttt{tls} i~\texttt{tls\_role} faktycznie szyfrują połączenia.
+%</sec-metoda>
+
+\begin{table}[H]
+\centering
+\small
+\caption{Zmiana mediany czasu operacji względem profilu \texttt{base}
+[\%], 1 mln biletów, z~indeksami. Wartość dodatnia oznacza spowolnienie.}
+\label{tab:sec}
+\tbinput{generated/tables/security.tex}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Przepustowość rezerwacji [rez./s] w~teście współbieżności przy
+1 i~100 klientach, strategie domyślne.}
+\label{tab:sec-cont}
+\resizebox{\linewidth}{!}{\tbinput{generated/tables/security_contention.tex}}
+\end{table}
+
+\input{sekcje/06c-bezpieczenstwo-wyniki}

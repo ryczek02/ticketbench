@@ -1,0 +1,49 @@
+%<*sec-wyniki>
+\paragraph{Punkt odniesienia.} Profil \texttt{base} mierzymy dwa razy:
+na początku i~na końcu sekwencji. Różnica między tymi dwoma przebiegami tej
+samej konfiguracji (kolumna ,,base A/B'' w~tab.~\ref{tab:sec}) wynosi
+\secnoise{postgres} w~PostgreSQL, \secnoise{mariadb} w~MariaDB,
+\secnoise{mongo} w~MongoDB i~\secnoise{valkey} w~Valkey. Dla operacji
+trwających ułamek milisekundy to naturalna zmienność środowiska. Narzut
+profilu, który się w~niej mieści, jest w~tym teście niemierzalny.
+
+\paragraph{Ograniczone role nie kosztują.} Zmiana łącznego czasu po
+przejściu na konto aplikacyjne wynosi \secpct{postgres}{role}{all}
+w~PostgreSQL, \secpct{mariadb}{role}{all} w~MariaDB,
+\secpct{mongo}{role}{all} w~MongoDB i~\secpct{valkey}{role}{all} w~Valkey.
+Znaki są różne i~wszystkie wartości mieszczą się w~dryfie ,,base A/B''.
+Sprawdzenie uprawnień to porównanie z~listą uprawnień roli. W~bazach
+relacyjnych odbywa się raz przy rozpoczęciu wykonania instrukcji,
+w~MongoDB raz na operację z~pamięci podręcznej sesji, a~w~Valkey raz na
+polecenie (dopasowanie prefiksu klucza). Wobec kosztu dostępu do danych jest
+to niezauważalne. Zasada najmniejszych uprawnień nie ma więc w~tym systemie
+ceny wydajnościowej.
+
+\paragraph{TLS przy pojedynczych operacjach.} Szyfrowanie połączenia zmienia
+łączny czas o~\secpct{postgres}{tls}{all} (PostgreSQL),
+\secpct{mariadb}{tls}{all} (MariaDB), \secpct{mongo}{tls}{all} (MongoDB)
+i~\secpct{valkey}{tls}{all} (Valkey), również w~granicach dryfu. Pule
+utrzymują połączenia otwarte, więc uzgadnianie sesji TLS (najdroższa część)
+odbywa się raz na połączenie, a~nie na operację. Szyfrowanie symetryczne
+kilkuset bajtów zapytania i~odpowiedzi kosztuje mikrosekundy. Profil
+\texttt{tls\_role}, łączący oba mechanizmy, daje podobny obraz.
+
+\paragraph{TLS przy wysokiej współbieżności.} Wyraźny efekt widać w~teście
+rezerwacji (tab.~\ref{tab:sec-cont}). Valkey przy 100 klientach obsługuje
+bez TLS \seccval{valkey}{base}{100}\,rez./s, a~z~TLS
+\seccval{valkey}{tls}{100}\,rez./s. Valkey w~domyślnej konfiguracji (jeden
+wątek I/O) sam szyfruje i~deszyfruje ruch wszystkich połączeń w~wątku, który
+wykonuje polecenia, więc przy dziesiątkach tysięcy krótkich poleceń na
+sekundę koszt TLS konkuruje bezpośrednio z~obsługą danych. Przy jednym
+kliencie różnica jest mała (\seccval{valkey}{base}{1} wobec
+\seccval{valkey}{tls}{1}\,rez./s), bo serwer nie jest wtedy wąskim gardłem.
+W~bazach dyskowych zmiany przepustowości przy 100 klientach nie układają się
+w~stały wzór: każda transakcja czeka na zapis dziennika, a~nie na
+szyfrowanie.
+
+\paragraph{Wniosek.} Konto o~minimalnych uprawnieniach i~TLS można włączyć
+w~PostgreSQL, MariaDB i~MongoDB bez mierzalnej straty wydajności operacji
+CRUD. W~Valkey TLS obniża przepustowość przy dużym ruchu. Trzeba to
+uwzględnić przy planowaniu (wątki I/O, więcej instancji albo szyfrowanie na
+poziomie sieci, np. w~prywatnej sieci klastra).
+%</sec-wyniki>

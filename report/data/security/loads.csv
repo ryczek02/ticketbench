@@ -1,0 +1,17 @@
+run_id,segment,store,tickets,kind,server_ms,checksum,rows,trace_id
+20261121-232329-c96686,postgres-1000000-security,postgres,1000000,reset,11.3915,,,d31b0f152fdcabbcb7ae75670c712061
+20261121-232329-c96686,postgres-1000000-security,postgres,1000000,load,1612.8383,8cb7cbcade345db1,"{""bilety"":1000000,""cenniki"":3197,""kategorie"":12,""klienci"":125000,""kody_rabatowe"":95,""miejsca"":33922,""obiekty"":16,""organizatorzy"":19,""platnosci"":135946,""rezerwacje"":170396,""sektory"":108,""wydarzenia"":476}",d31b0f152fdcabbcb7ae75670c712061
+20261121-232329-c96686,postgres-1000000-security,postgres,1000000,indexes_on,771.1134,,,d31b0f152fdcabbcb7ae75670c712061
+20261121-232329-c96686,postgres-1000000-security,postgres,1000000,reset,22.1105,,,d31b0f152fdcabbcb7ae75670c712061
+20261121-232329-c96686,mariadb-1000000-security,mariadb,1000000,reset,34.8710,,,c6beabe139cccde704c2d47514cfde4e
+20261121-232329-c96686,mariadb-1000000-security,mariadb,1000000,load,2366.3730,8cb7cbcade345db1,"{""bilety"":1000000,""cenniki"":3197,""kategorie"":12,""klienci"":125000,""kody_rabatowe"":95,""miejsca"":33922,""obiekty"":16,""organizatorzy"":19,""platnosci"":135946,""rezerwacje"":170396,""sektory"":108,""wydarzenia"":476}",c6beabe139cccde704c2d47514cfde4e
+20261121-232329-c96686,mariadb-1000000-security,mariadb,1000000,indexes_on,1188.6930,,,c6beabe139cccde704c2d47514cfde4e
+20261121-232329-c96686,mariadb-1000000-security,mariadb,1000000,reset,34.7155,,,c6beabe139cccde704c2d47514cfde4e
+20261121-232329-c96686,mongo-1000000-security,mongo,1000000,reset,136.3408,,,59ab354fe8a6721b620425064a052b25
+20261121-232329-c96686,mongo-1000000-security,mongo,1000000,load,3443.0257,8cb7cbcade345db1,"{""bilety"":1000000,""kategorie"":12,""klienci"":125000,""kody_rabatowe"":95,""obiekty"":16,""organizatorzy"":19,""platnosci"":135946,""rezerwacje"":170396,""wydarzenia"":476}",59ab354fe8a6721b620425064a052b25
+20261121-232329-c96686,mongo-1000000-security,mongo,1000000,indexes_on,3111.5797,,,59ab354fe8a6721b620425064a052b25
+20261121-232329-c96686,mongo-1000000-security,mongo,1000000,reset,132.1160,,,59ab354fe8a6721b620425064a052b25
+20261121-232329-c96686,valkey-1000000-security,valkey,1000000,reset,0.1756,,,1a66c62b8680f86d7c2e74305159d4e2
+20261121-232329-c96686,valkey-1000000-security,valkey,1000000,load,664.5732,8cb7cbcade345db1,"{""bilety"":1000000,""kategorie"":12,""klienci"":125000,""kody_rabatowe"":95,""obiekty"":16,""organizatorzy"":19,""platnosci"":135946,""rezerwacje"":170396,""wydarzenia"":476}",1a66c62b8680f86d7c2e74305159d4e2
+20261121-232329-c96686,valkey-1000000-security,valkey,1000000,indexes_on,1445.8897,,,1a66c62b8680f86d7c2e74305159d4e2
+20261121-232329-c96686,valkey-1000000-security,valkey,1000000,reset,0.0704,,,1a66c62b8680f86d7c2e74305159d4e2

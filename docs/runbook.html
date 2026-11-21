@@ -41,6 +41,7 @@ Autorzy: Łukasz Ryczko, Łukasz Pacholec.</p>
   <li><a href="#stos">Uruchomienie środowiska</a></li>
   <li><a href="#smoke">Test dymny</a></li>
   <li><a href="#bench">Pełna macierz</a></li>
+  <li><a href="#bezpieczenstwo">TLS i ograniczone role</a></li>
   <li><a href="#pojedyncze">Pojedyncze pomiary</a></li>
   <li><a href="#raport">Raport i PDF</a></li>
   <li><a href="#wyniki">Pliki wyników</a></li>
@@ -143,7 +144,25 @@ scenariusze Valkey bez indeksów na 10 mln (pełny <code>SCAN</code>) i współb
 zmierzyć. Brakujący segment można powtórzyć osobno, a <code>tbench report</code> przyjmuje kilka
 katalogów wyników naraz.</p>
 
-<h2 id="pojedyncze">7. Pojedyncze pomiary</h2>
+<h2 id="bezpieczenstwo">7. TLS i ograniczone role</h2>
+<pre><code>./ticketbench.sh security</code></pre>
+<p>Przełącza stos na nakładkę <code>infra/docker-compose.security.yml</code>, czyli TLS we wszystkich
+bazach z własnym CA (certyfikaty generuje kontener <code>certs</code>) i konta aplikacyjne z samym DML:</p>
+<ul>
+  <li>PostgreSQL: rola <code>tb_app</code> z <code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code>, <code>DELETE</code>;</li>
+  <li>MariaDB: użytkownik <code>tb_app</code> z tymi samymi uprawnieniami;</li>
+  <li>MongoDB: uwierzytelnianie i rola <code>find</code>/<code>insert</code>/<code>update</code>/<code>remove</code>;</li>
+  <li>Valkey: użytkownik ACL <code>tbapp</code> bez poleceń <code>@admin</code> i <code>@dangerous</code>, tylko prefiksy kluczy modelu.</li>
+</ul>
+<p>Na 1 mln biletów każda baza jest ładowana raz przez administratora, a potem wszystkie scenariusze
+i test współbieżności (1 i 100 klientów) przechodzą przez cztery profile połączenia:
+<code>base</code>, <code>role</code>, <code>tls</code> i <code>tls_role</code>. Wyniki trafiają do
+<code>results/security-latest</code>, a <code>./ticketbench.sh report</code> dołącza je do
+sprawozdania (tabela narzutu w procentach względem <code>base</code>). Ten wariant używa osobnych
+wolumenów, więc dane głównej macierzy zostają nietknięte. Powrót do zwykłego stosu:
+<code>./ticketbench.sh up</code>.</p>
+
+<h2 id="pojedyncze">8. Pojedyncze pomiary</h2>
 <pre><code># wybrane scenariusze na jednej bazie, z importem danych
 ./ticketbench.sh run --stores postgres --tickets 1M --scenarios R4,U6 --reps 10 --indexes both
 
@@ -156,7 +175,7 @@ katalogów wyników naraz.</p>
 # lista scenariuszy
 bin/tbench scenarios</code></pre>
 
-<h2 id="raport">8. Raport i PDF</h2>
+<h2 id="raport">9. Raport i PDF</h2>
 <pre><code>./ticketbench.sh report                      # ostatni przebieg (results/latest)
 ./ticketbench.sh report results/20261121-220002</code></pre>
 <p>Polecenie generuje <code>report/generated/</code> (tabele LaTeX, dane wykresów pgfplots, makra
@@ -166,7 +185,7 @@ do <code>report/data/results</code> i kompiluje <code>report/sprawozdanie.pdf</c
 Liczby w sprawozdaniu pochodzą wyłącznie z tych plików, a CI sprawdza, czy zgadzają się z surowymi
 wynikami.</p>
 
-<h2 id="wyniki">9. Pliki wyników</h2>
+<h2 id="wyniki">10. Pliki wyników</h2>
 <table>
   <tr><th>Plik</th><th>Zawartość</th></tr>
   <tr><td><code>scenarios.csv</code></td><td>wiersz na powtórzenie: <code>server_ms</code> (czas w serwisie bazy), <code>e2e_ms</code> (z runnera), <code>prepare_ms</code> (fikstura), <code>rows</code>, <code>timed_out</code>, <code>error</code>, <code>trace_id</code></td></tr>
@@ -182,7 +201,7 @@ wynikami.</p>
 <code>report/data/contention_summary.csv</code> kolumna <code>consistent</code> wszędzie ma
 <code>true</code>.</p>
 
-<h2 id="sledzenie">10. Śledzenie i metryki</h2>
+<h2 id="sledzenie">11. Śledzenie i metryki</h2>
 <ul>
   <li><strong>Jaeger</strong> (<a href="http://localhost:16686">localhost:16686</a>): każdy segment
   (rozmiar × baza) to jeden ślad. Identyfikator jest w każdym wierszu CSV, więc wolne powtórzenie
@@ -197,12 +216,12 @@ wynikami.</p>
   <code>tb_store_contention_conflicts_total</code>.</li>
 </ul>
 
-<h2 id="sprzatanie">11. Sprzątanie</h2>
+<h2 id="sprzatanie">12. Sprzątanie</h2>
 <pre><code>./ticketbench.sh down       # zatrzymuje kontenery, dane zostają
 ./ticketbench.sh destroy    # usuwa kontenery i wolumeny baz</code></pre>
 <p>Wyniki w <code>results/</code> i pliki raportu zostają.</p>
 
-<h2 id="problemy">12. Rozwiązywanie problemów</h2>
+<h2 id="problemy">13. Rozwiązywanie problemów</h2>
 <table>
   <tr><th>Objaw</th><th>Przyczyna i rozwiązanie</th></tr>
   <tr><td><code>bind: address already in use</code> przy starcie</td><td>port zajęty przez inną usługę. <code>./ticketbench.sh doctor</code> pokazuje które. Port runnera zmienia <code>TB_RUNNER_PORT=7171</code>.</td></tr>
@@ -214,20 +233,21 @@ wynikami.</p>
   <tr><td>Pobieranie <code>tbench</code> kończy się błędem 403</td><td>limit zapytań do API GitHuba bez logowania. Odczekaj godzinę albo zbuduj ze źródeł: <code>TB_SOURCE=1</code>.</td></tr>
 </table>
 
-<h2 id="zmienne">13. Zmienne środowiskowe</h2>
+<h2 id="zmienne">14. Zmienne środowiskowe</h2>
 <table>
   <tr><th>Zmienna</th><th>Domyślnie</th><th>Znaczenie</th></tr>
   <tr><td><code>TB_HOME</code></td><td>katalog klonu albo <code>./ticketbench</code></td><td>miejsce repozytorium, <code>bin/</code> i <code>results/</code></td></tr>
   <tr><td><code>TB_VERSION</code></td><td><code>latest</code></td><td>tag obrazów w GHCR</td></tr>
   <tr><td><code>TB_CHANNEL</code></td><td><code>latest</code></td><td>wydanie <code>tbench</code>: <code>latest</code>, <code>edge</code>, <code>v0.1.0</code></td></tr>
   <tr><td><code>TB_SOURCE</code></td><td><code>0</code></td><td><code>1</code> buduje obrazy i <code>tbench</code> ze źródeł</td></tr>
+  <tr><td><code>TB_SECURITY</code></td><td><code>0</code></td><td><code>1</code> dokłada nakładkę z TLS i rolami do każdego polecenia</td></tr>
   <tr><td><code>TB_UPDATE</code></td><td><code>0</code></td><td><code>1</code> ustawia submoduły na najnowszy <code>main</code></td></tr>
   <tr><td><code>TB_RUNNER_PORT</code></td><td><code>7070</code></td><td>port runnera na hoście</td></tr>
   <tr><td><code>TB_PROJECT</code></td><td><code>ticketbench</code></td><td>nazwa projektu Docker Compose</td></tr>
   <tr><td><code>TB_RUN</code></td><td>znacznik czasu</td><td>nazwa katalogu wyników</td></tr>
 </table>
 
-<h2 id="repo">14. Repozytoria</h2>
+<h2 id="repo">15. Repozytoria</h2>
 <table>
   <tr><th>Repozytorium</th><th>Zawartość</th></tr>
   <tr><td><a href="https://github.com/ryczek02/ticketbench">ticketbench</a></td><td>to repozytorium: README, <code>ticketbench.sh</code>, runbook, sprawozdanie (LaTeX, PDF), submoduły</td></tr>

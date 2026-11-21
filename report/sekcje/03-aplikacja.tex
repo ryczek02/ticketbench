@@ -167,6 +167,9 @@ Prometheusa i~na pulpit Grafany.
   wieloarchitekturowe obrazy w~GHCR, wydania przez GoReleaser oraz test
   end-to-end, w~którym Ansible stawia środowisko na maszynie CI i~uruchamia
   macierz \texttt{smoke}. Sprawozdanie również kompiluje się w~CI.
+  \item \textbf{Wariant bezpieczeństwa}: nakładka
+  \texttt{docker-compose.security.yml} (certyfikaty z~własnego CA, konta
+  aplikacyjne) i~polecenie \texttt{./ticketbench.sh security}.
   \item \textbf{Ansible}: role \texttt{docker} (instalacja silnika na
   Debianie/Ubuntu), \texttt{ticketbench} (wdrożenie i~start stosu),
   \texttt{bench} (uruchomienie macierzy i~pobranie wyników)

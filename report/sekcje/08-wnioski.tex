@@ -25,6 +25,11 @@
   Lua, WATCH) zmienia przepustowość tego samego silnika nawet o~trzy
   rzędy wielkości (Valkey: \texttt{lua} a~\texttt{watch}). Szybkie odrzucanie konfliktów (\texttt{NOWAIT}, operacja
   atomowa) skaluje się lepiej niż kolejkowanie na blokadach.
+  \item \textbf{Bezpieczeństwo bez kosztu, z~jednym wyjątkiem.} Konta
+  o~minimalnych uprawnieniach i~TLS nie zmieniają czasu operacji CRUD ponad
+  zmienność pomiaru. Wyjątkiem jest Valkey przy 100 klientach, gdzie TLS
+  obniża przepustowość z~\seccval{valkey}{base}{100} do
+  \seccval{valkey}{tls}{100}\,rez./s (rozdz.~\ref{sec:bezpieczenstwo}).
   \item \textbf{H1 potwierdzona dla Valkey, częściowo dla MongoDB, H2
   potwierdzona częściowo} (rozdz.~\ref{sec:hipotezy}).
   \item \textbf{Praktyczna rekomendacja dla systemu biletowego:}
@@ -47,8 +52,9 @@
   \item Poziomy trwałości nie są równe: Valkey bez RDB i~AOF nie czeka na dysk,
   MongoDB czeka na dziennik (\texttt{majority}), bazy relacyjne na
   \texttt{fsync} WAL i~redo. Zapisy w~Valkey są przez to tańsze z~założenia.
-  \item Każda baza działała jako pojedynczy węzeł bez TLS. Replikacja
-  synchroniczna i~szyfrowanie zwiększyłyby czasy zapisów.
+  \item Każda baza działała jako pojedynczy węzeł, a~główna macierz bez TLS.
+  Wpływ TLS i~ról zmierzyliśmy osobno (rozdz.~\ref{sec:bezpieczenstwo}),
+  wpływu replikacji synchronicznej nie badaliśmy.
   \item W~każdym wariancie mierzyliśmy 5 powtórzeń po jednym przebiegu
   rozgrzewkowym. Dla operacji trwających poniżej 1\,ms pojedyncze odchylenia
   (zimna pamięć podręczna, punkt kontrolny) przesuwają średnią, dlatego

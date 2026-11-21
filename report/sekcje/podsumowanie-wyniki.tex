@@ -18,6 +18,9 @@
   PostgreSQL \cval{postgres}{10000000}{cond}{1000}, MongoDB \cval{mongo}{10000000}{atomic}{1000},
   MariaDB \cval{mariadb}{10000000}{cond}{1000} (\texttt{nowait}: \cval{mariadb}{10000000}{nowait}{1000}).
   Zero podwójnych sprzedaży w~\ContentionRuns{} rundach.
+  \item Bezpieczeństwo (1 mln): rola aplikacyjna i~TLS mieszczą się w~zmienności pomiaru
+  (np. PostgreSQL TLS \secpct{postgres}{tls}{all}, dryf base A/B \secnoise{postgres});
+  Valkey przy 100 klientach z~TLS: \seccval{valkey}{base}{100} $\to$ \seccval{valkey}{tls}{100}\,rez./s.
   \item H1 \HOneVerdict{} (\HOneGrows/\HOneCases): pełna dla Valkey, dla MongoDB rośnie tylko stosunek.
   H2 \HTwoVerdict{} (\HTwoGrows/\HTwoCases).
 \end{itemize}
