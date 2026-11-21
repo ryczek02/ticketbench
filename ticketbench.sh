@@ -234,10 +234,26 @@ cmd_report() {
   run=$(cd "$run" && pwd -P)
   local rep=$TB_HOME/report
   [ -d "$rep" ] || die "brak katalogu $rep, uruchom: $0 install"
+  # The report plots 0.5M, 1M and 10M tickets; a smaller run (e.g. smoke)
+  # only gets its own tables next to the results.
+  local size
+  for size in 500000 1000000 10000000; do
+    if ! grep -q ",$size," "$run/scenarios.csv" 2>/dev/null; then
+      warn "wyniki w $run nie zawierają rozmiaru $size: sprawozdanie wymaga pełnej macierzy ($0 bench)"
+      say "Generuję tylko tabele obok wyników"
+      tb report "$run" --out "$run/report"
+      ok "tabele i dane wykresów: $run/report"
+      return 0
+    fi
+  done
   say "Generuję tabele i wykresy z $run"
-  rm -rf "$rep/generated" "$rep/data/results"
+  rm -rf "$rep/generated"
   tb report "$run" --out "$rep/generated"
-  mkdir -p "$rep/data" && cp -R "$run" "$rep/data/results"
+  # Keep the raw results next to the report (unless they already are there).
+  if [ "$run" != "$(cd "$rep" && pwd -P)/data/results" ]; then
+    rm -rf "$rep/data/results"
+    mkdir -p "$rep/data" && cp -R "$run" "$rep/data/results"
+  fi
   if have tectonic; then
     say "Kompiluję PDF (tectonic)"
     (cd "$rep" && for f in sprawozdanie podsumowanie prezentacja; do tectonic -X compile "$f.tex"; done)
