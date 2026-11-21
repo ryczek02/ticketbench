@@ -1,0 +1,3 @@
+-- valkey C3 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- HSET wb:{e} ... + SADD wf:{e} ...
+pipelined, O(tickets)

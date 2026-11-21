@@ -1,0 +1,1 @@
+bilety.updateMany {"update":"bilety","updates":[{"q":{"_id":{"$in":[2497702]},"status":"wolny"},"u":{"$set":{"status":"zarezerwowany"}},"multi":true}]}

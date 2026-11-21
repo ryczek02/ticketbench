@@ -1,0 +1,1 @@
+wydarzenia.find by JSON fields {"find":"wydarzenia","filter":{"metadane.gatunek":"komedia","metadane.tagi":"akustycznie"}}

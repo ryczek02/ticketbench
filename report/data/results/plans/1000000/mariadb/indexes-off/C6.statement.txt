@@ -1,0 +1,1 @@
+INSERT INTO platnosci (id, rezerwacja_id, kwota, metoda, status, zaplacono, metadane) VALUES (?, ?, ?, ?, ?, ?, ?)

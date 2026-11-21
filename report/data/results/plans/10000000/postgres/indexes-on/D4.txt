@@ -1,0 +1,9 @@
+-- postgres D4 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- DELETE FROM rezerwacje WHERE klient_id = $1
+Delete on rezerwacje  (cost=0.43..3.76 rows=0 width=0) (actual time=0.005..0.005 rows=0 loops=1)
+  Buffers: shared hit=9 dirtied=2
+  ->  Index Scan using idx_rezerwacje_klient on rezerwacje  (cost=0.43..3.76 rows=2 width=6) (actual time=0.002..0.002 rows=2 loops=1)
+        Index Cond: (klient_id = '20828'::bigint)
+        Buffers: shared hit=5
+Planning Time: 0.014 ms
+Execution Time: 0.007 ms

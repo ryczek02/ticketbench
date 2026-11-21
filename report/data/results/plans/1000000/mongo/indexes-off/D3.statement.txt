@@ -1,0 +1,1 @@
+rezerwacje.deleteMany {"delete":"rezerwacje","deletes":[{"q":{"wygasa_o":{"$lt":{"$date":"2025-12-25T00:00:00Z"}},"status":"wygasla"},"limit":0}]}

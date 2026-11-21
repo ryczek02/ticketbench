@@ -1,0 +1,1 @@
+bilety.updateOne {"update":"bilety","updates":[{"u":{"$set":{"status":"zablokowany"}},"multi":false,"q":{"_id":2499790,"status":"wolny"}}]}

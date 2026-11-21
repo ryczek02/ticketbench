@@ -1,0 +1,63 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.07493568
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 12.67430124,
+    "r_loops": 1,
+    "r_total_time_ms": 4.843832327,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "r",
+          "access_type": "range",
+          "possible_keys": ["PRIMARY", "idx_rezerwacje_status_wygasa"],
+          "key": "idx_rezerwacje_status_wygasa",
+          "key_length": "75",
+          "used_key_parts": ["status", "wygasa_o"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 1000,
+          "r_rows": 1000,
+          "cost": 0.15254124,
+          "r_table_time_ms": 0.080584098,
+          "r_other_time_ms": 0.07794817,
+          "r_engine_stats": {
+            "pages_accessed": 10
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "r.`status` = 'oczekujaca' and r.wygasa_o < '2026-01-01'",
+          "r_filtered": 100,
+          "using_index": true
+        }
+      },
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ref",
+          "possible_keys": ["idx_bilety_rezerwacja"],
+          "key": "idx_bilety_rezerwacja",
+          "key_length": "9",
+          "used_key_parts": ["rezerwacja_id"],
+          "ref": ["ticketbench.r.id"],
+          "loops": 1000,
+          "r_loops": 1000,
+          "rows": 6,
+          "r_rows": 1,
+          "cost": 12.52176,
+          "r_table_time_ms": 4.357817329,
+          "r_other_time_ms": 0.324093679,
+          "r_engine_stats": {
+            "pages_accessed": 25276,
+            "pages_updated": 6047
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

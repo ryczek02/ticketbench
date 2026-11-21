@@ -1,0 +1,31 @@
+-- postgres R2 tickets=1000000 indexes=on trace=1a8079f87549bfc399cde31511d43ee9
+-- SELECT b.id, s.nazwa, m.rzad, m.numer, b.cena
+			FROM bilety b
+			JOIN miejsca m ON m.id = b.miejsce_id
+			JOIN sektory s ON s.id = m.sektor_id
+			WHERE b.wydarzenie_id = $1 AND b.status = 'wolny'
+			ORDER BY s.nazwa, m.rzad, m.numer
+Sort  (cost=1216.02..1218.50 rows=995 width=24) (actual time=0.584..0.600 rows=706 loops=1)
+  Sort Key: s.nazwa, m.rzad, m.numer
+  Sort Method: quicksort  Memory: 58kB
+  Buffers: shared hit=2145
+  ->  Hash Join  (cost=4.15..1166.47 rows=995 width=24) (actual time=0.021..0.501 rows=706 loops=1)
+        Hash Cond: (m.sektor_id = s.id)
+        Buffers: shared hit=2145
+        ->  Nested Loop  (cost=0.72..1160.33 rows=995 width=30) (actual time=0.008..0.412 rows=706 loops=1)
+              Buffers: shared hit=2144
+              ->  Index Scan using idx_bilety_wydarzenie_status on bilety b  (cost=0.43..511.17 rows=995 width=22) (actual time=0.005..0.059 rows=706 loops=1)
+                    Index Cond: ((wydarzenie_id = '284'::bigint) AND ((status)::text = 'wolny'::text))
+                    Buffers: shared hit=26
+              ->  Index Scan using miejsca_pkey on miejsca m  (cost=0.29..0.65 rows=1 width=24) (actual time=0.000..0.000 rows=1 loops=706)
+                    Index Cond: (id = b.miejsce_id)
+                    Buffers: shared hit=2118
+        ->  Hash  (cost=2.08..2.08 rows=108 width=10) (actual time=0.011..0.012 rows=108 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 14kB
+              Buffers: shared hit=1
+              ->  Seq Scan on sektory s  (cost=0.00..2.08 rows=108 width=10) (actual time=0.002..0.006 rows=108 loops=1)
+                    Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=16
+Planning Time: 0.090 ms
+Execution Time: 0.620 ms

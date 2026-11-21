@@ -1,0 +1,3 @@
+-- valkey R6 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- ZRANGE sprzedaz +inf 1 BYSCORE REV LIMIT 0 10
+O(log N + 10), precomputed counter

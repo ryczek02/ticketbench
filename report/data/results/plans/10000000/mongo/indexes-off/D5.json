@@ -1,0 +1,128 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.bilety",
+    "parsedQuery": {
+      "wydarzenie_id": {
+        "$eq": 1230450000000
+      }
+    },
+    "indexFilterSet": false,
+    "queryHash": "B07E7374",
+    "planCacheShapeHash": "B07E7374",
+    "planCacheKey": "DFDBE93C",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "BATCHED_DELETE",
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "wydarzenie_id": {
+            "$eq": 1230450000000
+          }
+        },
+        "direction": "forward"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 2734,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 10078375,
+    "executionStages": {
+      "isCached": false,
+      "stage": "BATCHED_DELETE",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 2598,
+      "works": 10078376,
+      "advanced": 0,
+      "needTime": 10078375,
+      "needYield": 0,
+      "saveState": 183,
+      "restoreState": 183,
+      "isEOF": 1,
+      "nWouldDelete": 2388,
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "wydarzenie_id": {
+            "$eq": 1230450000000
+          }
+        },
+        "nReturned": 2388,
+        "executionTimeMillisEstimate": 2565,
+        "works": 10078376,
+        "advanced": 2388,
+        "needTime": 10075987,
+        "needYield": 0,
+        "saveState": 183,
+        "restoreState": 183,
+        "isEOF": 1,
+        "direction": "forward",
+        "docsExamined": 10078375
+      }
+    }
+  },
+  "command": {
+    "delete": "bilety",
+    "deletes": [
+      {
+        "limit": 0,
+        "q": {
+          "wydarzenie_id": 1230450000000
+        }
+      }
+    ],
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299943,
+        "i": 101
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299943,
+      "i": 101
+    }
+  }
+}

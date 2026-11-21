@@ -1,0 +1,3 @@
+-- postgres C3 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- COPY bilety FROM STDIN (binary)
+COPY has no query plan

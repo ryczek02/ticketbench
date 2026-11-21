@@ -1,0 +1,29 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.011194514
+  },
+  "query_block": {
+    "select_id": 1,
+    "r_total_time_ms": 0.042271821,
+    "table": {
+      "update": 1,
+      "table_name": "bilety",
+      "access_type": "range",
+      "possible_keys": ["PRIMARY"],
+      "key": "PRIMARY",
+      "key_length": "8",
+      "used_key_parts": ["id"],
+      "rows": 4,
+      "r_rows": 4,
+      "r_total_filtered": 100,
+      "r_table_time_ms": 0.039222569,
+      "r_other_time_ms": 0.002255611,
+      "r_engine_stats": {
+        "pages_accessed": 88,
+        "pages_updated": 29
+      },
+      "attached_condition": "bilety.`id` in (249735,249736,249737,249738) and bilety.`status` = 'wolny'",
+      "r_filtered": 100
+    }
+  }
+}

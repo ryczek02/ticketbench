@@ -1,0 +1,26 @@
+-- postgres R5 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT w.id, w.nazwa, count(b.id) AS sprzedane, coalesce(sum(b.cena), 0) AS przychod
+			FROM wydarzenia w
+			LEFT JOIN bilety b ON b.wydarzenie_id = w.id AND b.status = 'sprzedany'
+			WHERE w.organizator_id = $1
+			GROUP BY w.id, w.nazwa
+HashAggregate  (cost=11592.28..11592.53 rows=20 width=75) (actual time=7.639..7.642 rows=16 loops=1)
+  Group Key: w.id
+  Batches: 1  Memory Usage: 24kB
+  Buffers: shared hit=86 read=825 written=824
+  ->  Nested Loop Left Join  (cost=1.97..11424.62 rows=22354 width=49) (actual time=0.019..5.931 rows=25395 loops=1)
+        Buffers: shared hit=86 read=825 written=824
+        ->  Bitmap Heap Scan on wydarzenia w  (cost=1.54..21.96 rows=20 width=35) (actual time=0.006..0.019 rows=16 loops=1)
+              Recheck Cond: (organizator_id = '10'::bigint)
+              Heap Blocks: exact=15
+              Buffers: shared hit=17
+              ->  Bitmap Index Scan on idx_wydarzenia_organizator  (cost=0.00..1.53 rows=20 width=0) (actual time=0.003..0.003 rows=16 loops=1)
+                    Index Cond: (organizator_id = '10'::bigint)
+                    Buffers: shared hit=2
+        ->  Index Scan using idx_bilety_wydarzenie_status on bilety b  (cost=0.43..558.63 rows=1150 width=22) (actual time=0.009..0.289 rows=1587 loops=16)
+              Index Cond: ((wydarzenie_id = w.id) AND ((status)::text = 'sprzedany'::text))
+              Buffers: shared hit=69 read=825 written=824
+Planning:
+  Buffers: shared hit=144
+Planning Time: 0.382 ms
+Execution Time: 7.653 ms

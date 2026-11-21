@@ -1,0 +1,9 @@
+-- postgres U5 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- UPDATE wydarzenia SET data_rozpoczecia = $2 WHERE id = $1
+Update on wydarzenia  (cost=0.28..2.50 rows=0 width=0) (actual time=0.037..0.037 rows=0 loops=1)
+  Buffers: shared hit=20 dirtied=1
+  ->  Index Scan using wydarzenia_pkey on wydarzenia  (cost=0.28..2.50 rows=1 width=14) (actual time=0.004..0.004 rows=1 loops=1)
+        Index Cond: (id = '4115'::bigint)
+        Buffers: shared hit=3
+Planning Time: 0.018 ms
+Execution Time: 0.040 ms

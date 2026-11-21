@@ -1,0 +1,174 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.bilety",
+    "parsedQuery": {
+      "$and": [
+        {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        {
+          "wydarzenie_id": {
+            "$eq": 354
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "CD0232D2",
+    "planCacheShapeHash": "CD0232D2",
+    "planCacheKey": "C309CF9A",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "SORT",
+      "sortPattern": {
+        "sektor_id": 1,
+        "rzad": 1,
+        "numer": 1
+      },
+      "memLimit": 104857600,
+      "type": "simple",
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "status": {
+                "$eq": "wolny"
+              }
+            },
+            {
+              "wydarzenie_id": {
+                "$eq": 354
+              }
+            }
+          ]
+        },
+        "direction": "forward"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 721,
+    "executionTimeMillis": 288,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 1075975,
+    "executionStages": {
+      "isCached": false,
+      "stage": "SORT",
+      "nReturned": 721,
+      "executionTimeMillisEstimate": 281,
+      "works": 1076698,
+      "advanced": 721,
+      "needTime": 1075976,
+      "needYield": 0,
+      "saveState": 18,
+      "restoreState": 18,
+      "isEOF": 1,
+      "sortPattern": {
+        "sektor_id": 1,
+        "rzad": 1,
+        "numer": 1
+      },
+      "memLimit": 104857600,
+      "type": "simple",
+      "totalDataSizeSorted": 233478,
+      "usedDisk": false,
+      "spills": 0,
+      "spilledDataStorageSize": 0,
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "status": {
+                "$eq": "wolny"
+              }
+            },
+            {
+              "wydarzenie_id": {
+                "$eq": 354
+              }
+            }
+          ]
+        },
+        "nReturned": 721,
+        "executionTimeMillisEstimate": 281,
+        "works": 1075976,
+        "advanced": 721,
+        "needTime": 1075254,
+        "needYield": 0,
+        "saveState": 18,
+        "restoreState": 18,
+        "isEOF": 1,
+        "direction": "forward",
+        "docsExamined": 1075975
+      }
+    }
+  },
+  "queryShapeHash": "6F81D65D5F9BA3390576496123A1FDD6FDC3941A8BB0278044704EEA130E8745",
+  "command": {
+    "find": "bilety",
+    "filter": {
+      "wydarzenie_id": 354,
+      "status": "wolny"
+    },
+    "sort": {
+      "sektor_id": 1,
+      "rzad": 1,
+      "numer": 1
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299084,
+        "i": 1
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299084,
+      "i": 1
+    }
+  }
+}

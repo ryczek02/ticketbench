@@ -1,0 +1,6 @@
+SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = ? AND w.data_rozpoczecia >= ? AND w.data_rozpoczecia < ?
+			ORDER BY w.data_rozpoczecia

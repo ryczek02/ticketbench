@@ -1,0 +1,63 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.023929566
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.310472265,
+    "r_loops": 1,
+    "r_total_time_ms": 4.448017778,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "wydarzenia",
+          "access_type": "range",
+          "possible_keys": ["PRIMARY", "idx_wydarzenia_data"],
+          "key": "idx_wydarzenia_data",
+          "key_length": "8",
+          "used_key_parts": ["data_rozpoczecia"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.002583725,
+          "r_table_time_ms": 0.001127571,
+          "r_other_time_ms": 0.002129857,
+          "r_engine_stats": {
+            "pages_accessed": 2
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "wydarzenia.data_rozpoczecia < '2024-01-01'",
+          "r_filtered": 100,
+          "using_index": true
+        }
+      },
+      {
+        "table": {
+          "table_name": "bilety",
+          "access_type": "ref",
+          "possible_keys": ["idx_bilety_wydarzenie_status"],
+          "key": "idx_bilety_wydarzenie_status",
+          "key_length": "8",
+          "used_key_parts": ["wydarzenie_id"],
+          "ref": ["ticketbench.wydarzenia.id"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 2012,
+          "r_rows": 2000,
+          "cost": 0.30788854,
+          "r_table_time_ms": 4.235825584,
+          "r_other_time_ms": 0.20814129,
+          "r_engine_stats": {
+            "pages_accessed": 32059,
+            "pages_updated": 8045
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

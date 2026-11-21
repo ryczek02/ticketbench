@@ -1,0 +1,1 @@
+DELETE FROM rezerwacje WHERE status = 'wygasla' AND wygasa_o < ?

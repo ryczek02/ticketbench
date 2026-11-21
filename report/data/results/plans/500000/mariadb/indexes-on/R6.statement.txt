@@ -1,0 +1,5 @@
+SELECT w.id, w.nazwa, t.sprzedane
+			FROM (SELECT wydarzenie_id, count(*) AS sprzedane FROM bilety WHERE status = 'sprzedany'
+			      GROUP BY wydarzenie_id ORDER BY sprzedane DESC LIMIT 10) t
+			JOIN wydarzenia w ON w.id = t.wydarzenie_id
+			ORDER BY t.sprzedane DESC

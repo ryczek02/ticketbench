@@ -1,0 +1,3 @@
+-- valkey R2 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- SMEMBERS wf:{e} + HMGET wb:{e}
+O(free seats), sorted in the client

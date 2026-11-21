@@ -1,0 +1,1 @@
+rezerwacje.find by _id {"find":"rezerwacje","filter":{"_id":61058}}

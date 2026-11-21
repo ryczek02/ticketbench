@@ -1,0 +1,100 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.101211284
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 19915.06164,
+    "r_loops": 1,
+    "r_total_time_ms": 2174.086254,
+    "filesort": {
+      "sort_key": "s.nazwa, m.rzad, m.numer",
+      "r_loops": 1,
+      "r_total_time_ms": 0.120583267,
+      "r_used_priority_queue": false,
+      "r_output_rows": 1112,
+      "r_buffer_size": "306KiB",
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "b",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 10168034,
+              "r_rows": 10075987,
+              "cost": 1724.744105,
+              "r_table_time_ms": 2040.437527,
+              "r_other_time_ms": 132.604481,
+              "r_engine_stats": {
+                "pages_accessed": 78885,
+                "pages_read_count": 52838,
+                "pages_read_time_ms": 1240.922563,
+                "pages_prefetch_read_count": 17
+              },
+              "filtered": 100,
+              "r_total_filtered": 0.01103614,
+              "attached_condition": "b.wydarzenie_id = 3086 and b.`status` = 'wolny'",
+              "r_filtered": 0.01103614
+            }
+          },
+          {
+            "table": {
+              "table_name": "m",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.b.miejsce_id"],
+              "loops": 10168034,
+              "r_loops": 1112,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 9095.616293,
+              "r_table_time_ms": 0.704169457,
+              "r_other_time_ms": 0.110416114,
+              "r_engine_stats": {
+                "pages_accessed": 3342,
+                "pages_read_count": 10,
+                "pages_read_time_ms": 0.282211705
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "s",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.m.sektor_id"],
+              "loops": 10168034,
+              "r_loops": 1112,
+              "r_table_loops": 7,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 9094.701246,
+              "r_table_time_ms": 0.061295796,
+              "r_other_time_ms": 0.009037469,
+              "r_engine_stats": {
+                "pages_accessed": 14,
+                "pages_read_count": 2,
+                "pages_read_time_ms": 0.052174647
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          }
+        ]
+      }
+    }
+  }
+}

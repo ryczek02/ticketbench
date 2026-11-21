@@ -1,0 +1,29 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.016495949
+  },
+  "query_block": {
+    "select_id": 1,
+    "r_total_time_ms": 2.441525724,
+    "table": {
+      "delete": 1,
+      "table_name": "rezerwacje",
+      "access_type": "range",
+      "possible_keys": ["idx_rezerwacje_status_wygasa"],
+      "key": "idx_rezerwacje_status_wygasa",
+      "key_length": "75",
+      "used_key_parts": ["status", "wygasa_o"],
+      "rows": 1000,
+      "r_rows": 1000,
+      "r_total_filtered": 100,
+      "r_table_time_ms": 2.354535695,
+      "r_other_time_ms": 0.085820696,
+      "r_engine_stats": {
+        "pages_accessed": 17031,
+        "pages_updated": 5027
+      },
+      "attached_condition": "rezerwacje.`status` = 'wygasla' and rezerwacje.wygasa_o < '2025-12-25'",
+      "r_filtered": 100
+    }
+  }
+}

@@ -1,0 +1,9 @@
+-- postgres U4 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- UPDATE klienci SET email = $2, telefon = $3, preferencje = preferencje || $4::jsonb WHERE id = $1
+Update on klienci  (cost=0.43..2.65 rows=0 width=0) (actual time=2.980..2.981 rows=0 loops=1)
+  Buffers: shared hit=10 read=3 dirtied=2
+  ->  Index Scan using klienci_pkey on klienci  (cost=0.43..2.65 rows=1 width=102) (actual time=2.961..2.962 rows=1 loops=1)
+        Index Cond: (id = '65343'::bigint)
+        Buffers: shared hit=1 read=3
+Planning Time: 0.030 ms
+Execution Time: 2.988 ms

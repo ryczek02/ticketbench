@@ -1,0 +1,24 @@
+Import 10 mln biletów najszybciej wykonuje Valkey
+(\lval{valkey}{10000000}{load}\,s), potem PostgreSQL
+(\lval{postgres}{10000000}{load}\,s, binarny \texttt{COPY}), MariaDB
+(\lval{mariadb}{10000000}{load}\,s, wielowierszowe \texttt{INSERT}) i~MongoDB
+(\lval{mongo}{10000000}{load}\,s). MongoDB płaci za \emph{write concern}
+\texttt{majority} z~dziennikiem i~za budowę dokumentów BSON z~osadzonymi
+tablicami. Czas importu rośnie z~rozmiarem w~przybliżeniu liniowo we
+wszystkich bazach.
+
+Tworzenie 15 indeksów na 10 mln biletów trwa w~PostgreSQL
+\lval{postgres}{10000000}{indexes_on}\,s, w~MariaDB
+\lval{mariadb}{10000000}{indexes_on}\,s, a~w~MongoDB
+\lval{mongo}{10000000}{indexes_on}\,s. W~Valkey ,,indeksy'' buduje aplikacja:
+musi przeczytać przez \texttt{SCAN} wszystkie 1,67 mln rezerwacji i~zapisać
+zbiory posortowane, co zajmuje \lval{valkey}{10000000}{indexes_on}\,s.
+
+Najmniej miejsca zajmuje MongoDB dzięki kompresji WiredTiger (Snappy):
+\sval{mongo}{10000000}{off}\,MB bez indeksów wobec
+\sval{postgres}{10000000}{off}\,MB w~PostgreSQL i~\sval{mariadb}{10000000}{off}\,MB
+w~MariaDB. Valkey przy 10 mln biletów zajmuje \sval{valkey}{10000000}{off}\,MB
+pamięci RAM. Cały zbiór musi się w~niej zmieścić, co jest praktyczną granicą
+tego modelu. Wartości ,,z~indeksami'' obejmują też wiersze dopisane przez
+scenariusze z~pierwszego przebiegu (np. C3 importuje \num{10000} biletów
+w~każdym powtórzeniu).

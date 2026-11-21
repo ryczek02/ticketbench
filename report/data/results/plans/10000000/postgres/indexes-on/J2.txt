@@ -1,0 +1,18 @@
+-- postgres J2 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT metadane ->> 'kanal' AS kanal, count(*), sum(kwota)
+			FROM rezerwacje
+			WHERE utworzono >= $1 AND utworzono < $2
+			GROUP BY 1
+HashAggregate  (cost=20605.55..20607.05 rows=100 width=72) (actual time=10.553..10.555 rows=4 loops=1)
+  Group Key: (metadane ->> 'kanal'::text)
+  Batches: 1  Memory Usage: 24kB
+  Buffers: shared hit=4576 read=74 written=74
+  ->  Bitmap Heap Scan on rezerwacje  (cost=368.53..20396.57 rows=27864 width=38) (actual time=1.302..8.366 rows=26835 loops=1)
+        Recheck Cond: ((utworzono >= '2025-10-15 00:00:00+00'::timestamp with time zone) AND (utworzono < '2025-10-22 00:00:00+00'::timestamp with time zone))
+        Heap Blocks: exact=4574
+        Buffers: shared hit=4576 read=74 written=74
+        ->  Bitmap Index Scan on idx_rezerwacje_utworzono  (cost=0.00..361.57 rows=27864 width=0) (actual time=1.020..1.020 rows=26836 loops=1)
+              Index Cond: ((utworzono >= '2025-10-15 00:00:00+00'::timestamp with time zone) AND (utworzono < '2025-10-22 00:00:00+00'::timestamp with time zone))
+              Buffers: shared hit=2 read=74 written=74
+Planning Time: 0.035 ms
+Execution Time: 10.567 ms

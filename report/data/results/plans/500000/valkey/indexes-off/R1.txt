@@ -1,0 +1,3 @@
+-- valkey R1 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- GET r:{id}
+O(1) key lookup

@@ -1,0 +1,3 @@
+-- mariadb C3 tickets=1000000 indexes=off trace=db5e45ba8a79fdbdde1e812a48f13d89
+-- INSERT INTO bilety ... VALUES (...), (...)
+multi-row INSERT has no query plan

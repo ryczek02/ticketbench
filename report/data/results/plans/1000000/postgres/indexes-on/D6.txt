@@ -1,0 +1,16 @@
+-- postgres D6 tickets=1000000 indexes=on trace=1a8079f87549bfc399cde31511d43ee9
+-- DELETE FROM bilety WHERE wydarzenie_id IN (SELECT id FROM wydarzenia WHERE data_rozpoczecia < $1)
+Delete on bilety  (cost=0.70..1158.07 rows=0 width=0) (actual time=0.448..0.448 rows=0 loops=1)
+  Buffers: shared hit=2042
+  ->  Nested Loop  (cost=0.70..1158.07 rows=2015 width=12) (actual time=0.006..0.231 rows=2000 loops=1)
+        Buffers: shared hit=42
+        ->  Index Scan using idx_wydarzenia_data on wydarzenia  (cost=0.28..2.49 rows=1 width=14) (actual time=0.001..0.001 rows=1 loops=1)
+              Index Cond: (data_rozpoczecia < '2024-01-01 00:00:00+00'::timestamp with time zone)
+              Buffers: shared hit=3
+        ->  Index Scan using idx_bilety_wydarzenie_status on bilety  (cost=0.43..1132.79 rows=2279 width=14) (actual time=0.005..0.142 rows=2000 loops=1)
+              Index Cond: (wydarzenie_id = wydarzenia.id)
+              Buffers: shared hit=39
+Planning:
+  Buffers: shared hit=21
+Planning Time: 0.070 ms
+Execution Time: 0.451 ms

@@ -1,0 +1,10 @@
+-- postgres D4 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- DELETE FROM rezerwacje WHERE klient_id = $1
+Delete on rezerwacje  (cost=0.00..51247.66 rows=0 width=0) (actual time=42.745..42.746 rows=0 loops=1)
+  Buffers: shared hit=30029 dirtied=3
+  ->  Seq Scan on rezerwacje  (cost=0.00..51247.66 rows=2 width=6) (actual time=15.227..42.722 rows=3 loops=1)
+        Filter: (klient_id = '435357'::bigint)
+        Rows Removed by Filter: 1680389
+        Buffers: shared hit=30023
+Planning Time: 0.032 ms
+Execution Time: 42.757 ms

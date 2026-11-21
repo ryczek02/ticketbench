@@ -1,0 +1,3 @@
+-- valkey D6 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- ZRANGE ix:r:utw + ZRANGE ix:w:data + EVALSHA | SCAN r:* + SMEMBERS w:all + filter
+ZRANGE ix:r:utw + ZRANGE ix:w:data + EVALSHA

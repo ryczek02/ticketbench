@@ -1,0 +1,284 @@
+{
+  "run_id": "20261121-220002-a0b9b7",
+  "started": "2026-11-21T22:00:02.402763Z",
+  "ended": "2026-11-21T22:48:53.213033Z",
+  "cli_version": "dev (unknown, unknown, go1.26.2 darwin/arm64)",
+  "runner": "localhost:7070",
+  "stores": [
+    {
+      "Name": "mariadb",
+      "Engine": "mariadb",
+      "ServerVersion": "MariaDB 11.8.9-MariaDB-ubu2404",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    },
+    {
+      "Name": "mongo",
+      "Engine": "mongo",
+      "ServerVersion": "MongoDB 8.0.38",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    },
+    {
+      "Name": "postgres",
+      "Engine": "postgres",
+      "ServerVersion": "PostgreSQL 17.12 (Debian 17.12-1.pgdg13+1)",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    },
+    {
+      "Name": "valkey",
+      "Engine": "valkey",
+      "ServerVersion": "Valkey 8.1.12",
+      "BuildVersion": "dev (unknown, unknown, go1.26.11 linux/arm64)"
+    }
+  ],
+  "config": {
+    "Seed": 42,
+    "Sizes": [
+      500000,
+      1000000,
+      10000000
+    ],
+    "Stores": [
+      "postgres",
+      "mariadb",
+      "mongo",
+      "valkey"
+    ],
+    "Scenarios": "all",
+    "Repetitions": 5,
+    "Warmup": 1,
+    "Timeout": 60000000000,
+    "IndexModes": [
+      "off",
+      "on"
+    ],
+    "Explain": true,
+    "Load": {
+      "Workers": 4,
+      "BatchSize": 5000
+    },
+    "Contention": {
+      "Clients": [
+        1,
+        10,
+        100,
+        1000
+      ],
+      "HotTickets": 500,
+      "Rounds": 3,
+      "Strategies": [
+        "all"
+      ],
+      "Sizes": null,
+      "TraceRatio": 0.01
+    },
+    "Overhead": {
+      "Enabled": true,
+      "Size": 500000,
+      "Scenarios": [
+        "R1",
+        "R2",
+        "R4",
+        "U1",
+        "U4",
+        "C4"
+      ],
+      "Repetitions": 30
+    }
+  },
+  "segments": [
+    {
+      "name": "postgres-500000",
+      "trace_id": "4d6956339a89877cb8b1a240625231ac",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:00:02.426636Z",
+      "ended": "2026-11-21T22:00:14.265962Z"
+    },
+    {
+      "name": "postgres-500000-otel-on",
+      "trace_id": "cd769669f646af3680b56b4175063907",
+      "labels": {
+        "otel": "on",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:00:14.266782Z",
+      "ended": "2026-11-21T22:00:14.332702Z"
+    },
+    {
+      "name": "postgres-500000-otel-off",
+      "trace_id": "2fdbecb739763f8536b2a49866e354f5",
+      "labels": {
+        "otel": "off",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:00:14.333119Z",
+      "ended": "2026-11-21T22:00:14.411944Z"
+    },
+    {
+      "name": "mariadb-500000",
+      "trace_id": "6c04f7a49c1be929c185f35ba976db1b",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:00:14.412125Z",
+      "ended": "2026-11-21T22:03:49.584351Z"
+    },
+    {
+      "name": "mariadb-500000-otel-on",
+      "trace_id": "5ec56d36d00dba4e6137505eec2215c7",
+      "labels": {
+        "otel": "on",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:03:49.584675Z",
+      "ended": "2026-11-21T22:03:49.652339Z"
+    },
+    {
+      "name": "mariadb-500000-otel-off",
+      "trace_id": "944f774d3fcfed0a3b9245ef7a87729d",
+      "labels": {
+        "otel": "off",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:03:49.652608Z",
+      "ended": "2026-11-21T22:03:49.755231Z"
+    },
+    {
+      "name": "mongo-500000",
+      "trace_id": "95ca5723d5c87bbc4cfa68b12e35b482",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:03:49.755465Z",
+      "ended": "2026-11-21T22:04:11.746486Z"
+    },
+    {
+      "name": "mongo-500000-otel-on",
+      "trace_id": "684ab9516dde71dd8724774b6349ab2f",
+      "labels": {
+        "otel": "on",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:04:11.746723Z",
+      "ended": "2026-11-21T22:04:11.849167Z"
+    },
+    {
+      "name": "mongo-500000-otel-off",
+      "trace_id": "cf0c6c7a317ad4e5fe66847f77d08cef",
+      "labels": {
+        "otel": "off",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:04:11.849458Z",
+      "ended": "2026-11-21T22:04:12.103811Z"
+    },
+    {
+      "name": "valkey-500000",
+      "trace_id": "5845554c18c19dd33cb685a38164103f",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:04:12.104269Z",
+      "ended": "2026-11-21T22:05:37.077037Z"
+    },
+    {
+      "name": "valkey-500000-otel-on",
+      "trace_id": "c288c3ac65fd7a4c83e001a10efed4b9",
+      "labels": {
+        "otel": "on",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:05:37.077342Z",
+      "ended": "2026-11-21T22:05:37.161092Z"
+    },
+    {
+      "name": "valkey-500000-otel-off",
+      "trace_id": "737a5bcd2481bb9416e5498b08f4fbe7",
+      "labels": {
+        "otel": "off",
+        "phase": "overhead"
+      },
+      "started": "2026-11-21T22:05:37.16131Z",
+      "ended": "2026-11-21T22:05:37.254334Z"
+    },
+    {
+      "name": "postgres-1000000",
+      "trace_id": "1a8079f87549bfc399cde31511d43ee9",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:05:37.254498Z",
+      "ended": "2026-11-21T22:05:52.666761Z"
+    },
+    {
+      "name": "mariadb-1000000",
+      "trace_id": "db5e45ba8a79fdbdde1e812a48f13d89",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:05:52.667058Z",
+      "ended": "2026-11-21T22:11:08.401235Z"
+    },
+    {
+      "name": "mongo-1000000",
+      "trace_id": "757a11c112b28d82e6a82258a7a81b5f",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:11:08.40152Z",
+      "ended": "2026-11-21T22:11:39.802371Z"
+    },
+    {
+      "name": "valkey-1000000",
+      "trace_id": "fb8b1d2c5cdff2e6331598d56c30df0e",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:11:39.802707Z",
+      "ended": "2026-11-21T22:14:06.88892Z"
+    },
+    {
+      "name": "postgres-10000000",
+      "trace_id": "d5541ab7c0f418365920263c267cfb7a",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:14:06.889295Z",
+      "ended": "2026-11-21T22:15:09.394812Z"
+    },
+    {
+      "name": "mariadb-10000000",
+      "trace_id": "26397a2d8bc8a84eebf0d0bcc867c8e6",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:15:09.395306Z",
+      "ended": "2026-11-21T22:23:12.026643Z"
+    },
+    {
+      "name": "mongo-10000000",
+      "trace_id": "f4a7c149dba8c5f85c3cc52246182e51",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:23:12.027522Z",
+      "ended": "2026-11-21T22:26:56.152228Z"
+    },
+    {
+      "name": "valkey-10000000",
+      "trace_id": "8748cf55d2e58561a433f662fbbb0d36",
+      "labels": {
+        "phase": "matrix"
+      },
+      "started": "2026-11-21T22:26:56.152451Z",
+      "ended": "2026-11-21T22:48:53.213033Z"
+    }
+  ],
+  "host": {
+    "arch": "arm64",
+    "cpus": 10,
+    "hostname": "ukaszs-MacBook-Pro.local",
+    "os": "darwin"
+  }
+}

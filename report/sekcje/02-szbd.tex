@@ -1,0 +1,121 @@
+\section{Charakterystyka wybranych SZBD}
+\label{sec:szbd}
+
+\subsection{PostgreSQL 17}
+
+PostgreSQL to relacyjny SZBD rozwijany od 1996 roku na licencji PostgreSQL
+(odmiana BSD/MIT). Każde połączenie obsługuje osobny proces serwera.
+Współbieżność zapewnia MVCC: zmiana wiersza tworzy jego nową wersję, czytelnicy
+nie blokują piszących, a stare wersje usuwa proces \texttt{VACUUM}. Trwałość
+gwarantuje dziennik zapisu z~wyprzedzeniem (WAL). Domyślny poziom izolacji to
+READ COMMITTED, dostępne są też REPEATABLE READ i~SERIALIZABLE (SSI)~\cite{pg}.
+Typ \texttt{JSONB} przechowuje dokumenty JSON w~postaci binarnej z~operatorami
+(\texttt{->>}, \texttt{@>}, \texttt{||}) i~indeksami GIN. Silnik rozszerza się
+przez rozszerzenia (PostGIS, TimescaleDB, pgvector, pg\_partman) i~obce
+tabele (FDW).
+
+\subsection{MariaDB 11.8}
+
+MariaDB powstała w~2009 roku jako rozwidlenie MySQL i~jest rozwijana przez
+MariaDB Foundation na licencji GPLv2. Architektura opiera się na wątkach
+w~jednym procesie i~wymiennych silnikach składowania. Domyślny silnik InnoDB
+ma MVCC, dziennik redo i~undo oraz klucz główny jako indeks klastrowany: wiersze
+leżą w~liściach B-drzewa klucza głównego, a~indeksy drugorzędne wskazują na
+klucz główny. Domyślny poziom izolacji to REPEATABLE READ z~blokadami
+następnych kluczy (\emph{next-key locks})~\cite{maria}. Typ \texttt{JSON} jest
+aliasem \texttt{LONGTEXT} z~kontrolą poprawności, a~indeksować można go przez
+kolumny wirtualne. Inne silniki to m.in. ColumnStore do analityki, Aria
+i~Spider do shardingu.
+
+\subsection{MongoDB 8.0}
+
+MongoDB to dokumentowy SZBD przechowujący dokumenty BSON w~kolekcjach, bez
+narzuconego schematu (opcjonalnie z~walidacją JSON Schema). Silnik WiredTiger
+stosuje MVCC na poziomie dokumentu, kompresję i~dziennik. Operacja na jednym
+dokumencie jest zawsze atomowa. Od wersji 4.0 dostępne są transakcje
+wielodokumentowe z~izolacją migawkową, ale wymagają replica setu lub
+klastra~\cite{mongo}. Zapytania obsługują filtry, projekcje i~potok agregacji
+(\texttt{\$match}, \texttt{\$group}, \texttt{\$lookup}). Indeksy są B-drzewami
+na polach, w~tym zagnieżdżonych i~tablicowych (indeksy wielokluczowe).
+Licencja serwera to SSPL, która ogranicza oferowanie MongoDB jako usługi
+chmurowej przez strony trzecie.
+
+\subsection{Valkey 8.1}
+
+Valkey to magazyn klucz--wartość w~pamięci operacyjnej. Powstał w~2024 roku
+jako rozwidlenie Redis 7.2.4 pod opieką Linux Foundation, po zmianie licencji
+Redisa, i~jest na licencji BSD. Wartości mają typy: napisy, hasze, listy,
+zbiory, zbiory posortowane, strumienie. Polecenia wykonuje jeden wątek
+główny, dlatego każde polecenie i~każdy skrypt Lua są atomowe, a~wątki I/O
+obsługują tylko sieć~\cite{valkey}. Nie ma języka zapytań, planera ani
+indeksów drugorzędnych. Dostęp po atrybucie wymaga struktur utrzymywanych
+przez aplikację. Moduły (valkey-json, valkey-bloom, valkey-search) dodają
+m.in. typ JSON i~wyszukiwanie.
+
+\subsection{Zalety i wady}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Udogodnienia i ograniczenia.}
+\label{tab:zalety}
+\begin{tabular}{>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{6.4cm}}
+\toprule
+SZBD & zalety i udogodnienia & wady i ograniczenia \\
+\midrule
+PostgreSQL & zgodność ze standardem SQL, bogaty planer (złączenia haszowe, równoległe skany, indeksy częściowe i~na wyrażeniach), JSONB z~indeksami GIN, rozszerzenia, SSI & proces na połączenie (przy setkach sesji potrzebny pooler, np. PgBouncer), koszt \texttt{VACUUM} przy częstych aktualizacjach, brak wbudowanego shardingu \\
+MariaDB & wysoka wydajność prostych zapytań po kluczu, indeks klastrowany, replikacja i~Galera Cluster w~pakiecie, zgodność z~ekosystemem MySQL & JSON tylko jako tekst, słabszy planer złożonych zapytań (brak złączeń haszowych dla dużych tabel w~domyślnej konfiguracji), blokady przedziałów przy REPEATABLE READ \\
+MongoDB & elastyczny schemat, dokumenty zagnieżdżone zamiast złączeń, wbudowany sharding i~automatyczne przełączanie w~replica secie, potok agregacji & transakcje wielodokumentowe droższe niż w~bazach relacyjnych, duplikacja danych przy denormalizacji, limit 16\,MB na dokument, licencja SSPL \\
+Valkey & opóźnienia rzędu mikrosekund, atomowe operacje na strukturach danych, TTL na kluczach, skrypty Lua, Pub/Sub, licencja BSD & dane muszą mieścić się w~RAM, brak zapytań po atrybutach bez ręcznie utrzymywanych indeksów, trwałość tylko przez RDB/AOF (możliwa utrata ostatnich zapisów), brak transakcji z~wycofaniem \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Awaryjność, bezpieczeństwo, migracje, integracje i skalowalność}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Porównanie cech operacyjnych (część teoretyczna).}
+\label{tab:ops}
+\begin{tabular}{>{\raggedright\arraybackslash}p{1.75cm}>{\raggedright\arraybackslash}p{3.45cm}>{\raggedright\arraybackslash}p{3.45cm}>{\raggedright\arraybackslash}p{3.45cm}>{\raggedright\arraybackslash}p{3.45cm}}
+\toprule
+cecha & PostgreSQL & MariaDB & MongoDB & Valkey \\
+\midrule
+awaryjność i~odtwarzanie & WAL, odtwarzanie do punktu w~czasie (PITR) z~kopii bazowej i~archiwum WAL; replikacja strumieniowa (synchroniczna lub asynchroniczna), przełączanie przez Patroni & dziennik redo InnoDB, binlog; replikacja asynchroniczna lub półsynchroniczna, Galera (synchroniczna, wiele węzłów zapisujących); kopie Mariabackup & replica set (zwykle 3 węzły), automatyczny wybór nowego węzła głównego w~kilka sekund, \emph{write concern} \texttt{majority} chroni przed utratą potwierdzonych zapisów & RDB (migawki) i/lub AOF (dziennik poleceń, \texttt{fsync} co sekundę lub przy każdym zapisie); replikacja asynchroniczna, Sentinel lub Cluster do przełączania \\
+bezpieczeństwo & role i~\texttt{GRANT} do poziomu kolumny, Row-Level Security, SCRAM-SHA-256, TLS, \texttt{pgcrypto}; brak wbudowanego szyfrowania danych na dysku w~wersji społecznościowej & role i~\texttt{GRANT}, wtyczki uwierzytelniania (ed25519, PAM, GSSAPI), TLS, szyfrowanie przestrzeni tabel i~dzienników w~spoczynku (\emph{data-at-rest encryption}) & RBAC, SCRAM, x.509, LDAP; TLS; szyfrowanie w~spoczynku w~wersji Enterprise i~Atlas; szyfrowanie pól po stronie klienta (CSFLE) i~Queryable Encryption & ACL (użytkownicy, kategorie poleceń, wzorce kluczy), TLS; brak szyfrowania w~spoczynku, domyślnie bez hasła, więc konfiguracja jest niezbędna \\
+migracje & \texttt{pg\_dump}/\texttt{pg\_restore}, \texttt{pg\_upgrade}, replikacja logiczna do aktualizacji bez przestoju; narzędzia schematu: Flyway, Liquibase & \texttt{mariadb-dump}, Mariabackup, prosta migracja z~MySQL (zgodny protokół i~składnia), Flyway, Liquibase & \texttt{mongodump}/\texttt{mongorestore}, \texttt{mongoimport}, Relational Migrator (z~baz SQL), migracje schematu w~kodzie aplikacji & kopiowanie pliku RDB, \texttt{MIGRATE}, replikacja z~Redisa 7.2 (zgodny protokół), więc migracja z~Redisa jest bezpośrednia \\
+integracje & sterowniki dla wszystkich języków, FDW, replikacja logiczna i~Debezium (CDC), PostGIS, pgvector & sterowniki MySQL, Debezium, MaxScale (proxy, podział odczytów), CONNECT (obce źródła) & change streams, konektor Kafka, Atlas Search, sterowniki z~mapowaniem obiektów & klienty dla wszystkich języków, Pub/Sub, strumienie, zgodność z~bibliotekami Redisa \\
+skalowalność & pionowa; odczyty przez repliki; partycjonowanie deklaratywne; sharding przez rozszerzenia (Citus) & pionowa; odczyty przez repliki; Galera dla wysokiej dostępności; Spider do shardingu & pozioma: wbudowany sharding (klucz haszowy lub zakresowy), balanser, repliki do odczytów & pozioma: Valkey Cluster (16\,384 sloty haszowe), repliki; ograniczenie: pamięć RAM węzłów \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+W~naszym środowisku testowym wszystkie bazy działają jako pojedyncze węzły
+(MongoDB jako jednowęzłowy replica set), bez TLS i~bez ról ograniczających
+uprawnienia. Wyniki opisują więc wydajność silnika, a~nie konfiguracji
+produkcyjnej z~replikacją i~szyfrowaniem.
+
+\subsection{Obszary zastosowań biznesowych}
+
+\begin{description}
+  \item[PostgreSQL] systemy transakcyjne wymagające spójności i~złożonych
+  zapytań: bankowość i~płatności, ERP, systemy rezerwacyjne, SaaS
+  wielodostępne (RLS), systemy geoinformacyjne (PostGIS), hurtownie
+  średniej wielkości.
+  \item[MariaDB] aplikacje webowe i~e-commerce (stos LAMP, WordPress,
+  Magento), systemy zastępujące MySQL, klastry wysokiej dostępności z~Galerą,
+  analityka kolumnowa w~ColumnStore.
+  \item[MongoDB] katalogi produktów i~treści o~zmiennej strukturze, profile
+  użytkowników, backendy aplikacji mobilnych, IoT i~dane czasowe, systemy,
+  w~których dokument odpowiada agregatowi domenowemu (zamówienie z~pozycjami).
+  \item[Valkey] pamięć podręczna przed bazą główną, sesje, limity zapytań
+  (\emph{rate limiting}), rankingi (zbiory posortowane), kolejki i~Pub/Sub,
+  czasowe blokady zasobów z~TTL. W~systemie biletowym to dokładnie
+  przytrzymanie miejsca na czas płatności.
+\end{description}
+
+W~praktyce system rezerwacji biletów łączy kilka silników: dane transakcyjne
+(rezerwacje, płatności) w~bazie relacyjnej, katalog wydarzeń w~bazie
+dokumentowej, a~dostępność miejsc, blokady i~kolejkę wejścia w~Valkey.
+Wyniki testów w~kolejnych rozdziałach pokazują, gdzie każdy z~nich ma przewagę.

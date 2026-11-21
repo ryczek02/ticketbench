@@ -1,0 +1,323 @@
+{
+  "explainVersion": "2",
+  "queryPlanner": {
+    "namespace": "ticketbench.rezerwacje",
+    "parsedQuery": {
+      "$and": [
+        {
+          "utworzono": {
+            "$lt": {
+              "$date": "2025-10-22T00:00:00Z"
+            }
+          }
+        },
+        {
+          "utworzono": {
+            "$gte": {
+              "$date": "2025-10-15T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "56F9254A",
+    "planCacheShapeHash": "56F9254A",
+    "planCacheKey": "F8FEE0C4",
+    "optimizationTimeMillis": 0,
+    "optimizedPipeline": true,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "queryPlan": {
+        "stage": "GROUP",
+        "planNodeId": 4,
+        "inputStage": {
+          "stage": "FETCH",
+          "planNodeId": 2,
+          "inputStage": {
+            "stage": "IXSCAN",
+            "planNodeId": 1,
+            "keyPattern": {
+              "utworzono": 1
+            },
+            "indexName": "utworzono_1",
+            "isMultiKey": false,
+            "multiKeyPaths": {
+              "utworzono": []
+            },
+            "isUnique": false,
+            "isSparse": false,
+            "isPartial": false,
+            "indexVersion": 2,
+            "direction": "forward",
+            "indexBounds": {
+              "utworzono": [
+                "[new Date(1760486400000), new Date(1761091200000))"
+              ]
+            }
+          }
+        }
+      },
+      "slotBasedPlan": {
+        "slots": "$$RESULT=s14 env: { s5 = {\"utworzono\" : 1} }",
+        "stages": "[4] project [s14 = newBsonObj(\"_id\", s11, \"n\", s13)] \n[4] project [s13 = (convert ( s12, int32) ?: s12)] \n[4] group [s11] [s12 = count()] spillSlots[s10] mergingExprs[sum(s10)] \n[4] project [s11 = (s9 ?: null)] \n[4] project [s9 = traverseP(s8, lambda(l2.0) { getField(move(l2.0), \"kanal\") }, 1)] \n[2] nlj inner [] [s1, s2, s3, s4, s5] \n    left \n        [1] ixseek KS(7880000199E52AA0000104) KS(788000019A093724000104) s4 s1 s2 s3 [] @\"9e868249-4c7e-4cfb-bf71-b8d296efd808\" @\"utworzono_1\" true \n    right \n        [2] limit 1ll \n        [2] seek s1 s6 s7 s2 s3 s4 s5 none none [s8 = metadane] @\"9e868249-4c7e-4cfb-bf71-b8d296efd808\" true false \n"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 4,
+    "executionTimeMillis": 85,
+    "totalKeysExamined": 26835,
+    "totalDocsExamined": 26835,
+    "executionStages": {
+      "stage": "project",
+      "planNodeId": 4,
+      "nReturned": 4,
+      "executionTimeMillisEstimate": 76,
+      "opens": 1,
+      "closes": 1,
+      "saveState": 4,
+      "restoreState": 4,
+      "isEOF": 1,
+      "projections": {
+        "14": "newBsonObj(\"_id\", s11, \"n\", s13) "
+      },
+      "inputStage": {
+        "stage": "project",
+        "planNodeId": 4,
+        "nReturned": 4,
+        "executionTimeMillisEstimate": 76,
+        "opens": 1,
+        "closes": 1,
+        "saveState": 4,
+        "restoreState": 4,
+        "isEOF": 1,
+        "projections": {
+          "13": "(convert ( s12, int32) ?: s12) "
+        },
+        "inputStage": {
+          "stage": "group",
+          "planNodeId": 4,
+          "nReturned": 4,
+          "executionTimeMillisEstimate": 76,
+          "opens": 1,
+          "closes": 1,
+          "saveState": 4,
+          "restoreState": 4,
+          "isEOF": 1,
+          "groupBySlots": [
+            11
+          ],
+          "expressions": {
+            "12": "count() ",
+            "initExprs": {
+              "12": null
+            }
+          },
+          "mergingExprs": {
+            "10": "sum(s10) "
+          },
+          "usedDisk": false,
+          "spills": 0,
+          "spilledBytes": 0,
+          "spilledRecords": 0,
+          "spilledDataStorageSize": 0,
+          "inputStage": {
+            "stage": "project",
+            "planNodeId": 4,
+            "nReturned": 26835,
+            "executionTimeMillisEstimate": 76,
+            "opens": 1,
+            "closes": 1,
+            "saveState": 4,
+            "restoreState": 4,
+            "isEOF": 1,
+            "projections": {
+              "11": "(s9 ?: null) "
+            },
+            "inputStage": {
+              "stage": "project",
+              "planNodeId": 4,
+              "nReturned": 26835,
+              "executionTimeMillisEstimate": 76,
+              "opens": 1,
+              "closes": 1,
+              "saveState": 4,
+              "restoreState": 4,
+              "isEOF": 1,
+              "projections": {
+                "9": "traverseP(s8, lambda(l2.0) { getField(move(l2.0), \"kanal\") }, 1) "
+              },
+              "inputStage": {
+                "stage": "nlj",
+                "planNodeId": 2,
+                "nReturned": 26835,
+                "executionTimeMillisEstimate": 76,
+                "opens": 1,
+                "closes": 1,
+                "saveState": 4,
+                "restoreState": 4,
+                "isEOF": 1,
+                "totalDocsExamined": 26835,
+                "totalKeysExamined": 26835,
+                "collectionScans": 0,
+                "collectionSeeks": 26835,
+                "indexScans": 0,
+                "indexSeeks": 1,
+                "indexesUsed": [
+                  "utworzono_1"
+                ],
+                "innerOpens": 26835,
+                "innerCloses": 1,
+                "outerProjects": [],
+                "outerCorrelated": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ],
+                "outerStage": {
+                  "stage": "ixseek",
+                  "planNodeId": 1,
+                  "nReturned": 26835,
+                  "executionTimeMillisEstimate": 0,
+                  "opens": 1,
+                  "closes": 1,
+                  "saveState": 4,
+                  "restoreState": 4,
+                  "isEOF": 1,
+                  "indexName": "utworzono_1",
+                  "keysExamined": 26835,
+                  "seeks": 1,
+                  "numReads": 26836,
+                  "indexKeySlot": 4,
+                  "recordIdSlot": 1,
+                  "snapshotIdSlot": 2,
+                  "indexIdentSlot": 3,
+                  "outputSlots": [],
+                  "indexKeysToInclude": "00000000000000000000000000000000",
+                  "seekKeyLow": "KS(7880000199E52AA0000104) ",
+                  "seekKeyHigh": "KS(788000019A093724000104) "
+                },
+                "innerStage": {
+                  "stage": "limit",
+                  "planNodeId": 2,
+                  "nReturned": 26835,
+                  "executionTimeMillisEstimate": 76,
+                  "opens": 26835,
+                  "closes": 1,
+                  "saveState": 4,
+                  "restoreState": 4,
+                  "isEOF": 1,
+                  "limit": 1,
+                  "inputStage": {
+                    "stage": "seek",
+                    "planNodeId": 2,
+                    "nReturned": 26835,
+                    "executionTimeMillisEstimate": 76,
+                    "opens": 26835,
+                    "closes": 1,
+                    "saveState": 4,
+                    "restoreState": 4,
+                    "isEOF": 0,
+                    "numReads": 26835,
+                    "recordSlot": 6,
+                    "recordIdSlot": 7,
+                    "seekRecordIdSlot": 1,
+                    "snapshotIdSlot": 2,
+                    "indexIdentSlot": 3,
+                    "indexKeySlot": 4,
+                    "indexKeyPatternSlot": 5,
+                    "scanFieldNames": [
+                      "metadane"
+                    ],
+                    "scanFieldSlots": [
+                      8
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "queryShapeHash": "8966F7803DF3BDD302CA6530DD9714BB1B4F9A38436C8DA2EDA885B0A48E38EE",
+  "command": {
+    "aggregate": "rezerwacje",
+    "pipeline": [
+      {
+        "$match": {
+          "utworzono": {
+            "$gte": {
+              "$date": "2025-10-15T00:00:00Z"
+            },
+            "$lt": {
+              "$date": "2025-10-22T00:00:00Z"
+            }
+          }
+        }
+      },
+      {
+        "$group": {
+          "_id": "$metadane.kanal",
+          "n": {
+            "$sum": 1
+          }
+        }
+      }
+    ],
+    "cursor": {},
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795300004,
+        "i": 165
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795300004,
+      "i": 165
+    }
+  }
+}

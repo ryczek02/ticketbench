@@ -1,0 +1,1 @@
+rezerwacje.aggregate by metadane.kanal {"aggregate":"rezerwacje","pipeline":[{"$match":{"utworzono":{"$gte":{"$date":"2025-07-21T00:00:00Z"},"$lt":{"$date":"2025-07-28T00:00:00Z"}}}},{"$group":{"_id":"$metadane.kanal","n":{"$sum":1}}}],"cursor":{}}

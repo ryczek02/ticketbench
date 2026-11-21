@@ -1,0 +1,136 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.wydarzenia",
+    "parsedQuery": {
+      "$and": [
+        {
+          "metadane.gatunek": {
+            "$eq": "taniec wspolczesny"
+          }
+        },
+        {
+          "metadane.tagi": {
+            "$eq": "plener"
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "DC762DAD",
+    "planCacheShapeHash": "DC762DAD",
+    "planCacheKey": "BF970819",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "COLLSCAN",
+      "filter": {
+        "$and": [
+          {
+            "metadane.gatunek": {
+              "$eq": "taniec wspolczesny"
+            }
+          },
+          {
+            "metadane.tagi": {
+              "$eq": "plener"
+            }
+          }
+        ]
+      },
+      "direction": "forward"
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 16,
+    "executionTimeMillis": 2,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 4203,
+    "executionStages": {
+      "isCached": false,
+      "stage": "COLLSCAN",
+      "filter": {
+        "$and": [
+          {
+            "metadane.gatunek": {
+              "$eq": "taniec wspolczesny"
+            }
+          },
+          {
+            "metadane.tagi": {
+              "$eq": "plener"
+            }
+          }
+        ]
+      },
+      "nReturned": 16,
+      "executionTimeMillisEstimate": 0,
+      "works": 4204,
+      "advanced": 16,
+      "needTime": 4187,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "direction": "forward",
+      "docsExamined": 4203
+    }
+  },
+  "queryShapeHash": "D11293DFEFD6EB3DBA7016A61C89049D3C218BCE70B3C753ED379EFBF161FBED",
+  "command": {
+    "find": "wydarzenia",
+    "filter": {
+      "metadane.gatunek": "taniec wspolczesny",
+      "metadane.tagi": "plener"
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299952,
+        "i": 1
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299952,
+      "i": 1
+    }
+  }
+}

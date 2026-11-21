@@ -1,0 +1,70 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.027067332
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 188.5484296,
+    "r_loops": 1,
+    "r_total_time_ms": 20.94439259,
+    "filesort": {
+      "sort_key": "w.`id`, w.nazwa",
+      "r_loops": 1,
+      "r_total_time_ms": 0.00944015,
+      "r_used_priority_queue": false,
+      "r_output_rows": 121,
+      "r_buffer_size": "85KiB",
+      "r_sort_mode": "packed_sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "w",
+              "access_type": "ALL",
+              "possible_keys": ["idx_wydarzenia_organizator"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 339,
+              "r_rows": 339,
+              "cost": 0.069531,
+              "r_table_time_ms": 0.024185163,
+              "r_other_time_ms": 0.010818579,
+              "r_engine_stats": {
+                "pages_accessed": 7
+              },
+              "filtered": 36.28318405,
+              "r_total_filtered": 35.69321534,
+              "attached_condition": "w.organizator_id = 1",
+              "r_filtered": 35.69321534
+            }
+          },
+          {
+            "table": {
+              "table_name": "b",
+              "access_type": "ref",
+              "possible_keys": ["idx_bilety_wydarzenie_status"],
+              "key": "idx_bilety_wydarzenie_status",
+              "key_length": "74",
+              "used_key_parts": ["wydarzenie_id", "status"],
+              "ref": ["ticketbench.w.id", "const"],
+              "loops": 123,
+              "r_loops": 121,
+              "rows": 897,
+              "r_rows": 229.2892562,
+              "cost": 114.2495164,
+              "r_table_time_ms": 8.357331225,
+              "r_other_time_ms": 12.53242545,
+              "r_engine_stats": {
+                "pages_accessed": 83652
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "trigcond(b.`status` = 'sprzedany')",
+              "r_filtered": 100
+            }
+          }
+        ]
+      }
+    }
+  }
+}

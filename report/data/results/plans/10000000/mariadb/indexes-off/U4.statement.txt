@@ -1,0 +1,1 @@
+UPDATE klienci SET email = ?, telefon = ?, preferencje = JSON_MERGE_PATCH(preferencje, ?) WHERE id = ?

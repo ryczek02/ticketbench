@@ -1,0 +1,2 @@
+INSERT INTO klienci (id, imie, nazwisko, email, telefon, miasto, utworzono, preferencje)
+			VALUES (?, ?, ?, ?, ?, ?, ?, ?)

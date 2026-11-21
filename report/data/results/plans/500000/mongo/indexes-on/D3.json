@@ -1,0 +1,198 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.rezerwacje",
+    "parsedQuery": {
+      "$and": [
+        {
+          "status": {
+            "$eq": "wygasla"
+          }
+        },
+        {
+          "wygasa_o": {
+            "$lt": {
+              "$date": "2025-12-25T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "FC55E40E",
+    "planCacheShapeHash": "FC55E40E",
+    "planCacheKey": "39D1A138",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "BATCHED_DELETE",
+      "inputStage": {
+        "stage": "FETCH",
+        "inputStage": {
+          "stage": "IXSCAN",
+          "keyPattern": {
+            "status": 1,
+            "wygasa_o": 1
+          },
+          "indexName": "status_1_wygasa_o_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "status": [],
+            "wygasa_o": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "status": [
+              "[\"wygasla\", \"wygasla\"]"
+            ],
+            "wygasa_o": [
+              "[new Date(-9223372036854775808), new Date(1766620800000))"
+            ]
+          }
+        }
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 0,
+    "totalKeysExamined": 1000,
+    "totalDocsExamined": 1000,
+    "executionStages": {
+      "isCached": false,
+      "stage": "BATCHED_DELETE",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 0,
+      "works": 1001,
+      "advanced": 0,
+      "needTime": 1000,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "nWouldDelete": 1000,
+      "inputStage": {
+        "stage": "FETCH",
+        "nReturned": 1000,
+        "executionTimeMillisEstimate": 0,
+        "works": 1001,
+        "advanced": 1000,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "docsExamined": 1000,
+        "alreadyHasObj": 0,
+        "inputStage": {
+          "stage": "IXSCAN",
+          "nReturned": 1000,
+          "executionTimeMillisEstimate": 0,
+          "works": 1001,
+          "advanced": 1000,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "keyPattern": {
+            "status": 1,
+            "wygasa_o": 1
+          },
+          "indexName": "status_1_wygasa_o_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "status": [],
+            "wygasa_o": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "status": [
+              "[\"wygasla\", \"wygasla\"]"
+            ],
+            "wygasa_o": [
+              "[new Date(-9223372036854775808), new Date(1766620800000))"
+            ]
+          },
+          "keysExamined": 1000,
+          "seeks": 1,
+          "dupsTested": 0,
+          "dupsDropped": 0
+        }
+      }
+    }
+  },
+  "command": {
+    "delete": "rezerwacje",
+    "deletes": [
+      {
+        "q": {
+          "status": "wygasla",
+          "wygasa_o": {
+            "$lt": {
+              "$date": "2025-12-25T00:00:00Z"
+            }
+          }
+        },
+        "limit": 0
+      }
+    ],
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795298643,
+        "i": 36
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795298643,
+      "i": 36
+    }
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.bilety",
+    "parsedQuery": {
+      "$and": [
+        {
+          "sektor_id": {
+            "$eq": 19
+          }
+        },
+        {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        {
+          "wydarzenie_id": {
+            "$eq": 128
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "EBE19761",
+    "planCacheShapeHash": "EBE19761",
+    "planCacheKey": "018E43EC",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "UPDATE",
+      "inputStage": {
+        "stage": "FETCH",
+        "filter": {
+          "sektor_id": {
+            "$eq": 19
+          }
+        },
+        "inputStage": {
+          "stage": "IXSCAN",
+          "keyPattern": {
+            "wydarzenie_id": 1,
+            "status": 1
+          },
+          "indexName": "wydarzenie_id_1_status_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "wydarzenie_id": [],
+            "status": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "wydarzenie_id": [
+              "[128, 128]"
+            ],
+            "status": [
+              "[\"wolny\", \"wolny\"]"
+            ]
+          }
+        }
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 1,
+    "totalKeysExamined": 1600,
+    "totalDocsExamined": 1600,
+    "executionStages": {
+      "isCached": false,
+      "stage": "UPDATE",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 0,
+      "works": 1601,
+      "advanced": 0,
+      "needTime": 1600,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "nMatched": 289,
+      "nWouldModify": 289,
+      "nWouldUpsert": 0,
+      "inputStage": {
+        "stage": "FETCH",
+        "filter": {
+          "sektor_id": {
+            "$eq": 19
+          }
+        },
+        "nReturned": 289,
+        "executionTimeMillisEstimate": 0,
+        "works": 1601,
+        "advanced": 289,
+        "needTime": 1311,
+        "needYield": 0,
+        "saveState": 289,
+        "restoreState": 289,
+        "isEOF": 1,
+        "docsExamined": 1600,
+        "alreadyHasObj": 0,
+        "inputStage": {
+          "stage": "IXSCAN",
+          "nReturned": 1600,
+          "executionTimeMillisEstimate": 0,
+          "works": 1601,
+          "advanced": 1600,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 289,
+          "restoreState": 289,
+          "isEOF": 1,
+          "keyPattern": {
+            "wydarzenie_id": 1,
+            "status": 1
+          },
+          "indexName": "wydarzenie_id_1_status_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "wydarzenie_id": [],
+            "status": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "wydarzenie_id": [
+              "[128, 128]"
+            ],
+            "status": [
+              "[\"wolny\", \"wolny\"]"
+            ]
+          },
+          "keysExamined": 1600,
+          "seeks": 1,
+          "dupsTested": 0,
+          "dupsDropped": 0
+        }
+      }
+    }
+  },
+  "command": {
+    "update": "bilety",
+    "updates": [
+      {
+        "u": {
+          "$mul": {
+            "cena": 1.1
+          }
+        },
+        "multi": true,
+        "q": {
+          "wydarzenie_id": 128,
+          "sektor_id": 19,
+          "status": "wolny"
+        }
+      }
+    ],
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795298643,
+        "i": 140
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795298643,
+      "i": 140
+    }
+  }
+}

@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ticketbench: runbook</title>
+<style>
+  body { font-family: system-ui, sans-serif; line-height: 1.5; max-width: 52rem; margin: 2rem auto; padding: 0 1rem; color: #1d1d1f; background: #fff; }
+  h1, h2, h3 { line-height: 1.25; }
+  h2 { margin-top: 2.2rem; border-bottom: 1px solid #ddd; padding-bottom: .2rem; }
+  code, pre { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .9em; }
+  pre { background: #f5f5f7; border: 1px solid #e3e3e6; padding: .7rem .9rem; overflow-x: auto; }
+  code { background: #f5f5f7; padding: 0 .2em; }
+  pre code { background: none; padding: 0; }
+  table { border-collapse: collapse; width: 100%; margin: .8rem 0; }
+  th, td { border: 1px solid #ddd; padding: .35rem .5rem; text-align: left; vertical-align: top; }
+  th { background: #f5f5f7; }
+  .note { border-left: 4px solid #c9a227; background: #fffbea; padding: .5rem .8rem; }
+  nav ol { columns: 2; }
+  @media (prefers-color-scheme: dark) {
+    body { color: #e8e8ea; background: #161618; }
+    pre, code, th { background: #222226; border-color: #333; }
+    th, td { border-color: #333; }
+    .note { background: #2a2610; }
+  }
+</style>
+</head>
+<body>
+
+<h1>ticketbench: runbook</h1>
+<p>Jak przeprowadzić benchmark PostgreSQL&nbsp;17, MariaDB&nbsp;11.8, MongoDB&nbsp;8.0 i Valkey&nbsp;8.1
+programem <code>ticketbench.sh</code>: od pustej maszyny do tabel, wykresów i PDF ze sprawozdaniem.
+Autorzy: Łukasz Ryczko, Łukasz Pacholec.</p>
+
+<nav>
+<h2>Spis treści</h2>
+<ol>
+  <li><a href="#szybko">Szybki start</a></li>
+  <li><a href="#wymagania">Wymagania</a></li>
+  <li><a href="#instalacja">Instalacja</a></li>
+  <li><a href="#stos">Uruchomienie środowiska</a></li>
+  <li><a href="#smoke">Test dymny</a></li>
+  <li><a href="#bench">Pełna macierz</a></li>
+  <li><a href="#pojedyncze">Pojedyncze pomiary</a></li>
+  <li><a href="#raport">Raport i PDF</a></li>
+  <li><a href="#wyniki">Pliki wyników</a></li>
+  <li><a href="#sledzenie">Śledzenie i metryki</a></li>
+  <li><a href="#sprzatanie">Sprzątanie</a></li>
+  <li><a href="#problemy">Rozwiązywanie problemów</a></li>
+  <li><a href="#zmienne">Zmienne środowiskowe</a></li>
+  <li><a href="#repo">Repozytoria</a></li>
+</ol>
+</nav>
+
+<h2 id="szybko">1. Szybki start</h2>
+<pre><code>git clone --recursive https://github.com/ryczek02/ticketbench
+cd ticketbench
+./ticketbench.sh all        # sprawdzenie, instalacja, start stosu, test dymny
+./ticketbench.sh bench      # pełna macierz (0,5 mln, 1 mln, 10 mln biletów)
+./ticketbench.sh report     # tabele, wykresy, report/sprawozdanie.pdf</code></pre>
+<p>Bez klonowania: pobierz sam skrypt, a on sklonuje repozytorium do <code>./ticketbench</code>.</p>
+<pre><code>curl -fsSLO https://raw.githubusercontent.com/ryczek02/ticketbench/main/ticketbench.sh
+chmod +x ticketbench.sh
+./ticketbench.sh all</code></pre>
+
+<h2 id="wymagania">2. Wymagania</h2>
+<table>
+  <tr><th>Co</th><th>Minimum</th><th>Uwagi</th></tr>
+  <tr><td>System</td><td>macOS lub Linux, amd64 albo arm64</td><td>Windows przez WSL2</td></tr>
+  <tr><td>Docker</td><td>Docker Engine 24+ z <code>docker compose</code> v2</td><td>na macOS Docker Desktop</td></tr>
+  <tr><td>Pamięć dla Dockera</td><td>4&nbsp;GB na test dymny, 10&nbsp;GB na pełną macierz</td><td>Valkey trzyma 10 mln biletów w RAM (ok. 3,5&nbsp;GB)</td></tr>
+  <tr><td>Dysk</td><td>30&nbsp;GB wolnego</td><td>obrazy, wolumeny baz, wyniki</td></tr>
+  <tr><td>Narzędzia</td><td><code>git</code>, <code>curl</code>, <code>tar</code></td><td>opcjonalnie <code>tectonic</code> (PDF), <code>go</code> (budowanie ze źródeł)</td></tr>
+  <tr><td>Porty</td><td>5432, 3306, 27017, 6379, 7001–7004, 7070, 4317, 4318, 16686, 9090, 3000</td><td>runner jest na 7070, bo 7000 na macOS zajmuje AirPlay</td></tr>
+</table>
+<p>Wszystko to sprawdza jedno polecenie:</p>
+<pre><code>./ticketbench.sh doctor</code></pre>
+<p>Każda linia z <code>!</code> wymaga uwagi. Pamięć Dockera na macOS ustawia się w Docker Desktop:
+<em>Settings → Resources → Memory</em>.</p>
+
+<h2 id="instalacja">3. Instalacja</h2>
+<pre><code>./ticketbench.sh install</code></pre>
+<p>Polecenie:</p>
+<ol>
+  <li>klonuje albo aktualizuje repozytorium <code>ticketbench</code> i jego submoduły
+      (<code>contracts</code>, <code>services</code>, <code>cli</code>, <code>infra</code>);</li>
+  <li>pobiera <code>tbench</code> dla bieżącego systemu z GitHub Releases i sprawdza sumę SHA-256;</li>
+  <li>pobiera obrazy serwisów z <code>ghcr.io/ryczek02/ticketbench-*</code> oraz obrazy baz.</li>
+</ol>
+<p>Warianty:</p>
+<table>
+  <tr><th>Polecenie</th><th>Kiedy</th></tr>
+  <tr><td><code>TB_CHANNEL=edge ./ticketbench.sh install</code></td><td>najnowszy <code>tbench</code> zbudowany z <code>main</code></td></tr>
+  <tr><td><code>TB_VERSION=0.1.0 ./ticketbench.sh install</code></td><td>obrazy konkretnej wersji zamiast <code>latest</code></td></tr>
+  <tr><td><code>TB_UPDATE=1 ./ticketbench.sh install</code></td><td>submoduły na najnowszy <code>main</code> zamiast przypiętych commitów</td></tr>
+  <tr><td><code>TB_SOURCE=1 ./ticketbench.sh install</code></td><td>budowanie obrazów i <code>tbench</code> ze źródeł (wymaga Go 1.26)</td></tr>
+</table>
+<p>Binarki serwerów (np. do uruchomienia bez Dockera) są w wydaniach
+<a href="https://github.com/ryczek02/ticketbench-services/releases">ticketbench-services</a>:
+<code>&lt;serwis&gt;_&lt;wersja&gt;_&lt;os&gt;_&lt;arch&gt;.tar.gz</code>.</p>
+
+<h2 id="stos">4. Uruchomienie środowiska</h2>
+<pre><code>./ticketbench.sh up</code></pre>
+<p>Startuje 4 bazy, 4 serwisy <code>store-*</code>, <code>bench-runner</code>, kolektor OpenTelemetry,
+Jaeger, Prometheus i Grafanę, czeka na kontrole zdrowia i wywołuje <code>tbench ping</code>.
+Poprawny wynik wygląda tak:</p>
+<pre><code>STORE     ADDRESS              STATUS  SERVER                         STRATEGIES
+mariadb   store-mariadb:7002   ok      MariaDB 11.8.x                 cond,forupdate,nowait,serializable
+mongo     store-mongo:7003     ok      MongoDB 8.0.x                  atomic,txn
+postgres  store-postgres:7001  ok      PostgreSQL 17.x                cond,forupdate,nowait,serializable
+valkey    store-valkey:7004    ok      Valkey 8.1.x                   lua,setnx,watch</code></pre>
+<p>Stan w dowolnej chwili: <code>./ticketbench.sh status</code>, <code>./ticketbench.sh ping</code>,
+adresy interfejsów: <code>./ticketbench.sh urls</code>.</p>
+
+<h2 id="smoke">5. Test dymny</h2>
+<pre><code>./ticketbench.sh smoke</code></pre>
+<p>20 tys. biletów, wszystkie 27 scenariuszy z indeksami i bez, plany zapytań, współbieżność 1 i 16
+klientów każdą strategią. Trwa około minuty. Na końcu skrypt wypisuje ścieżkę wyników i powinien
+pokazać <code>0 errors</code> oraz <code>contention: 0 inconsistent groups</code>. Jeśli test
+dymny przechodzi, środowisko jest gotowe do pełnej macierzy.</p>
+
+<h2 id="bench">6. Pełna macierz</h2>
+<pre><code>./ticketbench.sh bench</code></pre>
+<p>Plan z <code>infra/config/matrix.yaml</code>:</p>
+<ul>
+  <li>3 rozmiary: 500 tys., 1 mln i 10 mln biletów;</li>
+  <li>4 bazy, każda z czystym importem danych;</li>
+  <li>27 scenariuszy, 1 przebieg rozgrzewkowy i 5 mierzonych, bez indeksów i z indeksami;</li>
+  <li>plany zapytań (EXPLAIN ANALYZE, explain executionStats);</li>
+  <li>współbieżność: 1, 10, 100 i 1000 klientów na tych samych 500 miejscach, każda strategia, 3 rundy;</li>
+  <li>pomiar narzutu śledzenia na 500 tys. biletów.</li>
+</ul>
+<p>Na Apple M5 z 8&nbsp;GB dla Dockera cały plan trwał około 1,5 godziny. Najdłużej trwają
+scenariusze Valkey bez indeksów na 10 mln (pełny <code>SCAN</code>) i współbieżność MariaDB przy
+1000 klientach.</p>
+<p>Zawężanie planu (flagi idą prosto do <code>tbench matrix</code>):</p>
+<pre><code>./ticketbench.sh bench --sizes 500k,1M
+./ticketbench.sh bench --stores postgres,valkey
+./ticketbench.sh bench --config moja-macierz.yaml</code></pre>
+<p>Podgląd kroków bez uruchamiania: <code>tbench plan --config infra/config/matrix.yaml</code>
+(binarka leży w <code>bin/tbench</code>).</p>
+<p class="note">Wyniki zapisują się na bieżąco. Przerwany przebieg zostawia wszystko, co zdążył
+zmierzyć. Brakujący segment można powtórzyć osobno, a <code>tbench report</code> przyjmuje kilka
+katalogów wyników naraz.</p>
+
+<h2 id="pojedyncze">7. Pojedyncze pomiary</h2>
+<pre><code># wybrane scenariusze na jednej bazie, z importem danych
+./ticketbench.sh run --stores postgres --tickets 1M --scenarios R4,U6 --reps 10 --indexes both
+
+# na już załadowanych danych
+./ticketbench.sh run --stores mongo --tickets 1M --scenarios 'R*' --load=false
+
+# tylko test współbieżności, wszystkie strategie
+./ticketbench.sh contend --stores mariadb,valkey --tickets 500k --clients 1,10,100,1000 --strategies all
+
+# lista scenariuszy
+bin/tbench scenarios</code></pre>
+
+<h2 id="raport">8. Raport i PDF</h2>
+<pre><code>./ticketbench.sh report                      # ostatni przebieg (results/latest)
+./ticketbench.sh report results/20261121-220002</code></pre>
+<p>Polecenie generuje <code>report/generated/</code> (tabele LaTeX, dane wykresów pgfplots, makra
+z werdyktami hipotez, <code>values.tex</code> z każdą zmierzoną wartością), kopiuje surowe wyniki
+do <code>report/data/results</code> i kompiluje <code>report/sprawozdanie.pdf</code>, <code>report/prezentacja.pdf</code>
+(slajdy) oraz <code>report/podsumowanie.pdf</code>, jeśli jest <code>tectonic</code> albo <code>latexmk</code>.
+Liczby w sprawozdaniu pochodzą wyłącznie z tych plików, a CI sprawdza, czy zgadzają się z surowymi
+wynikami.</p>
+
+<h2 id="wyniki">9. Pliki wyników</h2>
+<table>
+  <tr><th>Plik</th><th>Zawartość</th></tr>
+  <tr><td><code>scenarios.csv</code></td><td>wiersz na powtórzenie: <code>server_ms</code> (czas w serwisie bazy), <code>e2e_ms</code> (z runnera), <code>prepare_ms</code> (fikstura), <code>rows</code>, <code>timed_out</code>, <code>error</code>, <code>trace_id</code></td></tr>
+  <tr><td><code>contention.csv</code></td><td>wiersz na rundę: przepustowość, próby, konflikty, p50/p95/p99, <code>consistent</code></td></tr>
+  <tr><td><code>loads.csv</code></td><td>import, tworzenie indeksów, liczby wierszy, suma kontrolna danych</td></tr>
+  <tr><td><code>stats.csv</code></td><td>rozmiar danych bez indeksów i z indeksami</td></tr>
+  <tr><td><code>plans/</code></td><td>plany zapytań: <code>&lt;rozmiar&gt;/&lt;baza&gt;/indexes-on|off/&lt;scenariusz&gt;</code></td></tr>
+  <tr><td><code>meta.json</code></td><td>konfiguracja, wersje baz i serwisów, trace id każdego segmentu</td></tr>
+  <tr><td><code>errors.csv</code></td><td>nieudane kroki (pusty, jeśli wszystko przeszło)</td></tr>
+  <tr><td><code>report/</code></td><td>agregaty: <code>data/*_summary.csv</code>, <code>tables/*.tex</code>, <code>plots/*.dat</code></td></tr>
+</table>
+<p>Przed oddaniem sprawdź, że <code>errors.csv</code> ma tylko nagłówek, a w
+<code>report/data/contention_summary.csv</code> kolumna <code>consistent</code> wszędzie ma
+<code>true</code>.</p>
+
+<h2 id="sledzenie">10. Śledzenie i metryki</h2>
+<ul>
+  <li><strong>Jaeger</strong> (<a href="http://localhost:16686">localhost:16686</a>): każdy segment
+  (rozmiar × baza) to jeden ślad. Identyfikator jest w każdym wierszu CSV, więc wolne powtórzenie
+  otwiera się pod <code>http://localhost:16686/trace/&lt;trace_id&gt;</code>. W śladzie widać span
+  CLI, kroki runnera, wywołania <code>Execute</code>, spany serwisu i polecenia SQL, MongoDB lub
+  Valkey.</li>
+  <li><strong>Grafana</strong> (<a href="http://localhost:3000">localhost:3000</a>, pulpit
+  <em>ticketbench</em>): p95 czasu scenariuszy per baza, czas prób rezerwacji, konflikty na
+  sekundę.</li>
+  <li><strong>Prometheus</strong> (<a href="http://localhost:9090">localhost:9090</a>): metryki
+  <code>tb_store_scenario_duration_milliseconds</code>, <code>tb_store_contention_attempt_milliseconds</code>,
+  <code>tb_store_contention_conflicts_total</code>.</li>
+</ul>
+
+<h2 id="sprzatanie">11. Sprzątanie</h2>
+<pre><code>./ticketbench.sh down       # zatrzymuje kontenery, dane zostają
+./ticketbench.sh destroy    # usuwa kontenery i wolumeny baz</code></pre>
+<p>Wyniki w <code>results/</code> i pliki raportu zostają.</p>
+
+<h2 id="problemy">12. Rozwiązywanie problemów</h2>
+<table>
+  <tr><th>Objaw</th><th>Przyczyna i rozwiązanie</th></tr>
+  <tr><td><code>bind: address already in use</code> przy starcie</td><td>port zajęty przez inną usługę. <code>./ticketbench.sh doctor</code> pokazuje które. Port runnera zmienia <code>TB_RUNNER_PORT=7171</code>.</td></tr>
+  <tr><td><code>store-mongo</code> długo niezdrowy</td><td>pierwszy start inicjuje replica set <code>rs0</code>. Kontrola zdrowia robi to sama, zwykle w 10–20 s. Podgląd: <code>./ticketbench.sh logs mongo</code>.</td></tr>
+  <tr><td>Kontener bazy znika w trakcie 10 mln (OOMKilled)</td><td>za mało pamięci dla Dockera. Zwiększ do 10 GB albo uruchom <code>bench --sizes 500k,1M</code>.</td></tr>
+  <tr><td>„t/o” w tabeli</td><td>scenariusz przekroczył 60 s (zwykle Valkey bez indeksów na dużych zbiorach). To wynik, nie awaria. Limit zmienia <code>timeout:</code> w pliku macierzy.</td></tr>
+  <tr><td><code>tbench: connection refused</code></td><td>stos nie działa albo runner jest na innym porcie: <code>./ticketbench.sh up</code>, sprawdź <code>TB_RUNNER_PORT</code>.</td></tr>
+  <tr><td>Brak PDF po <code>report</code></td><td>brak <code>tectonic</code> i <code>latexmk</code>. Instalacja: <code>brew install tectonic</code> albo <code>apt install latexmk texlive-xetex texlive-lang-polish</code>.</td></tr>
+  <tr><td>Pobieranie <code>tbench</code> kończy się błędem 403</td><td>limit zapytań do API GitHuba bez logowania. Odczekaj godzinę albo zbuduj ze źródeł: <code>TB_SOURCE=1</code>.</td></tr>
+</table>
+
+<h2 id="zmienne">13. Zmienne środowiskowe</h2>
+<table>
+  <tr><th>Zmienna</th><th>Domyślnie</th><th>Znaczenie</th></tr>
+  <tr><td><code>TB_HOME</code></td><td>katalog klonu albo <code>./ticketbench</code></td><td>miejsce repozytorium, <code>bin/</code> i <code>results/</code></td></tr>
+  <tr><td><code>TB_VERSION</code></td><td><code>latest</code></td><td>tag obrazów w GHCR</td></tr>
+  <tr><td><code>TB_CHANNEL</code></td><td><code>latest</code></td><td>wydanie <code>tbench</code>: <code>latest</code>, <code>edge</code>, <code>v0.1.0</code></td></tr>
+  <tr><td><code>TB_SOURCE</code></td><td><code>0</code></td><td><code>1</code> buduje obrazy i <code>tbench</code> ze źródeł</td></tr>
+  <tr><td><code>TB_UPDATE</code></td><td><code>0</code></td><td><code>1</code> ustawia submoduły na najnowszy <code>main</code></td></tr>
+  <tr><td><code>TB_RUNNER_PORT</code></td><td><code>7070</code></td><td>port runnera na hoście</td></tr>
+  <tr><td><code>TB_PROJECT</code></td><td><code>ticketbench</code></td><td>nazwa projektu Docker Compose</td></tr>
+  <tr><td><code>TB_RUN</code></td><td>znacznik czasu</td><td>nazwa katalogu wyników</td></tr>
+</table>
+
+<h2 id="repo">14. Repozytoria</h2>
+<table>
+  <tr><th>Repozytorium</th><th>Zawartość</th></tr>
+  <tr><td><a href="https://github.com/ryczek02/ticketbench">ticketbench</a></td><td>to repozytorium: README, <code>ticketbench.sh</code>, runbook, sprawozdanie (LaTeX, PDF), submoduły</td></tr>
+  <tr><td><a href="https://github.com/ryczek02/ticketbench-contracts">ticketbench-contracts</a></td><td>kontrakty gRPC, model, generator danych, scenariusze, telemetria</td></tr>
+  <tr><td><a href="https://github.com/ryczek02/ticketbench-services">ticketbench-services</a></td><td><code>bench-runner</code> i serwisy <code>store-*</code>, testy zgodności, binarki i obrazy</td></tr>
+  <tr><td><a href="https://github.com/ryczek02/ticketbench-cli">ticketbench-cli</a></td><td><code>tbench</code>: plany, zapis wyników, raport</td></tr>
+  <tr><td><a href="https://github.com/ryczek02/ticketbench-infra">ticketbench-infra</a></td><td>Docker Compose, obserwowalność, macierze, Ansible</td></tr>
+</table>
+
+</body>
+</html>

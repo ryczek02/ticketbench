@@ -1,0 +1,13 @@
+-- postgres J1 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT id, nazwa, data_rozpoczecia FROM wydarzenia WHERE metadane @> $1::jsonb
+Bitmap Heap Scan on wydarzenia  (cost=5.61..6.72 rows=1 width=43) (actual time=0.021..0.035 rows=10 loops=1)
+  Recheck Cond: (metadane @> '{"tagi": ["akustycznie"], "gatunek": "komedia"}'::jsonb)
+  Heap Blocks: exact=9
+  Buffers: shared hit=15
+  ->  Bitmap Index Scan on idx_wydarzenia_metadane  (cost=0.00..5.61 rows=1 width=0) (actual time=0.016..0.016 rows=10 loops=1)
+        Index Cond: (metadane @> '{"tagi": ["akustycznie"], "gatunek": "komedia"}'::jsonb)
+        Buffers: shared hit=6
+Planning:
+  Buffers: shared hit=4
+Planning Time: 0.085 ms
+Execution Time: 0.041 ms

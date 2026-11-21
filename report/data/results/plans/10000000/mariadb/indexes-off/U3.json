@@ -1,0 +1,64 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.050752083
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 10820.3604,
+    "r_loops": 1,
+    "r_total_time_ms": 3306.998511,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ALL",
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 10168034,
+          "r_rows": 10075987,
+          "cost": 1724.744105,
+          "r_table_time_ms": 3076.009131,
+          "r_other_time_ms": 230.2095224,
+          "r_engine_stats": {
+            "pages_accessed": 81304,
+            "pages_updated": 693,
+            "pages_read_count": 52842,
+            "pages_read_time_ms": 1398.336235,
+            "pages_prefetch_read_count": 1
+          },
+          "filtered": 100,
+          "r_total_filtered": 0.014122686,
+          "attached_condition": "b.wydarzenie_id = 2255 and b.`status` = 'wolny'",
+          "r_filtered": 0.014122686
+        }
+      },
+      {
+        "table": {
+          "table_name": "m",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.b.miejsce_id"],
+          "loops": 10168034,
+          "r_loops": 1423,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 9095.616293,
+          "r_table_time_ms": 0.690822454,
+          "r_other_time_ms": 0.087822442,
+          "r_engine_stats": {
+            "pages_accessed": 4273,
+            "pages_read_count": 8,
+            "pages_read_time_ms": 0.203510412
+          },
+          "filtered": 100,
+          "r_total_filtered": 24.24455376,
+          "attached_condition": "m.sektor_id = 228",
+          "r_filtered": 24.24455376
+        }
+      }
+    ]
+  }
+}

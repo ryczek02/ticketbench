@@ -1,0 +1,178 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.rezerwacje",
+    "parsedQuery": {
+      "$and": [
+        {
+          "status": {
+            "$eq": "oczekujaca"
+          }
+        },
+        {
+          "wygasa_o": {
+            "$lt": {
+              "$date": "2026-01-01T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "FC55E40E",
+    "planCacheShapeHash": "FC55E40E",
+    "planCacheKey": "39D1A138",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "FETCH",
+      "inputStage": {
+        "stage": "IXSCAN",
+        "keyPattern": {
+          "status": 1,
+          "wygasa_o": 1
+        },
+        "indexName": "status_1_wygasa_o_1",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+          "status": [],
+          "wygasa_o": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+          "status": [
+            "[\"oczekujaca\", \"oczekujaca\"]"
+          ],
+          "wygasa_o": [
+            "[new Date(-9223372036854775808), new Date(1767225600000))"
+          ]
+        }
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 1000,
+    "executionTimeMillis": 0,
+    "totalKeysExamined": 1000,
+    "totalDocsExamined": 1000,
+    "executionStages": {
+      "isCached": false,
+      "stage": "FETCH",
+      "nReturned": 1000,
+      "executionTimeMillisEstimate": 0,
+      "works": 1001,
+      "advanced": 1000,
+      "needTime": 0,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "docsExamined": 1000,
+      "alreadyHasObj": 0,
+      "inputStage": {
+        "stage": "IXSCAN",
+        "nReturned": 1000,
+        "executionTimeMillisEstimate": 0,
+        "works": 1001,
+        "advanced": 1000,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "keyPattern": {
+          "status": 1,
+          "wygasa_o": 1
+        },
+        "indexName": "status_1_wygasa_o_1",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+          "status": [],
+          "wygasa_o": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+          "status": [
+            "[\"oczekujaca\", \"oczekujaca\"]"
+          ],
+          "wygasa_o": [
+            "[new Date(-9223372036854775808), new Date(1767225600000))"
+          ]
+        },
+        "keysExamined": 1000,
+        "seeks": 1,
+        "dupsTested": 0,
+        "dupsDropped": 0
+      }
+    }
+  },
+  "queryShapeHash": "9F4C58218C5D14157300D27FD2C23FC693B780B14C870404AEC37C330890516B",
+  "command": {
+    "find": "rezerwacje",
+    "filter": {
+      "status": "oczekujaca",
+      "wygasa_o": {
+        "$lt": {
+          "$date": "2026-01-01T00:00:00Z"
+        }
+      }
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299091,
+        "i": 3
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299091,
+      "i": 3
+    }
+  }
+}

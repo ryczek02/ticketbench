@@ -1,0 +1,75 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.065148558
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 488777.0154,
+    "r_loops": 1,
+    "r_total_time_ms": 396.3134603,
+    "filesort": {
+      "sort_key": "w.`id`, w.nazwa",
+      "r_loops": 1,
+      "r_total_time_ms": 0.007767713,
+      "r_used_priority_queue": false,
+      "r_output_rows": 28,
+      "r_buffer_size": "24KiB",
+      "r_sort_mode": "packed_sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "w",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 523,
+              "r_rows": 523,
+              "cost": 0.1020874,
+              "r_table_time_ms": 0.035789945,
+              "r_other_time_ms": 0.011192188,
+              "r_engine_stats": {
+                "pages_accessed": 8
+              },
+              "filtered": 100,
+              "r_total_filtered": 5.353728489,
+              "attached_condition": "w.organizator_id = 6",
+              "r_filtered": 5.353728489
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "b",
+                "access_type": "ALL",
+                "loops": 523,
+                "r_loops": 1,
+                "rows": 1074952,
+                "r_rows": 1075975,
+                "cost": 91810.22177,
+                "r_table_time_ms": 69.7712655,
+                "r_other_time_ms": 16.22892335,
+                "r_engine_stats": {
+                  "pages_accessed": 8418
+                },
+                "filtered": 100,
+                "r_total_filtered": 44.19907526,
+                "attached_condition": "b.`status` = 'sprzedany'",
+                "r_filtered": 44.19907526
+              },
+              "buffer_type": "flat",
+              "buffer_size": "256KiB",
+              "join_type": "BNL",
+              "attached_condition": "trigcond(b.wydarzenie_id = w.`id` and b.`status` = 'sprzedany')",
+              "r_loops": 28,
+              "r_filtered": 0.190305068,
+              "r_unpack_time_ms": 149.5816314,
+              "r_other_time_ms": 160.6635264,
+              "r_effective_rows": 475571
+            }
+          }
+        ]
+      }
+    }
+  }
+}

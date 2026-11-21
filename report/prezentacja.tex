@@ -1,0 +1,301 @@
+% Prezentacja projektu. Liczby i wykresy z generated/ (tbench report).
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage{fontspec}
+\usepackage[polish]{babel}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{xfp}
+\usepackage{array}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{arrows.meta,positioning}
+\pgfplotsset{compat=1.18, /pgf/number format/.cd, use comma, 1000 sep={\,}}
+\sisetup{output-decimal-marker={,}, group-separator={\,}, group-minimum-digits=4}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\definecolor{accent}{HTML}{2F6DB5}
+\setbeamercolor{frametitle}{fg=accent}
+\setbeamercolor{structure}{fg=accent}
+\definecolor{cpg}{HTML}{2F6DB5}
+\definecolor{cmaria}{HTML}{C0392B}
+\definecolor{cmongo}{HTML}{2E8B57}
+\definecolor{cvalkey}{HTML}{8E44AD}
+\pgfplotsset{
+  pg/.style={cpg, thick, mark=*}, maria/.style={cmaria, thick, mark=square*},
+  mongo/.style={cmongo, thick, mark=triangle*}, valkey/.style={cvalkey, thick, mark=diamond*},
+  tb/.style={grid=major, grid style={gray!25}, tick label style={font=\scriptsize}, label style={font=\scriptsize},
+    legend style={font=\scriptsize, draw=none, at={(0.5,1.03)}, anchor=south, legend columns=4}, unbounded coords=jump},
+}
+
+\input{generated/macros.tex}
+\input{generated/values.tex}
+\input{generated/plans_values.tex}
+
+\title{Porównanie wydajności relacyjnych i~nierelacyjnych SZBD}
+\subtitle{System rezerwacji biletów: PostgreSQL, MariaDB, MongoDB, Valkey}
+\author{Łukasz Ryczko, Łukasz Pacholec}
+\institute{Zaawansowane technologie baz danych · Politechnika Krakowska}
+\date{listopad 2026}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Cel, zakres i hipoteza}
+  \begin{itemize}
+    \item Cztery SZBD: 2 relacyjne (PostgreSQL 17, MariaDB 11.8) i~2 nierelacyjne
+      (MongoDB 8.0, Valkey 8.1); trzy modele danych.
+    \item Domena: rezerwacja biletów. Łączy transakcje, blokady, JSON i~duży
+      ruch równoległy.
+    \item 24 scenariusze CRUD (6 na operację) + 3 na danych JSON,
+      \SizesList{} biletów, bez indeksów i~z~indeksami, po 5 prób.
+    \item Test współbieżności: 1--1000 klientów rezerwuje te same 500 miejsc.
+  \end{itemize}
+  \vspace{2mm}
+  \begin{block}{Hipoteza H1}
+    Wraz ze wzrostem liczby równoległych klientów rezerwujących te same miejsca
+    przewaga wydajnościowa Valkey i~MongoDB nad bazami relacyjnymi rośnie.
+  \end{block}
+  {\small Dodatkowo H2: różnice między silnikami rosną z~liczbą rekordów.}
+\end{frame}
+
+\begin{frame}{Model danych}
+  \begin{columns}[T]
+    \column{0.33\textwidth}
+    \textbf{Relacyjny (12 tabel)}\\[1mm]
+    \small obiekty, sektory, miejsca, wydarzenia, cenniki, kategorie,
+    organizatorzy, klienci, kody\_rabatowe, rezerwacje, bilety, platnosci.
+    Bilet to pula sprzedażowa: miejsce × wydarzenie ze statusem.
+    \column{0.33\textwidth}
+    \textbf{Dokumentowy}\\[1mm]
+    \small wydarzenie z~osadzonym cennikiem, rezerwacja z~osadzonymi biletami
+    i~płatnością, bilety jako osobna kolekcja (to je zmieniają równolegli
+    klienci). Transakcje na replica secie.
+    \column{0.33\textwidth}
+    \textbf{Klucz--wartość}\\[1mm]
+    \small hash wydarzenia, hash biletów, \texttt{SET} wolnych miejsc,
+    rezerwacja jako JSON, liczniki w~\texttt{ZSET}, blokada miejsca z~TTL.
+    ,,Indeksy'' to zbiory \texttt{ix:*} utrzymywane przez aplikację.
+  \end{columns}
+  \vspace{4mm}
+  \small Dane z~deterministycznego generatora: te same wiersze w~każdej bazie,
+  potwierdzone sumą kontrolną. Metadane wszędzie jako JSON (JSONB, JSON, BSON,
+  JSON w~Valkey).
+\end{frame}
+
+\begin{frame}{Aplikacja: Go, gRPC, OpenTelemetry}
+  \centering
+  \begin{tikzpicture}[font=\scriptsize,
+    box/.style={draw, rounded corners=2pt, fill=blue!6, minimum height=7mm, minimum width=22mm, align=center},
+    db/.style={draw, rounded corners=2pt, fill=gray!10, minimum height=7mm},
+    arr/.style={-{Stealth[length=1.6mm]}}]
+    \node[box, fill=green!8, minimum width=12mm] (cli) {tbench\\CLI};
+    \node[box, right=18mm of cli] (run) {bench-runner};
+    \node[box, right=12mm of run, yshift=12mm] (s1) {store-postgres};
+    \node[box, below=1.5mm of s1] (s2) {store-mariadb};
+    \node[box, below=1.5mm of s2] (s3) {store-mongo};
+    \node[box, below=1.5mm of s3] (s4) {store-valkey};
+    \node[db, right=6mm of s1, minimum width=18mm] {PostgreSQL};
+    \node[db, right=6mm of s2, minimum width=18mm] {MariaDB};
+    \node[db, right=6mm of s3, minimum width=18mm] {MongoDB};
+    \node[db, right=6mm of s4, minimum width=18mm] {Valkey};
+    \draw[arr] (cli) -- node[above, font=\tiny]{traceparent} (run);
+    \foreach \s in {s1,s2,s3,s4} \draw[arr] (run.east) -- (\s.west);
+    \node[box, fill=orange!10, below=20mm of run, xshift=-10mm] (otel) {OTel Collector → Jaeger, Prometheus, Grafana};
+    \draw[arr, dashed, gray] (run) -- (otel);
+  \end{tikzpicture}
+  \vspace{2mm}
+  \begin{itemize}\small
+    \item Czas mierzony w~serwisie bazy, bez narzutu gRPC; trace id w~każdym wierszu wyników.
+    \item Docker Compose, GitHub Actions (testy na prawdziwych bazach, binarki, obrazy, PDF),
+      Ansible, jedno polecenie: \texttt{./ticketbench.sh all}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Import i rozmiar (10 mln biletów)}
+  \begin{columns}[c]
+    \column{0.5\textwidth}
+    \begin{tikzpicture}
+      \begin{axis}[tb, ybar, width=\linewidth, height=5cm, ylabel={s}, symbolic x coords={PG,Maria,Mongo,Valkey},
+        xtick=data, bar width=8pt, legend entries={import, indeksy}]
+        \addplot[fill=accent!70, draw=none] coordinates {(PG,\tbget{l@postgres@10000000@load}) (Maria,\tbget{l@mariadb@10000000@load}) (Mongo,\tbget{l@mongo@10000000@load}) (Valkey,\tbget{l@valkey@10000000@load})};
+        \addplot[fill=orange!70, draw=none] coordinates {(PG,\tbget{l@postgres@10000000@indexes_on}) (Maria,\tbget{l@mariadb@10000000@indexes_on}) (Mongo,\tbget{l@mongo@10000000@indexes_on}) (Valkey,\tbget{l@valkey@10000000@indexes_on})};
+      \end{axis}
+    \end{tikzpicture}
+    \column{0.5\textwidth}
+    \small
+    \begin{itemize}
+      \item Valkey importuje najszybciej (\lval{valkey}{10000000}{load}\,s), ale
+        trzyma \sval{valkey}{10000000}{off}\,MB w~RAM.
+      \item MongoDB zajmuje najmniej miejsca (\sval{mongo}{10000000}{off}\,MB,
+        kompresja), ale importuje najwolniej (\lval{mongo}{10000000}{load}\,s).
+      \item Budowa indeksów: PostgreSQL \lval{postgres}{10000000}{indexes_on}\,s,
+        MariaDB \lval{mariadb}{10000000}{indexes_on}\,s.
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+\newcommand{\scenplot}[2]{%
+  \nextgroupplot[title={#1 #2}]
+  \addplot[pg] table[x=tickets, y=postgres] {generated/plots/scen_#1_#2.dat};
+  \addplot[maria] table[x=tickets, y=mariadb] {generated/plots/scen_#1_#2.dat};
+  \addplot[mongo] table[x=tickets, y=mongo] {generated/plots/scen_#1_#2.dat};
+  \addplot[valkey] table[x=tickets, y=valkey] {generated/plots/scen_#1_#2.dat};}
+
+\begin{frame}{Czas scenariuszy rośnie liniowo bez indeksów}
+  \centering
+  \begin{tikzpicture}
+    \begin{groupplot}[group style={group size=4 by 1, horizontal sep=9mm}, width=0.3\textwidth, height=4.6cm,
+      xmode=log, ymode=log, tb, title style={font=\scriptsize}, xtick={500000,1000000,10000000},
+      xticklabels={0{,}5,1,10}, xlabel={mln biletów}]
+      \scenplot{R1}{off}
+      \scenplot{R2}{off}
+      \scenplot{R4}{off}
+      \scenplot{R6}{off}
+    \end{groupplot}
+  \end{tikzpicture}
+  \small
+  \begin{itemize}
+    \item R1 (rezerwacja z~biletami) w~MongoDB i~Valkey trwa stale ok.
+      \val{mongo}{10000000}{off}{R1}\,ms dzięki osadzeniu biletów.
+      MariaDB: \val{mariadb}{10000000}{off}{R1}\,ms.
+    \item R6 (top 10 wydarzeń): Valkey odczytuje licznik
+      (\val{valkey}{10000000}{off}{R6}\,ms), pozostałe agregują 10 mln biletów.
+    \item R4 w~Valkey bez struktur \texttt{ix:*}: \texttt{SCAN} 1,67 mln kluczy,
+      \val{valkey}{10000000}{off}{R4}\,ms.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Indeksy: przyspieszenie przy 10 mln biletów}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[tb, ybar, bar width=1.4pt, ymode=log, log origin=infty, width=\textwidth, height=5.2cm,
+      ylabel={bez / z indeksami}, xtick={0,...,26},
+      xticklabels={C1,C2,C3,C4,C5,C6,R1,R2,R3,R4,R5,R6,U1,U2,U3,U4,U5,U6,D1,D2,D3,D4,D5,D6,J1,J2,J3},
+      x tick label style={font=\tiny, rotate=90}, enlarge x limits=0.02]
+      \addplot[fill=cpg, draw=none] table[x=i, y=postgres] {generated/plots/speedup_10000000.dat}; \addlegendentry{PostgreSQL}
+      \addplot[fill=cmaria, draw=none] table[x=i, y=mariadb] {generated/plots/speedup_10000000.dat}; \addlegendentry{MariaDB}
+      \addplot[fill=cmongo, draw=none] table[x=i, y=mongo] {generated/plots/speedup_10000000.dat}; \addlegendentry{MongoDB}
+      \addplot[fill=cvalkey, draw=none] table[x=i, y=valkey] {generated/plots/speedup_10000000.dat}; \addlegendentry{Valkey}
+    \end{axis}
+  \end{tikzpicture}
+  \small Koszt: import \num{10000} biletów (C3) w~PostgreSQL
+  \val{postgres}{10000000}{off}{C3}\,ms $\to$ \val{postgres}{10000000}{on}{C3}\,ms.
+\end{frame}
+
+\begin{frame}{Plany zapytań (EXPLAIN)}
+  \small
+  \begin{itemize}
+    \item Pełne skany w~13 planach odczytu, 10 mln biletów: PostgreSQL
+      \fullscans{postgres}{10000000}{off} $\to$ \fullscans{postgres}{10000000}{on},
+      MariaDB \fullscans{mariadb}{10000000}{off} $\to$ \fullscans{mariadb}{10000000}{on},
+      MongoDB \fullscans{mongo}{10000000}{off} $\to$ \fullscans{mongo}{10000000}{on}.
+    \item R4 w~PostgreSQL: \texttt{Parallel Seq Scan} + \texttt{Hash Join}
+      $\to$ dwa \texttt{Index Scan}; MariaDB: pełny skan \texttt{ALL}
+      $\to$ dostęp przez indeks \texttt{ref}. Czas silnika: setki ms $\to$ dziesiąte części ms.
+    \item R6 w~MongoDB zostaje \texttt{COLLSCAN} mimo indeksu: \texttt{\$match}
+      po \texttt{status} nie pasuje do prefiksu \texttt{(wydarzenie\_id, status)}.
+      PostgreSQL robi \texttt{Index Only Scan}.
+    \item J1 na JSON: indeks GIN \texttt{jsonb\_path\_ops} (PostgreSQL),
+      kolumna wirtualna (MariaDB), indeks na polach zagnieżdżonych (MongoDB).
+  \end{itemize}
+\end{frame}
+
+\newcommand{\contplot}[2]{%
+  \begin{tikzpicture}
+    \begin{axis}[tb, width=0.43\textwidth, height=4.4cm, xmode=log, ymode=log, xlabel={klienci}, ylabel={#2}, xtick={1,10,100,1000}]
+      \addplot[pg] table[x=clients, y=postgres] {#1}; \addlegendentry{PG}
+      \addplot[maria] table[x=clients, y=mariadb] {#1}; \addlegendentry{MariaDB}
+      \addplot[mongo] table[x=clients, y=mongo] {#1}; \addlegendentry{MongoDB}
+      \addplot[valkey] table[x=clients, y=valkey] {#1}; \addlegendentry{Valkey}
+    \end{axis}
+  \end{tikzpicture}}
+
+\begin{frame}{Współbieżność: 1--1000 klientów, te same 500 miejsc}
+  \centering
+  \contplot{generated/plots/contention_10000000.dat}{rezerwacje/s}\hfill
+  \contplot{generated/plots/contention_p95_10000000.dat}{p95 próby [ms]}
+  \small
+  \ContentionRuns{} rund, \ContentionInconsistent{} niespójnych: żadnej podwójnej sprzedaży.
+  Valkey (Lua): \cval{valkey}{10000000}{lua}{1}$\to$\cval{valkey}{10000000}{lua}{1000}\,rez./s;
+  MariaDB (\texttt{cond}) przy 1000 klientach: \cval{mariadb}{10000000}{cond}{1000}\,rez./s.
+\end{frame}
+
+\begin{frame}{Strategia blokowania ma większe znaczenie niż silnik}
+  \centering
+  \small
+  \begin{tabular}{llrr}
+    \toprule
+    SZBD & strategia & 100 klientów & 1000 klientów \\
+    \midrule
+    PostgreSQL & \texttt{cond} & \cval{postgres}{10000000}{cond}{100} & \cval{postgres}{10000000}{cond}{1000} \\
+    PostgreSQL & \texttt{forupdate} & \cval{postgres}{10000000}{forupdate}{100} & \cval{postgres}{10000000}{forupdate}{1000} \\
+    MariaDB & \texttt{cond} & \cval{mariadb}{10000000}{cond}{100} & \cval{mariadb}{10000000}{cond}{1000} \\
+    MariaDB & \texttt{nowait} & \cval{mariadb}{10000000}{nowait}{100} & \cval{mariadb}{10000000}{nowait}{1000} \\
+    MongoDB & \texttt{atomic} & \cval{mongo}{10000000}{atomic}{100} & \cval{mongo}{10000000}{atomic}{1000} \\
+    Valkey & \texttt{lua} & \cval{valkey}{10000000}{lua}{100} & \cval{valkey}{10000000}{lua}{1000} \\
+    Valkey & \texttt{watch} & \cval{valkey}{10000000}{watch}{100} & \cval{valkey}{10000000}{watch}{1000} \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{3mm}
+  rezerwacje/s, 10 mln biletów. Szybkie odrzucenie konfliktu (\texttt{NOWAIT},
+  operacja atomowa) skaluje się lepiej niż kolejka na blokadzie.
+\end{frame}
+
+\begin{frame}{Weryfikacja hipotez}
+  \begin{block}{H1: \HOneVerdict{} (\HOneGrows/\HOneCases{} przypadków)}
+    \small Przewaga Valkey nad PostgreSQL przy 10 mln:
+    \cratio{valkey}{postgres}{10000000}{lua}{cond}{1}$\times$ (1 klient) $\to$
+    \cratio{valkey}{postgres}{10000000}{lua}{cond}{1000}$\times$ (1000 klientów).
+    MongoDB/PostgreSQL: \cratio{mongo}{postgres}{10000000}{atomic}{cond}{1} $\to$
+    \cratio{mongo}{postgres}{10000000}{atomic}{cond}{1000}. Pozycja MongoDB rośnie,
+    ale przewagę ma tylko nad MariaDB. Potwierdzona dla Valkey, częściowo dla MongoDB.
+  \end{block}
+  \begin{block}{H2: \HTwoVerdict{} (\HTwoGrows/\HTwoCases{})}
+    \small Rozrzut rośnie, gdy bazy mają różną złożoność ścieżki dostępu
+    (brak indeksu, osadzenie a~złączenie, licznik a~agregacja).
+    Nie rośnie dla operacji po kluczu.
+  \end{block}
+  \small Zastrzeżenia: Valkey bez zapisu na dysk, jeden komputer, pojedyncze węzły bez TLS.
+\end{frame}
+
+\begin{frame}{Wnioski}
+  \begin{enumerate}\small
+    \item Nie ma jednej najszybszej bazy. Valkey wygrywa w~operacjach po kluczu
+      i~przy współbieżności, ale bez struktur dostępu jest najwolniejszy.
+    \item Indeksy zmieniają czas o~rzędy wielkości. Silnik po zaindeksowaniu
+      zwykle o~mniej niż rząd.
+    \item Model danych zmienia złożoność: osadzenie daje odczyt agregatu bez
+      złączeń i~bez indeksu na kluczu obcym.
+    \item Przy 1000 klientach strategia blokowania decyduje o~przepustowości.
+    \item System biletowy: transakcje w~PostgreSQL, blokady miejsc z~TTL
+      i~liczniki w~Valkey.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Wymagania na ocenę 5.0}
+  \small
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.38\textwidth}>{\raggedright\arraybackslash}p{0.55\textwidth}}
+    \toprule
+    wymaganie & realizacja \\
+    \midrule
+    4 SZBD, 3 modele danych, 12 tabel & PostgreSQL, MariaDB, MongoDB, Valkey \\
+    24 scenariusze, 6 na CRUD, $\geq3$ próby & 24 + 3 JSON, 5 prób + rozgrzewka \\
+    0,5 / 1 / 10 mln rekordów & tak \\
+    indeksy, przed/po, EXPLAIN & 15 indeksów, oba warianty, zestawienie planów \\
+    testy skalowalności & 1--1000 klientów, 13 strategii \\
+    dane półstrukturalne & JSONB, JSON, BSON, JSON w~Valkey, J1--J3 \\
+    automatyzacja & \texttt{ticketbench.sh}, Docker, CI, Ansible, \texttt{tbench report} \\
+    hipoteza & H1 zweryfikowana (+ H2) \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{3mm}
+  Kod: \texttt{github.com/ryczek02/ticketbench} · runbook: \texttt{docs/runbook.html}
+\end{frame}
+
+\end{document}

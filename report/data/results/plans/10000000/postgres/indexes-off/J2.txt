@@ -1,0 +1,30 @@
+-- postgres J2 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT metadane ->> 'kanal' AS kanal, count(*), sum(kwota)
+			FROM rezerwacje
+			WHERE utworzono >= $1 AND utworzono < $2
+			GROUP BY 1
+Finalize GroupAggregate  (cost=41774.22..41801.06 rows=100 width=72) (actual time=24.435..27.266 rows=4 loops=1)
+  Group Key: ((metadane ->> 'kanal'::text))
+  Buffers: shared hit=30056
+  ->  Gather Merge  (cost=41774.22..41797.56 rows=200 width=72) (actual time=24.429..27.258 rows=12 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=30056
+        ->  Sort  (cost=40774.20..40774.45 rows=100 width=72) (actual time=22.522..22.522 rows=4 loops=3)
+              Sort Key: ((metadane ->> 'kanal'::text))
+              Sort Method: quicksort  Memory: 25kB
+              Buffers: shared hit=30056
+              Worker 0:  Sort Method: quicksort  Memory: 25kB
+              Worker 1:  Sort Method: quicksort  Memory: 25kB
+              ->  Partial HashAggregate  (cost=40769.38..40770.88 rows=100 width=72) (actual time=22.500..22.501 rows=4 loops=3)
+                    Group Key: (metadane ->> 'kanal'::text)
+                    Batches: 1  Memory Usage: 24kB
+                    Buffers: shared hit=30040
+                    Worker 0:  Batches: 1  Memory Usage: 24kB
+                    Worker 1:  Batches: 1  Memory Usage: 24kB
+                    ->  Parallel Seq Scan on rezerwacje  (cost=0.00..40686.10 rows=11104 width=38) (actual time=0.322..21.633 rows=8586 loops=3)
+                          Filter: ((utworzono >= '2025-07-21 00:00:00+00'::timestamp with time zone) AND (utworzono < '2025-07-28 00:00:00+00'::timestamp with time zone))
+                          Rows Removed by Filter: 551545
+                          Buffers: shared hit=30040
+Planning Time: 0.040 ms
+Execution Time: 27.286 ms

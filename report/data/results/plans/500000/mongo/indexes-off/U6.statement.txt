@@ -1,0 +1,1 @@
+rezerwacje.find expired {"find":"rezerwacje","filter":{"status":"oczekujaca","wygasa_o":{"$lt":{"$date":"2026-01-01T00:00:00Z"}}}}

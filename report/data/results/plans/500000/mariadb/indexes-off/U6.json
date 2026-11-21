@@ -1,0 +1,60 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.050834789
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 595.2824136,
+    "r_loops": 1,
+    "r_total_time_ms": 112.1078359,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ALL",
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 558920,
+          "r_rows": 576980,
+          "cost": 94.7058296,
+          "r_table_time_ms": 75.85268989,
+          "r_other_time_ms": 13.77401401,
+          "r_engine_stats": {
+            "pages_accessed": 11723,
+            "pages_updated": 2017
+          },
+          "filtered": 100,
+          "r_total_filtered": 46.40143506,
+          "attached_condition": "b.rezerwacja_id is not null",
+          "r_filtered": 46.40143506
+        }
+      },
+      {
+        "table": {
+          "table_name": "r",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.b.rezerwacja_id"],
+          "loops": 558920,
+          "r_loops": 267727,
+          "r_table_loops": 77211,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 500.576584,
+          "r_table_time_ms": 20.6512467,
+          "r_other_time_ms": 1.82729555,
+          "r_engine_stats": {
+            "pages_accessed": 155076
+          },
+          "filtered": 100,
+          "r_total_filtered": 0.373514812,
+          "attached_condition": "r.`status` = 'oczekujaca' and r.wygasa_o < '2026-01-01'",
+          "r_filtered": 0.373514812
+        }
+      }
+    ]
+  }
+}

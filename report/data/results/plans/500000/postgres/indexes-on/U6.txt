@@ -1,0 +1,31 @@
+-- postgres U6 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- WITH wygasle AS (
+				UPDATE rezerwacje SET status = 'wygasla'
+				WHERE status = 'oczekujaca' AND wygasa_o < $1
+				RETURNING id
+			)
+			UPDATE bilety SET status = 'wolny', rezerwacja_id = NULL
+			WHERE rezerwacja_id IN (SELECT id FROM wygasle)
+Update on bilety  (cost=697.97..3159.35 rows=0 width=0) (actual time=5.814..5.814 rows=0 loops=1)
+  Buffers: shared hit=29183 dirtied=41 written=41
+  CTE wygasle
+    ->  Update on rezerwacje  (cost=0.29..674.93 rows=1005 width=56) (actual time=0.074..2.917 rows=1000 loops=1)
+          Buffers: shared hit=14110 dirtied=21 written=21
+          ->  Index Scan using idx_rezerwacje_status_wygasa on rezerwacje  (cost=0.29..674.93 rows=1005 width=56) (actual time=0.060..0.145 rows=1000 loops=1)
+                Index Cond: (((status)::text = 'oczekujaca'::text) AND (wygasa_o < '2026-01-01 00:00:00+00'::timestamp with time zone))
+                Buffers: shared hit=53
+  ->  Nested Loop  (cost=23.04..2484.42 rows=4293 width=96) (actual time=3.123..3.855 rows=1000 loops=1)
+        Buffers: shared hit=18110 dirtied=21 written=21
+        ->  HashAggregate  (cost=22.61..32.66 rows=1005 width=40) (actual time=3.121..3.181 rows=1000 loops=1)
+              Group Key: wygasle.id
+              Batches: 1  Memory Usage: 193kB
+              Buffers: shared hit=14110 dirtied=21 written=21
+              ->  CTE Scan on wygasle  (cost=0.00..20.10 rows=1005 width=40) (actual time=0.076..3.034 rows=1000 loops=1)
+                    Buffers: shared hit=14110 dirtied=21 written=21
+        ->  Index Scan using idx_bilety_rezerwacja on bilety  (cost=0.42..2.40 rows=4 width=14) (actual time=0.001..0.001 rows=1 loops=1000)
+              Index Cond: (rezerwacja_id = wygasle.id)
+              Buffers: shared hit=4000
+Planning:
+  Buffers: shared hit=69
+Planning Time: 0.090 ms
+Execution Time: 5.826 ms

@@ -1,0 +1,80 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.04681911
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 2798976885,
+    "r_loops": 1,
+    "r_total_time_ms": 2622.906168,
+    "filesort": {
+      "sort_key": "r.utworzono desc",
+      "r_loops": 1,
+      "r_total_time_ms": 0.005941299,
+      "r_limit": 50,
+      "r_used_priority_queue": true,
+      "r_output_rows": 2,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "r",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 1685923,
+              "r_rows": 1680392,
+              "cost": 286.7330706,
+              "r_table_time_ms": 175.2170258,
+              "r_other_time_ms": 21.69963244,
+              "r_engine_stats": {
+                "pages_accessed": 13722,
+                "pages_read_count": 2628,
+                "pages_read_time_ms": 62.14238976,
+                "pages_prefetch_read_count": 54
+              },
+              "filtered": 100,
+              "r_total_filtered": 1.190198e-4,
+              "attached_condition": "r.klient_id = 193859",
+              "r_filtered": 1.190198e-4
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "b",
+                "access_type": "ALL",
+                "loops": 1685923,
+                "r_loops": 1,
+                "rows": 10168034,
+                "r_rows": 10075987,
+                "cost": 2798976598,
+                "r_table_time_ms": 1810.650716,
+                "r_other_time_ms": 57.18199082,
+                "r_engine_stats": {
+                  "pages_accessed": 78885,
+                  "pages_read_count": 52837,
+                  "pages_read_time_ms": 1256.385882,
+                  "pages_prefetch_read_count": 8
+                },
+                "filtered": 100,
+                "r_total_filtered": 100,
+                "r_filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "256KiB",
+              "join_type": "BNL",
+              "attached_condition": "trigcond(b.rezerwacja_id = r.`id`)",
+              "r_loops": 2,
+              "r_filtered": 4.466064e-5,
+              "r_unpack_time_ms": 350.691494,
+              "r_other_time_ms": 207.4489915,
+              "r_effective_rows": 10075987
+            }
+          }
+        ]
+      }
+    }
+  }
+}

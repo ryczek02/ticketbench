@@ -1,0 +1,1 @@
+wydarzenia.find {"find":"wydarzenia","filter":{"data_rozpoczecia":{"$gte":{"$date":"2025-10-23T00:00:00Z"},"$lt":{"$date":"2025-11-22T00:00:00Z"}},"miasto":"Warszawa"},"sort":{"data_rozpoczecia":1}}

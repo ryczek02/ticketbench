@@ -1,0 +1,65 @@
+% Krótka ściąga do nauki i obrony projektu. Liczby z generated/macros.tex.
+\documentclass[10pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage[polish]{babel}
+\usepackage[a4paper,margin=1.8cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{xfp}
+\usepackage[hidelinks]{hyperref}
+\sisetup{output-decimal-marker={,}, group-separator={\,}, group-minimum-digits=4}
+\setlist{itemsep=1pt,topsep=3pt}
+\input{generated/macros.tex}
+\input{generated/values.tex}
+\input{generated/plans_values.tex}
+
+\begin{document}
+\begin{center}
+{\Large\bfseries ticketbench: podsumowanie do nauki}\\[2pt]
+Zaawansowane technologie baz danych · Łukasz Ryczko, Łukasz Pacholec · listopad 2026
+\end{center}
+
+\section*{Co zrobiliśmy}
+\begin{itemize}
+  \item Porównanie PostgreSQL 17, MariaDB 11.8, MongoDB 8.0 i~Valkey 8.1 na
+  systemie rezerwacji biletów: \SizesList{} biletów, 24 scenariusze CRUD
+  i~3 scenariusze JSON, bez indeksów drugorzędnych i~z~nimi, test 1--1000
+  równoległych klientów rezerwujących te same 500 miejsc.
+  \item Aplikacja w~Go: \texttt{tbench} (CLI) $\to$ \texttt{bench-runner}
+  $\to$ \texttt{store-*} (po jednym na bazę), gRPC, OpenTelemetry. Trace id
+  idzie nagłówkiem W3C \texttt{traceparent} aż do spanów sterownika bazy
+  i~jest zapisany w~każdym wierszu wyników.
+  \item Docker Compose, GitHub Actions (testy na prawdziwych bazach przez
+  testcontainers, obrazy w~GHCR, binarki, PDF), Ansible (wdrożenie i~uruchomienie
+  testu end-to-end).
+\end{itemize}
+
+\input{sekcje/podsumowanie-wyniki}
+
+\section*{Pytania, które mogą paść}
+\begin{description}
+  \item[Dlaczego czas mierzy serwis bazy, a~nie CLI?] Hop gRPC dodaje
+  dziesiąte części milisekundy, czyli przy szybkich operacjach tyle samo co
+  sama baza. Runner zapisuje oba czasy, porównujemy czas serwerowy.
+  \item[Dlaczego brak kluczy obcych?] InnoDB tworzy indeks dla każdego FK.
+  Wariant ,,bez indeksów'' w~MariaDB miałby wtedy indeksy, których
+  PostgreSQL nie ma. Spójność sprawdzają testy.
+  \item[Skąd pewność, że bazy mają te same dane?] Generator jest
+  deterministyczny (ziarno, rodzaj, id), a~każdy import zwraca sumę
+  kontrolną FNV-64. Test zgodności porównuje wyniki zapytań z~wyrocznią
+  liczoną z~generatora.
+  \item[Czym są ,,indeksy'' w~Valkey?] Aplikacja sama utrzymuje zbiory
+  posortowane (\texttt{ix:*}). Bez nich zapytanie po atrybucie to
+  \texttt{SCAN} po całej przestrzeni kluczy i~dekodowanie każdego JSON-a.
+  \item[Jak wykluczono podwójną sprzedaż?] Po każdej rundzie testu
+  współbieżności serwis liczy w~bazie zajęte bilety i~rezerwacje. Muszą być
+  równe 500 i~liczbie udanych prób.
+  \item[Czy Valkey jest uczciwie porównany?] Valkey nie zapisuje na dysk
+  (bez RDB i~AOF), bazy dyskowe mają domyślną trwałość. To wyjaśnia część
+  przewagi przy zapisach. Stąd w~sprawozdaniu osobny akapit o~zagrożeniach
+  trafności.
+  \item[Po co trace id w~wynikach?] Wolne powtórzenie z~CSV można otworzyć
+  w~Jaegerze i~zobaczyć, które polecenie SQL trwało najdłużej.
+\end{description}
+\end{document}

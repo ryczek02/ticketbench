@@ -1,0 +1,3 @@
+-- valkey D4 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- ZRANGE ix:k:{id} + EVALSHA release | SCAN r:* + filter + EVALSHA release
+ZRANGE ix:k:{id} + EVALSHA release

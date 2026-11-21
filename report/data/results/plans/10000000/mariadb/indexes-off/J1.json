@@ -1,0 +1,33 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.032844505
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.7682246,
+    "r_loops": 1,
+    "r_total_time_ms": 2.339323739,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "wydarzenia",
+          "access_type": "ALL",
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 4143,
+          "r_rows": 4203,
+          "cost": 0.7682246,
+          "r_table_time_ms": 0.494424865,
+          "r_other_time_ms": 1.843225268,
+          "r_engine_stats": {
+            "pages_accessed": 54
+          },
+          "filtered": 100,
+          "r_total_filtered": 0.380680466,
+          "attached_condition": "wydarzenia.gatunek = 'taniec wspolczesny' and json_contains(wydarzenia.metadane,'"plener"','$.tagi')",
+          "r_filtered": 0.380680466
+        }
+      }
+    ]
+  }
+}

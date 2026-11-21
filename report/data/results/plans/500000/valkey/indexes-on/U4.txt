@@ -1,0 +1,3 @@
+-- valkey U4 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- HSET k:{id} + EVALSHA hjson merge
+O(1)

@@ -1,0 +1,2 @@
+INSERT INTO wydarzenia (id, organizator_id, kategoria_id, obiekt_id, nazwa, data_rozpoczecia, status, metadane)
+			   VALUES (?, ?, ?, ?, ?, ?, ?, ?)

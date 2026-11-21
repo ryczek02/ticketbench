@@ -1,0 +1,31 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.022802873
+  },
+  "query_block": {
+    "select_id": 1,
+    "r_total_time_ms": 0.136817239,
+    "table": {
+      "update": 1,
+      "table_name": "wydarzenia",
+      "access_type": "range",
+      "possible_keys": ["PRIMARY"],
+      "key": "PRIMARY",
+      "key_length": "8",
+      "used_key_parts": ["id"],
+      "rows": 1,
+      "r_rows": 1,
+      "r_total_filtered": 100,
+      "r_table_time_ms": 0.122968154,
+      "r_other_time_ms": 0.010125312,
+      "r_engine_stats": {
+        "pages_accessed": 7,
+        "pages_updated": 5,
+        "pages_read_count": 3,
+        "pages_read_time_ms": 0.095018945
+      },
+      "attached_condition": "wydarzenia.`id` = 2127",
+      "r_filtered": 100
+    }
+  }
+}

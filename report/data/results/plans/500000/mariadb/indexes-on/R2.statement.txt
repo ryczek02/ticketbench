@@ -1,0 +1,6 @@
+SELECT b.id, s.nazwa, m.rzad, m.numer, b.cena
+			FROM bilety b
+			JOIN miejsca m ON m.id = b.miejsce_id
+			JOIN sektory s ON s.id = m.sektor_id
+			WHERE b.wydarzenie_id = ? AND b.status = 'wolny'
+			ORDER BY s.nazwa, m.rzad, m.numer

@@ -1,0 +1,1 @@
+wydarzenia.distinct _id by organizator_id {"find":"wydarzenia","filter":{"organizator_id":1}}

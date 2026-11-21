@@ -1,0 +1,211 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.bilety",
+    "parsedQuery": {
+      "$and": [
+        {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        {
+          "_id": {
+            "$in": [
+              5008120,
+              5008121,
+              5008122,
+              5008123
+            ]
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "6F057C13",
+    "planCacheShapeHash": "6F057C13",
+    "planCacheKey": "466051C8",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "UPDATE",
+      "inputStage": {
+        "stage": "FETCH",
+        "filter": {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        "inputStage": {
+          "stage": "IXSCAN",
+          "keyPattern": {
+            "_id": 1
+          },
+          "indexName": "_id_",
+          "isMultiKey": false,
+          "isUnique": true,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "_id": [
+              "[5008120, 5008120]",
+              "[5008121, 5008121]",
+              "[5008122, 5008122]",
+              "[5008123, 5008123]"
+            ]
+          }
+        }
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 0,
+    "totalKeysExamined": 5,
+    "totalDocsExamined": 4,
+    "executionStages": {
+      "isCached": false,
+      "stage": "UPDATE",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 0,
+      "works": 5,
+      "advanced": 0,
+      "needTime": 4,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "nMatched": 4,
+      "nWouldModify": 4,
+      "nWouldUpsert": 0,
+      "inputStage": {
+        "stage": "FETCH",
+        "filter": {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        "nReturned": 4,
+        "executionTimeMillisEstimate": 0,
+        "works": 5,
+        "advanced": 4,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 4,
+        "restoreState": 4,
+        "isEOF": 1,
+        "docsExamined": 4,
+        "alreadyHasObj": 0,
+        "inputStage": {
+          "stage": "IXSCAN",
+          "nReturned": 4,
+          "executionTimeMillisEstimate": 0,
+          "works": 5,
+          "advanced": 4,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 4,
+          "restoreState": 4,
+          "isEOF": 1,
+          "keyPattern": {
+            "_id": 1
+          },
+          "indexName": "_id_",
+          "isMultiKey": false,
+          "isUnique": true,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "_id": [
+              "[5008120, 5008120]",
+              "[5008121, 5008121]",
+              "[5008122, 5008122]",
+              "[5008123, 5008123]"
+            ]
+          },
+          "keysExamined": 5,
+          "seeks": 1,
+          "dupsTested": 0,
+          "dupsDropped": 0
+        }
+      }
+    }
+  },
+  "command": {
+    "update": "bilety",
+    "updates": [
+      {
+        "q": {
+          "_id": {
+            "$in": [
+              5008120,
+              5008121,
+              5008122,
+              5008123
+            ]
+          },
+          "status": "wolny"
+        },
+        "u": {
+          "$set": {
+            "status": "zarezerwowany"
+          }
+        },
+        "multi": true
+      }
+    ],
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795300004,
+        "i": 37
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795300004,
+      "i": 37
+    }
+  }
+}

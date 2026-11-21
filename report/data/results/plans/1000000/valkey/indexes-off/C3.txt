@@ -1,0 +1,3 @@
+-- valkey C3 tickets=1000000 indexes=off trace=fb8b1d2c5cdff2e6331598d56c30df0e
+-- HSET wb:{e} ... + SADD wf:{e} ...
+pipelined, O(tickets)

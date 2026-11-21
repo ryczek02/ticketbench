@@ -1,0 +1,28 @@
+-- postgres R5 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT w.id, w.nazwa, count(b.id) AS sprzedane, coalesce(sum(b.cena), 0) AS przychod
+			FROM wydarzenia w
+			LEFT JOIN bilety b ON b.wydarzenie_id = w.id AND b.status = 'sprzedany'
+			WHERE w.organizator_id = $1
+			GROUP BY w.id, w.nazwa
+HashAggregate  (cost=19042.01..19042.35 rows=27 width=74) (actual time=28.879..28.883 rows=22 loops=1)
+  Group Key: w.id
+  Batches: 1  Memory Usage: 32kB
+  Buffers: shared hit=10525
+  ->  Hash Right Join  (cost=14.15..18855.77 rows=24833 width=48) (actual time=0.208..27.583 rows=19645 loops=1)
+        Hash Cond: (b.wydarzenie_id = w.id)
+        Buffers: shared hit=10525
+        ->  Seq Scan on bilety b  (cost=0.00..18095.01 rows=280521 width=22) (actual time=0.058..20.643 rows=229586 loops=1)
+              Filter: ((status)::text = 'sprzedany'::text)
+              Rows Removed by Filter: 346394
+              Buffers: shared hit=10515
+        ->  Hash  (cost=13.81..13.81 rows=27 width=34) (actual time=0.016..0.017 rows=22 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 10kB
+              Buffers: shared hit=10
+              ->  Seq Scan on wydarzenia w  (cost=0.00..13.81 rows=27 width=34) (actual time=0.003..0.015 rows=22 loops=1)
+                    Filter: (organizator_id = '3'::bigint)
+                    Rows Removed by Filter: 269
+                    Buffers: shared hit=10
+Planning:
+  Buffers: shared hit=9
+Planning Time: 0.068 ms
+Execution Time: 28.894 ms

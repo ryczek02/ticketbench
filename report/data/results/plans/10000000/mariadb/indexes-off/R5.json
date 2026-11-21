@@ -1,0 +1,80 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.064350126
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 37332903.04,
+    "r_loops": 1,
+    "r_total_time_ms": 5167.377482,
+    "filesort": {
+      "sort_key": "w.`id`, w.nazwa",
+      "r_loops": 1,
+      "r_total_time_ms": 0.009162989,
+      "r_used_priority_queue": false,
+      "r_output_rows": 28,
+      "r_buffer_size": "24KiB",
+      "r_sort_mode": "packed_sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "w",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 4143,
+              "r_rows": 4203,
+              "cost": 0.7682246,
+              "r_table_time_ms": 1.379762103,
+              "r_other_time_ms": 0.087152999,
+              "r_engine_stats": {
+                "pages_accessed": 54,
+                "pages_read_count": 33,
+                "pages_read_time_ms": 0.941570378
+              },
+              "filtered": 100,
+              "r_total_filtered": 0.666190816,
+              "attached_condition": "w.organizator_id = 50",
+              "r_filtered": 0.666190816
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "b",
+                "access_type": "ALL",
+                "loops": 4143,
+                "r_loops": 1,
+                "rows": 10168034,
+                "r_rows": 10075987,
+                "cost": 6878290.758,
+                "r_table_time_ms": 2069.570687,
+                "r_other_time_ms": 160.0415673,
+                "r_engine_stats": {
+                  "pages_accessed": 78885,
+                  "pages_read_count": 52839,
+                  "pages_read_time_ms": 1346.02703,
+                  "pages_prefetch_read_count": 3
+                },
+                "filtered": 100,
+                "r_total_filtered": 46.33725708,
+                "attached_condition": "b.`status` = 'sprzedany'",
+                "r_filtered": 46.33725708
+              },
+              "buffer_type": "flat",
+              "buffer_size": "256KiB",
+              "join_type": "BNL",
+              "attached_condition": "trigcond(b.wydarzenie_id = w.`id` and b.`status` = 'sprzedany')",
+              "r_loops": 28,
+              "r_filtered": 0.025271894,
+              "r_unpack_time_ms": 1544.38073,
+              "r_other_time_ms": 1391.894319,
+              "r_effective_rows": 4668936
+            }
+          }
+        ]
+      }
+    }
+  }
+}

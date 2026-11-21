@@ -1,0 +1,22 @@
+-- postgres U3 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- UPDATE bilety b SET cena = round(b.cena * $3::numeric, 2)
+			   FROM miejsca m
+			   WHERE m.id = b.miejsce_id AND m.sektor_id = $2 AND b.wydarzenie_id = $1 AND b.status = 'wolny'
+Update on bilety b  (cost=22.44..1042.32 rows=0 width=0) (actual time=1.384..1.384 rows=0 loops=1)
+  Buffers: shared hit=3315 dirtied=4 written=1
+  ->  Hash Join  (cost=22.44..1042.32 rows=67 width=28) (actual time=0.106..0.299 rows=289 loops=1)
+        Hash Cond: (b.miejsce_id = m.id)
+        Buffers: shared hit=77
+        ->  Index Scan using idx_bilety_wydarzenie_status on bilety b  (cost=0.42..1014.49 rows=2022 width=20) (actual time=0.005..0.142 rows=1600 loops=1)
+              Index Cond: ((wydarzenie_id = '128'::bigint) AND ((status)::text = 'wolny'::text))
+              Buffers: shared hit=70
+        ->  Hash  (cost=15.13..15.13 rows=551 width=14) (actual time=0.065..0.065 rows=551 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 34kB
+              Buffers: shared hit=7
+              ->  Index Scan using idx_miejsca_sektor on miejsca m  (cost=0.29..15.13 rows=551 width=14) (actual time=0.004..0.041 rows=551 loops=1)
+                    Index Cond: (sektor_id = '19'::bigint)
+                    Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.067 ms
+Execution Time: 1.390 ms

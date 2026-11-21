@@ -1,0 +1,95 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.042597134
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 1.380260955,
+    "r_loops": 1,
+    "r_total_time_ms": 0.082939125,
+    "nested_loop": [
+      {
+        "read_sorted_file": {
+          "r_rows": 23,
+          "filesort": {
+            "sort_key": "w.data_rozpoczecia",
+            "r_loops": 1,
+            "r_total_time_ms": 0.0691577,
+            "r_used_priority_queue": false,
+            "r_output_rows": 23,
+            "r_buffer_size": "357KiB",
+            "r_sort_mode": "sort_key,packed_addon_fields",
+            "table": {
+              "table_name": "w",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 523,
+              "r_rows": 523,
+              "cost": 0.1020874,
+              "r_table_time_ms": 0.044017038,
+              "r_other_time_ms": 0.022509662,
+              "r_engine_stats": {
+                "pages_accessed": 8
+              },
+              "filtered": 100,
+              "r_total_filtered": 4.397705545,
+              "attached_condition": "w.data_rozpoczecia >= '2026-07-15' and w.data_rozpoczecia < '2026-08-14'",
+              "r_filtered": 4.397705545
+            }
+          }
+        }
+      },
+      {
+        "table": {
+          "table_name": "o",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.w.obiekt_id"],
+          "loops": 523,
+          "r_loops": 23,
+          "r_table_loops": 22,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.46861132,
+          "r_table_time_ms": 0.00551257,
+          "r_other_time_ms": 0.003549761,
+          "r_engine_stats": {
+            "pages_accessed": 22
+          },
+          "filtered": 100,
+          "r_total_filtered": 17.39130435,
+          "attached_condition": "o.miasto = 'Szczecin'",
+          "r_filtered": 17.39130435
+        }
+      },
+      {
+        "table": {
+          "table_name": "k",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.w.kategoria_id"],
+          "loops": 523,
+          "r_loops": 4,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.46861132,
+          "r_table_time_ms": 0.001169333,
+          "r_other_time_ms": 5.846665e-4,
+          "r_engine_stats": {
+            "pages_accessed": 4
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

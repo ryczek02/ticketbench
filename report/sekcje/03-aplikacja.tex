@@ -1,0 +1,158 @@
+\section{Aplikacja testowa}
+
+\subsection{Wymagania}
+
+Wymagania funkcjonalne:
+\begin{enumerate}[label=F\arabic*.]
+  \item Generowanie tego samego syntetycznego zbioru danych o~zadanym rozmiarze
+  (liczba biletów) i~ziarnie dla każdej bazy oraz potwierdzenie identyczności
+  danych sumą kontrolną.
+  \item Import hurtowy danych do PostgreSQL, MariaDB, MongoDB i~Valkey.
+  \item Wykonanie każdego z~27 scenariuszy na każdej bazie z~zadaną liczbą
+  powtórzeń, w~wariancie bez indeksów drugorzędnych i~z~nimi.
+  \item Zapis planów zapytań dla każdego scenariusza i~wariantu indeksów.
+  \item Test współbieżności: $N$ klientów rezerwujących te same miejsca, wiele
+  strategii blokowania, kontrola braku podwójnej sprzedaży.
+  \item Zapis surowych wyników do CSV i~wygenerowanie z~nich tabel, wykresów
+  oraz oceny hipotez bez ręcznego przepisywania liczb.
+  \item Uruchomienie całości jednym poleceniem.
+\end{enumerate}
+
+Wymagania niefunkcjonalne:
+\begin{enumerate}[label=N\arabic*.]
+  \item Powtarzalność: deterministyczne dane i~parametry, wersje obrazów
+  i~konfiguracja baz zapisane w~repozytorium.
+  \item Rzetelność pomiaru: czas mierzony w~serwisie bazy, bez narzutu sieci
+  między CLI a~serwisem; rozgrzewka przed pomiarem; fikstury poza pomiarem.
+  \item Obserwowalność: każdy wynik powiązany z~identyfikatorem śladu
+  OpenTelemetry, metryki w~Prometheusie.
+  \item Przenośność: uruchomienie na macOS i~Linuksie (amd64, arm64) w~Dockerze.
+  \item Jakość: testy automatyczne na prawdziwych bazach w~CI przy każdej zmianie.
+\end{enumerate}
+
+\subsection{Technologie i narzędzia}
+
+\begin{table}[H]
+\centering
+\small
+\caption{Wykorzystane technologie.}
+\begin{tabular}{>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{11cm}}
+\toprule
+obszar & technologie \\
+\midrule
+język i~komunikacja & Go 1.26, gRPC i~Protocol Buffers (buf), cobra (CLI) \\
+sterowniki baz & pgx v5 (PostgreSQL), go-sql-driver/mysql (MariaDB), mongo-driver v2, valkey-go \\
+obserwowalność & OpenTelemetry SDK, otelgrpc, otelpgx, otelsql, otelmongo, valkeyotel, OpenTelemetry Collector, Jaeger, Prometheus, Grafana \\
+środowisko & Docker, Docker Compose, obrazy distroless, GHCR \\
+testy & testing (Go), testcontainers-go, golangci-lint, ansible-lint, shellcheck \\
+CI/CD i~wdrożenie & GitHub Actions, GoReleaser, Ansible, skrypt \texttt{ticketbench.sh} \\
+raport & LaTeX (XeLaTeX, tectonic), pgfplots, siunitx; tabele generowane przez \texttt{tbench report} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Architektura}
+
+Aplikacja \emph{ticketbench} jest napisana w~Go (1.26) i~podzielona na
+mikroserwisy komunikujące się przez gRPC (rys.~\ref{fig:arch}). Kontrakty
+(\texttt{StoreService}, \texttt{RunnerService}), model danych, generator,
+definicje scenariuszy i~konfiguracja OpenTelemetry tworzą wspólny moduł
+\texttt{ticketbench-contracts}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, align=center, font=\footnotesize, minimum height=0.85cm, inner sep=4pt},
+  svc/.style={box, fill=blue!6},
+  db/.style={box, fill=gray!10},
+  obs/.style={box, fill=orange!10},
+  arr/.style={-{Stealth[length=2mm]}},
+  otlp/.style={-{Stealth[length=2mm]}, dashed, gray}]
+  \node[box, fill=green!8] (cli) {\texttt{tbench} CLI\\root span};
+  \node[svc, right=1.3cm of cli] (run) {bench-runner\\plan, wyniki};
+  \node[svc, right=1.6cm of run, yshift=1.9cm] (spg) {store-postgres};
+  \node[svc, below=0.35cm of spg] (smy) {store-mariadb};
+  \node[svc, below=0.35cm of smy] (smo) {store-mongo};
+  \node[svc, below=0.35cm of smo] (sva) {store-valkey};
+  \node[db, right=1.1cm of spg] (pg) {PostgreSQL 17};
+  \node[db, right=1.1cm of smy] (my) {MariaDB 11.8};
+  \node[db, right=1.1cm of smo] (mo) {MongoDB 8 (rs0)};
+  \node[db, right=1.1cm of sva] (va) {Valkey 8.1};
+  \node[obs, below=1.3cm of run] (col) {OTel Collector};
+  \node[obs, left=0.7cm of col] (jae) {Jaeger};
+  \node[obs, below=0.5cm of col, xshift=-1.2cm] (pro) {Prometheus};
+  \node[obs, right=0.5cm of pro] (gra) {Grafana};
+  \draw[arr] (cli) -- node[above, font=\scriptsize]{gRPC} node[below, font=\scriptsize]{traceparent} (run);
+  \foreach \s in {spg,smy,smo,sva} \draw[arr] (run.east) -- (\s.west);
+  \draw[arr] (spg) -- (pg); \draw[arr] (smy) -- (my); \draw[arr] (smo) -- (mo); \draw[arr] (sva) -- (va);
+  \draw[otlp] (run) -- (col); \draw[otlp] (sva.south) |- (col.east);
+  \draw[otlp] (col) -- (jae); \draw[otlp] (col) -- (pro); \draw[otlp] (pro) -- (gra);
+\end{tikzpicture}
+\caption{Architektura: linie ciągłe to wywołania gRPC i~połączenia z~bazą, przerywane to eksport OTLP.}
+\label{fig:arch}
+\end{figure}
+
+\begin{description}
+  \item[store-*] Jeden serwis na bazę, wspólny interfejs \texttt{Engine} w~Go.
+  Serwis generuje dane z~ziarna, ładuje je hurtowo (PostgreSQL: \texttt{COPY}
+  w~formacie binarnym, MariaDB: wielowierszowe \texttt{INSERT} po 1000 wierszy,
+  MongoDB: \texttt{insertMany} po 5000 dokumentów, Valkey: potoki poleceń),
+  tworzy i~usuwa indeksy, wykonuje scenariusze, zwraca plany zapytań
+  i~przeprowadza test współbieżności.
+  \item[bench-runner] Przyjmuje plan (listę kroków), wykonuje go po kolei
+  i~strumieniuje wiersze wyników do klienta.
+  \item[tbench] Klient CLI: buduje plan z~pliku \texttt{matrix.yaml}, zapisuje
+  wyniki do CSV na bieżąco, generuje tabele i~dane wykresów do tego
+  sprawozdania (\texttt{tbench report}).
+\end{description}
+
+\subsection{Śledzenie i trace id}
+
+CLI rozpoczyna span główny dla każdego segmentu (jeden rozmiar zbioru na
+jednej bazie). Kontekst śladu trafia do runnera jako nagłówek W3C
+\texttt{traceparent} w~metadanych gRPC~\cite{w3c}. Runner tworzy spany kroków
+i~wywołań \texttt{Execute}, przekazuje kontekst dalej do serwisu bazy, a~ten
+do instrumentacji sterownika (otelpgx, otelsql, otelmongo, valkeyotel). Każde
+polecenie SQL, operacja MongoDB i~polecenie Valkey jest więc spanem w~tym
+samym śladzie. Logi (\texttt{slog}, JSON) zawierają pola \texttt{trace\_id}
+i~\texttt{span\_id}. Identyfikator śladu jest zapisany w~każdym wierszu
+plików CSV z~wynikami, więc z~dowolnego pomiaru można przejść do jego śladu
+w~Jaegerze. Test jednostkowy runnera sprawdza, że nagłówek
+\texttt{traceparent} z~identyfikatorem śladu klienta dociera do serwisu bazy.
+
+Przy imporcie danych serwis oznacza kontekst jako niepróbkowany
+(\texttt{telemetry.Quiet}): identyfikator śladu zostaje, ale tysiące spanów
+pojedynczych partii \texttt{INSERT} nie są zapisywane. W~teście
+współbieżności śledzimy 1\% prób rezerwacji. Metryki (histogramy czasu
+scenariuszy i~prób rezerwacji, licznik konfliktów) trafiają przez kolektor do
+Prometheusa i~na pulpit Grafany.
+
+\subsection{Automatyzacja}
+\label{sec:testy}
+
+\begin{itemize}
+  \item \textbf{Docker Compose} uruchamia 4 bazy, 4 serwisy, runner, kolektor
+  OTel, Jaeger, Prometheus i~Grafanę. Obrazy serwisów są oparte na
+  \texttt{distroless/static} (ok.~30\,MB) i~mają kontrolę zdrowia przez
+  gRPC Health.
+  \item \textbf{Jeden skrypt} (\texttt{scripts/bench.sh}) uruchamia środowisko,
+  całą macierz testów, generuje tabele i~wykresy, a~na koniec kompiluje to
+  sprawozdanie.
+  \item \textbf{Testy automatyczne}: testy jednostkowe generatora (determinizm,
+  spójność rezerwacji i~biletów), scenariuszy, generatora raportu i~CLI,
+  a~także test zgodności (\texttt{enginetest}) uruchamiany na prawdziwych
+  bazach przez testcontainers-go. Test zgodności porównuje wyniki zapytań
+  z~wyrocznią liczoną bezpośrednio z~generatora, wykonuje wszystkie
+  scenariusze w~obu wariantach indeksów, plany zapytań i~test współbieżności
+  każdą strategią.
+  \item \textbf{GitHub Actions}: lint (golangci-lint, buf, ansible-lint),
+  testy z~detektorem wyścigów, test zgodności jako macierz czterech baz,
+  benchmarki Go, binarki dla linux/amd64, linux/arm64 i~darwin/arm64,
+  wieloarchitekturowe obrazy w~GHCR, wydania przez GoReleaser oraz test
+  end-to-end, w~którym Ansible stawia środowisko na maszynie CI i~uruchamia
+  macierz \texttt{smoke}. Sprawozdanie również kompiluje się w~CI.
+  \item \textbf{Ansible}: role \texttt{docker} (instalacja silnika na
+  Debianie/Ubuntu), \texttt{ticketbench} (wdrożenie i~start stosu),
+  \texttt{bench} (uruchomienie macierzy i~pobranie wyników)
+  i~\texttt{teardown}.
+\end{itemize}

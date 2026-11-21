@@ -1,0 +1,121 @@
+% Sprawozdanie: ticketbench, porównanie PostgreSQL, MariaDB, MongoDB i Valkey.
+% Kompilacja: tectonic -X compile sprawozdanie.tex  (albo latexmk -xelatex)
+% Tabele i dane wykresów w generated/ tworzy `tbench report`, nie edytować ręcznie.
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\usepackage[polish]{babel}
+\usepackage[a4paper,margin=2.3cm]{geometry}
+\usepackage{microtype}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{fancyvrb}
+\usepackage{fvextra}
+\usepackage{listings}
+\usepackage{siunitx}
+\usepackage{xfp}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds}
+\usepackage[hidelinks]{hyperref}
+
+\pgfplotsset{compat=1.18, /pgf/number format/.cd, use comma, 1000 sep={\,}}
+\sisetup{output-decimal-marker={,}, group-separator={\,}, group-minimum-digits=4}
+\setlist{itemsep=2pt,topsep=4pt}
+\setlength{\emergencystretch}{3em}
+% Long inline code may break at spaces and after underscores.
+\let\origtexttt\texttt
+\renewcommand{\texttt}[1]{\origtexttt{\def\_{\textunderscore\allowbreak}#1}}
+\lstset{basicstyle=\ttfamily\footnotesize,breaklines=true,columns=fullflexible,frame=single,framesep=3pt}
+\captionsetup{font=small,labelfont=bf}
+
+\definecolor{cpg}{HTML}{2F6DB5}
+\definecolor{cmaria}{HTML}{C0392B}
+\definecolor{cmongo}{HTML}{2E8B57}
+\definecolor{cvalkey}{HTML}{8E44AD}
+
+\pgfplotsset{
+  tb/.style={
+    width=\linewidth, height=6.2cm, grid=major, grid style={gray!25},
+    legend style={font=\footnotesize, at={(0.5,1.02)}, anchor=south, legend columns=4, draw=none},
+    tick label style={font=\footnotesize}, label style={font=\footnotesize},
+    unbounded coords=jump, every axis plot/.append style={mark options={scale=0.8}},
+  },
+  pg/.style={cpg, thick, mark=*},
+  maria/.style={cmaria, thick, mark=square*},
+  mongo/.style={cmongo, thick, mark=triangle*},
+  valkey/.style={cvalkey, thick, mark=diamond*},
+}
+
+\input{generated/macros.tex}
+\input{generated/values.tex}
+\input{generated/plans_values.tex}
+
+% Wstawia wygenerowany plik albo informację o braku danych.
+\newcommand{\tbinput}[1]{\IfFileExists{#1}{\input{#1}}{\emph{brak danych: \texttt{\detokenize{#1}}}}}
+
+% \fourlines{plik}{ylabel}{xmode}{ymode}{xlabel}
+\newcommand{\fourlines}[5]{%
+  \begin{axis}[tb, xmode=#3, ymode=#4, ylabel={#2}, xlabel={#5}]
+    \addplot[pg] table[x index=0, y=postgres] {#1}; \addlegendentry{PostgreSQL}
+    \addplot[maria] table[x index=0, y=mariadb] {#1}; \addlegendentry{MariaDB}
+    \addplot[mongo] table[x index=0, y=mongo] {#1}; \addlegendentry{MongoDB}
+    \addplot[valkey] table[x index=0, y=valkey] {#1}; \addlegendentry{Valkey}
+  \end{axis}}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  {\large Politechnika Krakowska im.~Tadeusza Kościuszki\par}
+  {\large Wydział Informatyki i Telekomunikacji\par}
+  \vspace{3cm}
+  {\Large Zaawansowane technologie baz danych\par}
+  \vspace{1.2cm}
+  {\huge\bfseries Porównanie wydajności relacyjnych\\[4pt] i nierelacyjnych SZBD\par}
+  \vspace{0.6cm}
+  {\Large System rezerwacji biletów: PostgreSQL, MariaDB, MongoDB i Valkey\par}
+  \vfill
+  {\large Wykonali: Łukasz Ryczko, Łukasz Pacholec\par}
+  \vspace{0.4cm}
+  {\large Studia II stopnia, niestacjonarne, semestr 1\par}
+  \vspace{1.5cm}
+  {\large Kraków, listopad 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\input{sekcje/01-wstep}
+\input{sekcje/02-szbd}
+\input{sekcje/02-model}
+\input{sekcje/03-aplikacja}
+\input{sekcje/04-metodyka}
+\input{sekcje/05-wyniki}
+\input{sekcje/06-wspolbieznosc}
+\input{sekcje/07-hipotezy}
+\input{sekcje/08-wnioski}
+\input{sekcje/10-harmonogram}
+\input{sekcje/11-zgodnosc}
+
+\appendix
+\input{sekcje/09-dodatki}
+
+\begin{thebibliography}{9}
+\bibitem{pg} PostgreSQL Global Development Group, \emph{PostgreSQL 17 Documentation}, rozdz. 13 (Concurrency Control) i 14 (Performance Tips), \url{https://www.postgresql.org/docs/17/}.
+\bibitem{maria} MariaDB Foundation, \emph{MariaDB Server Documentation: InnoDB, Optimization and Indexes, JSON Functions}, \url{https://mariadb.com/kb/}.
+\bibitem{mongo} MongoDB Inc., \emph{MongoDB 8.0 Manual: Data Modeling, Transactions, Explain Results}, \url{https://www.mongodb.com/docs/manual/}.
+\bibitem{valkey} Valkey contributors, \emph{Valkey Documentation: Commands, Scripting with Lua, Transactions}, \url{https://valkey.io/docs/}.
+\bibitem{otel} OpenTelemetry Authors, \emph{OpenTelemetry Specification: Trace Context Propagation}, \url{https://opentelemetry.io/docs/specs/}.
+\bibitem{w3c} W3C, \emph{Trace Context, W3C Recommendation}, 2021, \url{https://www.w3.org/TR/trace-context/}.
+\bibitem{repo} Ł.~Ryczko, Ł.~Pacholec, \emph{ticketbench}, kod źródłowy, \url{https://github.com/ryczek02/ticketbench}.
+\end{thebibliography}
+
+\end{document}

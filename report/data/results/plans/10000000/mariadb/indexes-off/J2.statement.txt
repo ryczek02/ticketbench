@@ -1,0 +1,4 @@
+SELECT JSON_UNQUOTE(JSON_EXTRACT(metadane, '$.kanal')) AS kanal, count(*), sum(kwota)
+			FROM rezerwacje
+			WHERE utworzono >= ? AND utworzono < ?
+			GROUP BY kanal

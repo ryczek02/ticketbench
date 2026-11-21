@@ -1,0 +1,29 @@
+-- postgres U6 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- WITH wygasle AS (
+				UPDATE rezerwacje SET status = 'wygasla'
+				WHERE status = 'oczekujaca' AND wygasa_o < $1
+				RETURNING id
+			)
+			UPDATE bilety SET status = 'wolny', rezerwacja_id = NULL
+			WHERE rezerwacja_id IN (SELECT id FROM wygasle)
+Update on bilety  (cost=55559.17..358400.60 rows=0 width=0) (actual time=863.876..863.878 rows=0 loops=1)
+  Buffers: shared hit=90510 read=128848 dirtied=36 written=36
+  CTE wygasle
+    ->  Update on rezerwacje  (cost=0.00..55559.13 rows=1 width=56) (actual time=47.126..48.680 rows=1000 loops=1)
+          Buffers: shared hit=37027 dirtied=19 written=19
+          ->  Seq Scan on rezerwacje  (cost=0.00..55559.13 rows=1 width=56) (actual time=47.094..47.190 rows=1000 loops=1)
+                Filter: ((wygasa_o < '2026-01-01 00:00:00+00'::timestamp with time zone) AND ((status)::text = 'oczekujaca'::text))
+                Rows Removed by Filter: 1680392
+                Buffers: shared hit=30059
+  ->  Hash Semi Join  (cost=0.03..302841.47 rows=20 width=96) (actual time=862.412..862.561 rows=1000 loops=1)
+        Hash Cond: (bilety.rezerwacja_id = wygasle.id)
+        Buffers: shared hit=83471 read=128848 dirtied=19 written=19
+        ->  Seq Scan on bilety  (cost=0.00..276321.08 rows=10102908 width=14) (actual time=0.004..532.081 rows=10076987 loops=1)
+              Buffers: shared hit=46444 read=128848
+        ->  Hash  (cost=0.02..0.02 rows=1 width=40) (actual time=48.872..48.873 rows=1000 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 79kB
+              Buffers: shared hit=37027 dirtied=19 written=19
+              ->  CTE Scan on wygasle  (cost=0.00..0.02 rows=1 width=40) (actual time=47.130..48.815 rows=1000 loops=1)
+                    Buffers: shared hit=37027 dirtied=19 written=19
+Planning Time: 0.055 ms
+Execution Time: 863.893 ms

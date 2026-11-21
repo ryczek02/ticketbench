@@ -1,0 +1,222 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.wydarzenia",
+    "parsedQuery": {
+      "$and": [
+        {
+          "miasto": {
+            "$eq": "Warszawa"
+          }
+        },
+        {
+          "data_rozpoczecia": {
+            "$lt": {
+              "$date": "2025-11-22T00:00:00Z"
+            }
+          }
+        },
+        {
+          "data_rozpoczecia": {
+            "$gte": {
+              "$date": "2025-10-23T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "510E711E",
+    "planCacheShapeHash": "510E711E",
+    "planCacheKey": "C37BAAC7",
+    "optimizationTimeMillis": 1,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "FETCH",
+      "inputStage": {
+        "stage": "IXSCAN",
+        "keyPattern": {
+          "miasto": 1,
+          "data_rozpoczecia": 1
+        },
+        "indexName": "miasto_1_data_rozpoczecia_1",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+          "miasto": [],
+          "data_rozpoczecia": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+          "miasto": [
+            "[\"Warszawa\", \"Warszawa\"]"
+          ],
+          "data_rozpoczecia": [
+            "[new Date(1761177600000), new Date(1763769600000))"
+          ]
+        }
+      }
+    },
+    "rejectedPlans": [
+      {
+        "isCached": false,
+        "stage": "FETCH",
+        "filter": {
+          "miasto": {
+            "$eq": "Warszawa"
+          }
+        },
+        "inputStage": {
+          "stage": "IXSCAN",
+          "keyPattern": {
+            "data_rozpoczecia": 1
+          },
+          "indexName": "data_rozpoczecia_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "data_rozpoczecia": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "data_rozpoczecia": [
+              "[new Date(1761177600000), new Date(1763769600000))"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 46,
+    "executionTimeMillis": 1,
+    "totalKeysExamined": 46,
+    "totalDocsExamined": 46,
+    "executionStages": {
+      "isCached": false,
+      "stage": "FETCH",
+      "nReturned": 46,
+      "executionTimeMillisEstimate": 0,
+      "works": 48,
+      "advanced": 46,
+      "needTime": 0,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "docsExamined": 46,
+      "alreadyHasObj": 0,
+      "inputStage": {
+        "stage": "IXSCAN",
+        "nReturned": 46,
+        "executionTimeMillisEstimate": 0,
+        "works": 47,
+        "advanced": 46,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "keyPattern": {
+          "miasto": 1,
+          "data_rozpoczecia": 1
+        },
+        "indexName": "miasto_1_data_rozpoczecia_1",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+          "miasto": [],
+          "data_rozpoczecia": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+          "miasto": [
+            "[\"Warszawa\", \"Warszawa\"]"
+          ],
+          "data_rozpoczecia": [
+            "[new Date(1761177600000), new Date(1763769600000))"
+          ]
+        },
+        "keysExamined": 46,
+        "seeks": 1,
+        "dupsTested": 0,
+        "dupsDropped": 0
+      }
+    }
+  },
+  "queryShapeHash": "1402D2DB88117A3734F47CAD0B3E20E4FFE48F538E1ADF68F419E08531C453E5",
+  "command": {
+    "find": "wydarzenia",
+    "filter": {
+      "data_rozpoczecia": {
+        "$gte": {
+          "$date": "2025-10-23T00:00:00Z"
+        },
+        "$lt": {
+          "$date": "2025-11-22T00:00:00Z"
+        }
+      },
+      "miasto": "Warszawa"
+    },
+    "sort": {
+      "data_rozpoczecia": 1
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795300004,
+        "i": 165
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795300004,
+      "i": 165
+    }
+  }
+}

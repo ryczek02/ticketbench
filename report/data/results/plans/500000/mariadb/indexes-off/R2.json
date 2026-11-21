@@ -1,0 +1,93 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.035129053
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 1092.675041,
+    "r_loops": 1,
+    "r_total_time_ms": 45.711837,
+    "filesort": {
+      "sort_key": "s.nazwa, m.rzad, m.numer",
+      "r_loops": 1,
+      "r_total_time_ms": 0.128152122,
+      "r_used_priority_queue": false,
+      "r_output_rows": 1300,
+      "r_buffer_size": "358KiB",
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "b",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 557920,
+              "r_rows": 575980,
+              "cost": 94.5428296,
+              "r_table_time_ms": 38.33657376,
+              "r_other_time_ms": 6.791978947,
+              "r_engine_stats": {
+                "pages_accessed": 4524
+              },
+              "filtered": 100,
+              "r_total_filtered": 0.225702281,
+              "attached_condition": "b.wydarzenie_id = 182 and b.`status` = 'wolny'",
+              "r_filtered": 0.225702281
+            }
+          },
+          {
+            "table": {
+              "table_name": "m",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.b.miejsce_id"],
+              "loops": 557920,
+              "r_loops": 1300,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 499.1054272,
+              "r_table_time_ms": 0.301917712,
+              "r_other_time_ms": 0.10977307,
+              "r_engine_stats": {
+                "pages_accessed": 2610
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "s",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.m.sektor_id"],
+              "loops": 557920,
+              "r_loops": 1300,
+              "r_table_loops": 6,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 499.026784,
+              "r_table_time_ms": 0.00221384,
+              "r_other_time_ms": 0.006850374,
+              "r_engine_stats": {
+                "pages_accessed": 6
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          }
+        ]
+      }
+    }
+  }
+}

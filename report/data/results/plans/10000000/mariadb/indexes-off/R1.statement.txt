@@ -1,0 +1,6 @@
+SELECT r.id, r.status, r.kwota, r.utworzono, b.id, b.cena, b.status, s.nazwa, m.rzad, m.numer
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			LEFT JOIN miejsca m ON m.id = b.miejsce_id
+			LEFT JOIN sektory s ON s.id = m.sektor_id
+			WHERE r.id = ?

@@ -1,0 +1,10 @@
+-- postgres D5 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- DELETE FROM bilety WHERE wydarzenie_id = $1
+Delete on bilety  (cost=0.00..18033.06 rows=0 width=0) (actual time=12.048..12.049 rows=0 loops=1)
+  Buffers: shared hit=12867
+  ->  Seq Scan on bilety  (cost=0.00..18033.06 rows=1907 width=6) (actual time=11.670..11.786 rows=2388 loops=1)
+        Filter: (wydarzenie_id = '1230450000000'::bigint)
+        Rows Removed by Filter: 575980
+        Buffers: shared hit=10479
+Planning Time: 0.015 ms
+Execution Time: 12.053 ms

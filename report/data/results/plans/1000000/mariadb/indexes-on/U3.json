@@ -1,0 +1,64 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.05880075
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 3.932647635,
+    "r_loops": 1,
+    "r_total_time_ms": 1.128406429,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ref",
+          "possible_keys": ["idx_bilety_wydarzenie_status"],
+          "key": "idx_bilety_wydarzenie_status",
+          "key_length": "74",
+          "used_key_parts": ["wydarzenie_id", "status"],
+          "ref": ["const", "const"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 1447,
+          "r_rows": 1447,
+          "cost": 2.6305196,
+          "r_table_time_ms": 0.686398522,
+          "r_other_time_ms": 0.048276752,
+          "r_engine_stats": {
+            "pages_accessed": 5182,
+            "pages_updated": 417
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "b.`status` = 'wolny'",
+          "r_filtered": 100
+        }
+      },
+      {
+        "table": {
+          "table_name": "m",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY", "idx_miejsca_sektor"],
+          "key": "idx_miejsca_sektor",
+          "key_length": "16",
+          "used_key_parts": ["sektor_id", "id"],
+          "ref": ["const", "ticketbench.b.miejsce_id"],
+          "loops": 1447,
+          "r_loops": 1447,
+          "rows": 1,
+          "r_rows": 0.143054596,
+          "cost": 1.302128035,
+          "r_table_time_ms": 0.334053406,
+          "r_other_time_ms": 0.05880075,
+          "r_engine_stats": {
+            "pages_accessed": 2896
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100,
+          "using_index": true
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,22 @@
+Rozrzut między najszybszą a~najwolniejszą bazą rośnie z~rozmiarem w~większości
+przypadków, ale nie we wszystkich. Rośnie tam, gdzie co najmniej jedna baza
+skanuje dane w~czasie $O(n)$, a~inna ma ścieżkę stałą lub logarytmiczną.
+Przykłady to scenariusze bez indeksów R1, R2, R5, U3, D1, D2, D5 i~J2 oraz
+R6, gdzie Valkey odczytuje licznik, a~pozostałe bazy agregują wszystkie bilety
+(tab.~\ref{tab:h2}). Przy R4, D4 i~D6 bez indeksów rozrzut nie rośnie, bo
+wszystkie bazy, także najszybsza, skanują tam pełne dane. Czas najszybszej
+rośnie więc co najmniej w~tym samym tempie co czas najwolniejszej (Valkey ze
+skanem \texttt{SCAN}).
+Na przykład w~R1 bez indeksów MariaDB jest
+\ratio{mariadb}{valkey}{500000}{off}{R1}$\times$ wolniejsza od Valkey przy
+500 tys. biletów i~\ratio{mariadb}{valkey}{10000000}{off}{R1}$\times$ przy
+10 mln.
+
+Rozrzut nie rośnie dla operacji punktowych po kluczu (C1, C4, U1, U2, J3),
+których czas w~każdej bazie jest stały. Nie rośnie też dla zapytań z~indeksem
+o~małej selektywności, gdzie wszystkie bazy czytają kilka wierszy. H2 jest
+\textbf{potwierdzona częściowo}. Różnice rosną z~liczbą rekordów wtedy, gdy
+bazy mają różną złożoność ścieżki dostępu, czyli przy braku indeksu, przy
+różnicy modeli danych (osadzenie a~złączenie) lub przy agregacji
+utrzymywanej w~locie. Dla dobrze zaindeksowanych operacji punktowych rozmiar
+zbioru nie ma znaczenia.

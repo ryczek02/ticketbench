@@ -1,0 +1,3 @@
+-- valkey R5 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- SMEMBERS ix:org:{o} | SMEMBERS w:all + HMGET, then ZSCORE sprzedaz
+counters kept on write

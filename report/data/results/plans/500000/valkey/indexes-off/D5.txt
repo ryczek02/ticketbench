@@ -1,0 +1,3 @@
+-- valkey D5 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- EVALSHA dropevent
+DEL wb:{e} wf:{e} w:{e}, O(tickets)

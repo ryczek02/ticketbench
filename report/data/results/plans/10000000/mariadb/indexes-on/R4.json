@@ -1,0 +1,74 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.069329102
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.00598459,
+    "r_loops": 1,
+    "r_total_time_ms": 0.04355558,
+    "filesort": {
+      "sort_key": "r.utworzono desc",
+      "r_loops": 1,
+      "r_total_time_ms": 0.002510408,
+      "r_limit": 50,
+      "r_used_priority_queue": true,
+      "r_output_rows": 1,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "r",
+              "access_type": "ref",
+              "possible_keys": ["idx_rezerwacje_klient"],
+              "key": "idx_rezerwacje_klient",
+              "key_length": "8",
+              "used_key_parts": ["klient_id"],
+              "ref": ["const"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 0.00345856,
+              "r_table_time_ms": 0.020459826,
+              "r_other_time_ms": 0.002510408,
+              "r_engine_stats": {
+                "pages_accessed": 9
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "r.klient_id <=> 747267",
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "b",
+              "access_type": "ref",
+              "possible_keys": ["idx_bilety_rezerwacja"],
+              "key": "idx_bilety_rezerwacja",
+              "key_length": "9",
+              "used_key_parts": ["rezerwacja_id"],
+              "ref": ["ticketbench.r.id"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 6,
+              "r_rows": 6,
+              "cost": 0.00252603,
+              "r_table_time_ms": 0.005146336,
+              "r_other_time_ms": 0.008744588,
+              "r_engine_stats": {
+                "pages_accessed": 3
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100,
+              "using_index": true
+            }
+          }
+        ]
+      }
+    }
+  }
+}

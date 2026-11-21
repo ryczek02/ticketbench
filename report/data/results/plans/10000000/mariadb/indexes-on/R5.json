@@ -1,0 +1,76 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.054350334
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 15.17917808,
+    "r_loops": 1,
+    "r_total_time_ms": 80.96785602,
+    "filesort": {
+      "sort_key": "w.`id`, w.nazwa",
+      "r_loops": 1,
+      "r_total_time_ms": 0.007322023,
+      "r_used_priority_queue": false,
+      "r_output_rows": 16,
+      "r_buffer_size": "17KiB",
+      "r_sort_mode": "packed_sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "w",
+              "access_type": "ref",
+              "possible_keys": ["idx_wydarzenia_organizator"],
+              "key": "idx_wydarzenia_organizator",
+              "key_length": "8",
+              "used_key_parts": ["organizator_id"],
+              "ref": ["const"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 16,
+              "r_rows": 16,
+              "cost": 0.03064816,
+              "r_table_time_ms": 0.0248112,
+              "r_other_time_ms": 0.018493339,
+              "r_engine_stats": {
+                "pages_accessed": 36
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "w.organizator_id <=> 10",
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "b",
+              "access_type": "ref",
+              "possible_keys": ["idx_bilety_wydarzenie_status"],
+              "key": "idx_bilety_wydarzenie_status",
+              "key_length": "74",
+              "used_key_parts": ["wydarzenie_id", "status"],
+              "ref": ["ticketbench.w.id", "const"],
+              "loops": 16,
+              "r_loops": 16,
+              "rows": 520,
+              "r_rows": 1587.1875,
+              "cost": 15.14852992,
+              "r_table_time_ms": 67.05329182,
+              "r_other_time_ms": 13.85314289,
+              "r_engine_stats": {
+                "pages_accessed": 76282,
+                "pages_read_count": 383,
+                "pages_read_time_ms": 55.45181759
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "attached_condition": "trigcond(b.`status` = 'sprzedany')",
+              "r_filtered": 100
+            }
+          }
+        ]
+      }
+    }
+  }
+}

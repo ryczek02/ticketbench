@@ -1,0 +1,3 @@
+UPDATE bilety b JOIN miejsca m ON m.id = b.miejsce_id
+			   SET b.cena = round(b.cena * ?, 2)
+			   WHERE m.sektor_id = ? AND b.wydarzenie_id = ? AND b.status = 'wolny'

@@ -1,0 +1,29 @@
+-- postgres R1 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT r.id, r.status, r.kwota, r.utworzono, b.id, b.cena, b.status, s.nazwa, m.rzad, m.numer
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			LEFT JOIN miejsca m ON m.id = b.miejsce_id
+			LEFT JOIN sektory s ON s.id = m.sektor_id
+			WHERE r.id = $1
+Nested Loop Left Join  (cost=1.56..70.46 rows=22 width=63) (actual time=0.526..0.531 rows=4 loops=1)
+  Buffers: shared hit=32 read=4 written=4
+  ->  Nested Loop Left Join  (cost=1.29..63.97 rows=22 width=69) (actual time=0.522..0.525 rows=4 loops=1)
+        Buffers: shared hit=20 read=4 written=4
+        ->  Nested Loop Left Join  (cost=0.86..5.89 rows=22 width=61) (actual time=0.516..0.518 rows=4 loops=1)
+              Buffers: shared hit=4 read=4 written=4
+              ->  Index Scan using rezerwacje_pkey on rezerwacje r  (cost=0.43..2.65 rows=1 width=31) (actual time=0.487..0.488 rows=1 loops=1)
+                    Index Cond: (id = '1177931'::bigint)
+                    Buffers: shared hit=3 read=1 written=1
+              ->  Index Scan using idx_bilety_rezerwacja on bilety b  (cost=0.43..3.02 rows=22 width=38) (actual time=0.026..0.027 rows=4 loops=1)
+                    Index Cond: (rezerwacja_id = '1177931'::bigint)
+                    Buffers: shared hit=1 read=3 written=3
+        ->  Index Scan using miejsca_pkey on miejsca m  (cost=0.42..2.64 rows=1 width=24) (actual time=0.001..0.001 rows=1 loops=4)
+              Index Cond: (id = b.miejsce_id)
+              Buffers: shared hit=16
+  ->  Index Scan using sektory_pkey on sektory s  (cost=0.28..0.30 rows=1 width=10) (actual time=0.001..0.001 rows=1 loops=4)
+        Index Cond: (id = m.sektor_id)
+        Buffers: shared hit=12
+Planning:
+  Buffers: shared hit=36
+Planning Time: 0.200 ms
+Execution Time: 0.553 ms

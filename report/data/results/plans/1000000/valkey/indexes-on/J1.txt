@@ -1,0 +1,3 @@
+-- valkey J1 tickets=1000000 indexes=on trace=fb8b1d2c5cdff2e6331598d56c30df0e
+-- SMEMBERS ix:gatunek:{g} + HGET metadane | SMEMBERS w:all + HGET metadane of every event
+SMEMBERS ix:gatunek:{g} + HGET metadane

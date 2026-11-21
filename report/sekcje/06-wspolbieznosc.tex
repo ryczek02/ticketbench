@@ -1,0 +1,51 @@
+\section{Współbieżna rezerwacja tych samych miejsc}
+
+\newcommand{\contplot}[2]{%
+\begin{subfigure}{0.49\linewidth}
+\begin{tikzpicture}
+\begin{axis}[tb, height=5.4cm, xmode=log, ymode=log, xlabel={liczba klientów}, ylabel={#2},
+  xtick={1,10,100,1000}, legend to name=contlegend]
+  \addplot[pg] table[x=clients, y=postgres] {#1}; \addlegendentry{PostgreSQL}
+  \addplot[maria] table[x=clients, y=mariadb] {#1}; \addlegendentry{MariaDB}
+  \addplot[mongo] table[x=clients, y=mongo] {#1}; \addlegendentry{MongoDB}
+  \addplot[valkey] table[x=clients, y=valkey] {#1}; \addlegendentry{Valkey}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}}
+
+\begin{figure}[H]
+\centering
+\contplot{generated/plots/contention_500000.dat}{rezerwacje/s, 0,5 mln}\hfill
+\contplot{generated/plots/contention_10000000.dat}{rezerwacje/s, 10 mln}
+
+\contplot{generated/plots/contention_p95_500000.dat}{p95 próby [ms], 0,5 mln}\hfill
+\contplot{generated/plots/contention_p95_10000000.dat}{p95 próby [ms], 10 mln}
+
+\ref{contlegend}
+\caption{Przepustowość udanych rezerwacji i~95.~percentyl czasu pojedynczej
+próby w~funkcji liczby równoległych klientów, domyślne strategie
+(\texttt{cond}, \texttt{cond}, \texttt{atomic}, \texttt{lua}). Obie osie
+logarytmiczne.}
+\label{fig:cont}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Przepustowość [rezerwacje/s] wszystkich strategii, 1 mln biletów,
+500 spornych miejsc, średnia z~3 rund. $^{*}$ strategia domyślna, $^{!}$ runda
+niespójna (nie wystąpiła).}
+\label{tab:strat}
+\small
+\tbinput{generated/tables/strategies_1000000.tex}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Liczba konfliktów na rundę i~p95 czasu próby, strategie domyślne,
+1 mln biletów.}
+\label{tab:conf}
+\small
+\tbinput{generated/tables/contention_1000000.tex}
+\end{table}
+
+\input{sekcje/06a-analiza}

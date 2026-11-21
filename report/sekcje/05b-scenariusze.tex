@@ -1,0 +1,64 @@
+\paragraph{Operacje punktowe.} Wstawienie i~zmiana pojedynczego rekordu
+po kluczu (C1, C2, C4--C6, U1, U2, U4, U5, J3) we wszystkich bazach trwają
+poniżej 2\,ms i~nie zależą od rozmiaru zbioru. Pojedyncza rezerwacja (C1) na
+10 mln biletów trwa \val{valkey}{10000000}{off}{C1}\,ms w~Valkey,
+\val{postgres}{10000000}{off}{C1}\,ms w~PostgreSQL,
+\val{mariadb}{10000000}{off}{C1}\,ms w~MariaDB i~\val{mongo}{10000000}{off}{C1}\,ms
+w~MongoDB. MongoDB jest tu najwolniejszy, bo każdy zapis czeka na
+potwierdzenie z~dziennika (\texttt{majority}), a~C1 dodatkowo jest
+transakcją wielodokumentową. Valkey nie zapisuje niczego na dysk, więc jego
+przewaga w~zapisach wynika częściowo z~innego poziomu trwałości.
+
+\paragraph{Zapytania bez indeksów rosną liniowo.} W~bazach relacyjnych
+i~w~MongoDB każde zapytanie po kolumnie innej niż klucz główny wymaga pełnego
+skanu. Wolne miejsca na wydarzenie (R2) w~PostgreSQL rosną z~\val{postgres}{500000}{off}{R2}\,ms
+(500 tys.) do \val{postgres}{10000000}{off}{R2}\,ms (10 mln). W~MariaDB rosną
+z~\val{mariadb}{500000}{off}{R2} do \val{mariadb}{10000000}{off}{R2}\,ms,
+a~w~MongoDB z~\val{mongo}{500000}{off}{R2} do \val{mongo}{10000000}{off}{R2}\,ms.
+W~Valkey ten sam scenariusz trwa stale około \val{valkey}{10000000}{off}{R2}\,ms,
+bo zbiór wolnych miejsc wydarzenia jest podstawową strukturą modelu, a~nie
+indeksem.
+
+\paragraph{MariaDB bez indeksów jest najwolniejsza z~relacyjnych.} Przy 10 mln
+biletów MariaDB wykonuje R1 w~\val{mariadb}{10000000}{off}{R1}\,ms, a~PostgreSQL
+w~\val{postgres}{10000000}{off}{R1}\,ms. Złączenie rezerwacji z~biletami bez
+indeksu MariaDB realizuje pętlą zagnieżdżoną z~buforem bloków (\texttt{ALL} na
+tabeli \texttt{bilety}, ok. 10 mln przeczytanych wierszy, tab.~\ref{tab:plans-rel}).
+PostgreSQL używa złączenia haszowego i~równoległego skanu. Ta sama różnica
+widać w~R5, U3, U6 i~D1--D6.
+
+\paragraph{Osadzanie zamiast złączeń.} Odczyt rezerwacji z~biletami (R1)
+w~MongoDB trwa \val{mongo}{10000000}{off}{R1}\,ms, a~w~Valkey
+\val{valkey}{10000000}{off}{R1}\,ms, także bez indeksów drugorzędnych.
+Bilety są osadzone w~dokumencie albo w~JSON-ie rezerwacji, więc wystarcza
+wyszukiwanie po kluczu głównym. Ten sam efekt widać przy anulowaniu
+rezerwacji (D1): MongoDB zwalnia bilety po identyfikatorach z~osadzonej
+migawki, przez indeks \texttt{\_id}, w~\val{mongo}{10000000}{off}{D1}\,ms.
+PostgreSQL bez indeksu na \texttt{bilety.rezerwacja\_id} potrzebuje do tego
+\val{postgres}{10000000}{off}{D1}\,ms, a~MariaDB \val{mariadb}{10000000}{off}{D1}\,ms.
+To przykład kompromisu normalizacji i~denormalizacji: odczyt agregatu jest
+tani, ale dane biletów są przechowywane w~dwóch miejscach.
+
+\paragraph{Agregacje.} Ranking 10 najpopularniejszych wydarzeń (R6) wymaga
+w~bazach relacyjnych i~w~MongoDB przejścia przez wszystkie sprzedane bilety.
+PostgreSQL z~indeksem robi to w~\val{postgres}{10000000}{on}{R6}\,ms (Index
+Only Scan), MariaDB w~\val{mariadb}{10000000}{on}{R6}\,ms, MongoDB
+w~\val{mongo}{10000000}{on}{R6}\,ms. Valkey odczytuje gotowy licznik ze zbioru
+posortowanego w~\val{valkey}{10000000}{on}{R6}\,ms. Utrzymuje go przy każdej
+sprzedaży, czyli przenosi koszt agregacji na zapis.
+
+\paragraph{Valkey bez struktur indeksujących.} Zapytania po atrybucie
+(historia klienta R4, wygaszanie U6, usuwanie D3, D4, D6, agregacja J2)
+wymagają w~Valkey przejścia \texttt{SCAN} przez wszystkie klucze rezerwacji
+i~zdekodowania każdego JSON-a. Przy 10 mln biletów to około
+\val{valkey}{10000000}{off}{R4}\,ms na operację, najgorszy wynik w~całym badaniu.
+Po dodaniu zbiorów \texttt{ix:*} ta sama historia klienta trwa
+\val{valkey}{10000000}{on}{R4}\,ms. W~modelu klucz--wartość brak ,,indeksu''
+nie oznacza wolniejszego planu, tylko brak jakiejkolwiek ścieżki dostępu.
+
+\paragraph{Zmienność.} Mediany, odchylenia standardowe i~p95 są w~pliku
+\texttt{generated/data/scenarios\_summary.csv}. Najwyższy współczynnik
+zmienności mają operacje punktowe trwające ułamek milisekundy. Pojedyncze
+powtórzenie trafiające na zimną pamięć podręczną albo punkt kontrolny WAL
+wydłuża się wtedy kilkukrotnie. Dla operacji trwających powyżej 10\,ms
+rozrzut jest mały i~nie zmienia kolejności baz.

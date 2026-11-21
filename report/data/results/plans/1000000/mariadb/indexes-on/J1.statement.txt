@@ -1,0 +1,2 @@
+SELECT id, nazwa, data_rozpoczecia FROM wydarzenia
+			WHERE gatunek = ? AND JSON_CONTAINS(metadane, ?, '$.tagi')

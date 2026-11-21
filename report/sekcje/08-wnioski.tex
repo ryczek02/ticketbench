@@ -1,0 +1,57 @@
+\section{Wnioski}
+
+\begin{enumerate}
+  \item \textbf{Nie ma jednej najszybszej bazy.} Valkey wygrywa w~operacjach
+  po kluczu, w~licznikach i~w~rezerwacji miejsc przy dużej współbieżności.
+  Bez przygotowanych przez aplikację struktur dostępu jest jednak najwolniejszy
+  ze wszystkich: historia klienta (R4) bez indeksów trwa w~nim
+  \val{valkey}{10000000}{off}{R4}\,ms, a~w~PostgreSQL \val{postgres}{10000000}{off}{R4}\,ms. PostgreSQL jest najbardziej
+  przewidywalny: bez indeksów najszybszy z~baz dyskowych, z~indeksami
+  w~czołówce wszystkich scenariuszy.
+  \item \textbf{Indeksy decydują bardziej niż silnik.} Ten sam scenariusz
+  w~tej samej bazie przyspiesza po dodaniu indeksu nawet o~kilka rzędów
+  wielkości (rys.~\ref{fig:speedup}). Po zaindeksowaniu różnice między
+  silnikami w~zapytaniach selektywnych są zwykle mniejsze niż rząd wielkości.
+  Duże pozostają w~agregacjach po całej tabeli (R6, J2). Koszt to wolniejsze wstawianie hurtowe
+  i~dodatkowe miejsce.
+  \item \textbf{Model danych zmienia złożoność operacji.} Osadzenie biletów
+  w~dokumencie rezerwacji daje w~MongoDB odczyt i~anulowanie rezerwacji
+  w~czasie stałym bez indeksów drugorzędnych. Baza relacyjna potrzebuje do
+  tego indeksu na kluczu obcym.
+  \item \textbf{Współbieżność to kwestia strategii blokowania.} Przy 1000
+  klientów strategia (warunkowy UPDATE, \texttt{FOR UPDATE NOWAIT}, skrypt
+  Lua, WATCH) zmienia przepustowość tego samego silnika nawet o~trzy
+  rzędy wielkości (Valkey: \texttt{lua} a~\texttt{watch}). Szybkie odrzucanie konfliktów (\texttt{NOWAIT}, operacja
+  atomowa) skaluje się lepiej niż kolejkowanie na blokadach.
+  \item \textbf{H1 potwierdzona dla Valkey, częściowo dla MongoDB, H2
+  potwierdzona częściowo} (rozdz.~\ref{sec:hipotezy}).
+  \item \textbf{Praktyczna rekomendacja dla systemu biletowego:}
+  rezerwacje i~płatności w~PostgreSQL (spójność, złożone zapytania), blokady
+  miejsc z~TTL i~liczniki dostępności w~Valkey (operacja atomowa w~skrypcie
+  Lua). Katalog wydarzeń może być w~MongoDB, jeśli jego struktura często się
+  zmienia.
+\end{enumerate}
+
+\subsection{Zagrożenia dla trafności wyników}
+
+\begin{itemize}
+  \item Wszystkie bazy działały na jednym komputerze w~maszynie wirtualnej
+  Docker Desktop (8\,GB RAM, Apple M5). Wyniki pokazują relacje między
+  silnikami, a~nie przepustowość produkcyjną. Generator obciążenia działał na
+  tej samej maszynie co bazy.
+  \item Poziomy trwałości nie są równe: Valkey bez RDB i~AOF nie czeka na dysk,
+  MongoDB czeka na dziennik (\texttt{majority}), bazy relacyjne na
+  \texttt{fsync} WAL i~redo. Zapisy w~Valkey są przez to tańsze z~założenia.
+  \item Każda baza działała jako pojedynczy węzeł bez TLS. Replikacja
+  synchroniczna i~szyfrowanie zwiększyłyby czasy zapisów.
+  \item W~każdym wariancie mierzyliśmy 5 powtórzeń po jednym przebiegu
+  rozgrzewkowym. Dla operacji trwających poniżej 1\,ms pojedyncze odchylenia
+  (zimna pamięć podręczna, punkt kontrolny) przesuwają średnią, dlatego
+  w~danych są też mediany i~p95.
+  \item Indeksy w~Valkey są projektem autorów (zbiory \texttt{ix:*}), a~nie
+  funkcją silnika. Inny projekt struktur dałby inne wyniki.
+  \item Parametry konfiguracyjne baz zostały ustawione tak samo (1\,GB
+  pamięci podręcznej), ale nie były strojone pod obciążenie. Strojenie
+  (np. \texttt{innodb\_thread\_concurrency}, pooler połączeń dla PostgreSQL)
+  zmieniłoby wyniki przy 1000 klientach.
+\end{itemize}

@@ -1,0 +1,137 @@
+\section{Metodyka}
+
+\subsection{Scenariusze}
+
+Zgodnie z~koncepcją mamy 24 scenariusze CRUD, po 6 na każdą operację.
+Dodaliśmy do nich 3 scenariusze na danych JSON (tab.~\ref{tab:scen}).
+Parametry każdego wykonania (identyfikatory, miasta, przedziały dat) wynikają
+wyłącznie z~(zbioru, scenariusza, numeru iteracji), więc wszystkie bazy
+wykonują dokładnie te same operacje na tych samych wierszach.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Scenariusze. ,,F'' oznacza scenariusz z~fiksturą: dane, na których
+działa operacja, są wstawiane przed pomiarem i~nie wliczają się do czasu.}
+\label{tab:scen}
+\begin{tabular}{lp{4.6cm}p{8.6cm}}
+\toprule
+ID & nazwa & co dokładnie jest mierzone \\
+\midrule
+C1 & Pojedyncza rezerwacja & transakcja: nowa rezerwacja + zajęcie 1 wolnego biletu \\
+C2 & Rezerwacja z~kilkoma biletami & jak C1, 4 bilety \\
+C3 (F) & Masowy import biletów & \num{10000} nowych biletów (pula sprzedażowa nowych wydarzeń) \\
+C4 & Rejestracja klienta & wstawienie klienta z~preferencjami JSON \\
+C5 & Wydarzenie z~cennikiem & wydarzenie i~cena dla każdego sektora obiektu \\
+C6 (F) & Zapis płatności & płatność + zmiana statusu rezerwacji na opłaconą \\
+\midrule
+R1 & Rezerwacja po identyfikatorze & rezerwacja z~biletami, miejscami i~sektorami \\
+R2 & Wolne miejsca na wydarzenie & wolne bilety wydarzenia z~sektorem, rzędem i~numerem, posortowane \\
+R3 & Wydarzenia po dacie i~mieście & wydarzenia w~mieście w~30-dniowym oknie \\
+R4 & Historia rezerwacji klienta & 50 ostatnich rezerwacji klienta z~liczbą biletów \\
+R5 & Sprzedaż per wydarzenie & liczba i~suma cen sprzedanych biletów dla wydarzeń organizatora \\
+R6 & 10 najpopularniejszych wydarzeń & agregacja po wszystkich sprzedanych biletach \\
+\midrule
+U1 & Zmiana statusu rezerwacji & rezerwacja $\to$ opłacona \\
+U2 & Zajęcie miejsca (blokada) & warunkowe \texttt{wolny}$\to$\texttt{zablokowany} z~terminem blokady \\
+U3 & Masowa zmiana cen w~sektorze & cena $\times 1{,}1$ dla wolnych biletów sektora + cennik \\
+U4 & Zmiana danych klienta & e-mail, telefon, scalenie pól w~preferencjach JSON \\
+U5 & Zmiana terminu wydarzenia & przesunięcie daty o~tydzień \\
+U6 (F) & Wygaszenie nieopłaconych rezerwacji & \num{1000} przeterminowanych rezerwacji $\to$ wygasłe, zwolnienie ich biletów \\
+\midrule
+D1 & Anulowanie rezerwacji & usunięcie rezerwacji i~płatności, zwolnienie biletów \\
+D2 & Rezerwacja wraz z~biletami & usunięcie rezerwacji, płatności i~jej biletów \\
+D3 (F) & Masowe usunięcie wygasłych & usunięcie \num{1000} wygasłych rezerwacji \\
+D4 & Usunięcie konta klienta & klient, jego rezerwacje i~płatności, zwolnienie biletów \\
+D5 (F) & Usunięcie odwołanego wydarzenia & wydarzenie, jego bilety (całe obiekty) i~cennik \\
+D6 (F) & Usunięcie danych starszych niż data & wydarzenia sprzed 2 lat z~biletami, cennikami, rezerwacjami i~płatnościami \\
+\midrule
+J1 & Filtr po polu JSON & wydarzenia o~danym gatunku z~danym tagiem w~metadanych \\
+J2 & Agregacja po polu JSON & liczba i~suma rezerwacji z~7 dni pogrupowana po \texttt{metadane.kanal} \\
+J3 & Modyfikacja tablicy w~JSON & dopisanie tagu do \texttt{metadane.tagi} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Przebieg pomiaru}
+
+Dla każdego rozmiaru zbioru i~każdej bazy plan wygląda tak:
+\begin{enumerate}
+  \item reset schematu, import danych, pomiar rozmiaru;
+  \item wszystkie scenariusze bez indeksów drugorzędnych: 1 przebieg rozgrzewkowy
+  i~5 mierzonych; plany zapytań;
+  \item utworzenie indeksów (czas tworzenia jest osobnym wynikiem), pomiar rozmiaru;
+  \item wszystkie scenariusze z~indeksami, plany zapytań;
+  \item test współbieżności dla każdej strategii rezerwacji;
+  \item reset (zwolnienie miejsca).
+\end{enumerate}
+
+Czas jest mierzony w~serwisie bazy, wokół samej operacji na bazie
+(\texttt{time.Now()} przed i~po wywołaniu \texttt{Engine.Run}). Fikstura
+(np. \num{1000} rezerwacji do usunięcia w~D3) jest wstawiana przed
+rozpoczęciem pomiaru. Runner mierzy niezależnie czas całego wywołania gRPC,
+dzięki czemu narzut sieci i~serializacji jest znany
+(rozdz.~\ref{sec:grpc}), ale nie wpływa na porównanie baz. Wynik scenariusza
+to średnia z~5 powtórzeń. W~plikach z~danymi są też mediana, odchylenie
+standardowe, p95, minimum i~maksimum. Jedno wykonanie ma limit 60~s. Po
+przekroczeniu limitu dalsze powtórzenia są pomijane, a~w~tabeli pojawia się
+,,t/o''.
+
+Kolejne powtórzenia działają na różnych wierszach (inny numer iteracji),
+a~przebieg z~indeksami używa innego zakresu iteracji niż przebieg bez
+indeksów. Scenariusze rezerwujące miejsca nie trafiają więc na bilety zajęte
+we wcześniejszym przebiegu. Plany zapytań powstają przez
+\texttt{EXPLAIN (ANALYZE, BUFFERS)} w~PostgreSQL, \texttt{ANALYZE FORMAT=JSON}
+w~MariaDB (oba w~transakcji wycofywanej po pomiarze) oraz
+\texttt{explain} z~\texttt{executionStats} w~MongoDB. Dla Valkey zapisujemy
+listę wykonywanych poleceń.
+
+\subsection{Test współbieżności}
+
+Test odpowiada na pytanie z~hipotezy H1. W~serwisie bazy startuje
+$N \in \{1, 10, 100, 1000\}$ gorutyn, każda z~własną sesją bazy. Wszystkie
+próbują zarezerwować te same 500 biletów jednego wydarzenia, każda w~innej
+losowej kolejności. Runda kończy się, gdy wszystkie bilety są zajęte. Mierzymy
+czas rundy, przepustowość (udane rezerwacje na sekundę), liczbę konfliktów
+(próba trafiła na zajęte miejsce albo transakcja została przerwana)
+i~percentyle czasu pojedynczej próby. Po każdej rundzie serwis sprawdza
+w~bazie, że istnieje dokładnie 500 rezerwacji i~500 zajętych biletów, czyli
+że żadne miejsce nie zostało sprzedane dwa razy. Każdą konfigurację powtarzamy
+3 razy.
+
+Strategie rezerwacji:
+\begin{itemize}
+  \item PostgreSQL i~MariaDB: \texttt{cond} (warunkowy \texttt{UPDATE ... WHERE status='wolny'}),
+  \texttt{forupdate} (\texttt{SELECT ... FOR UPDATE}, sprawdzenie, \texttt{UPDATE}),
+  \texttt{nowait} (jak wyżej, ale zablokowany wiersz od razu oznacza konflikt),
+  \texttt{serializable} (izolacja SERIALIZABLE i~ponawianie po błędzie serializacji lub zakleszczeniu);
+  \item MongoDB: \texttt{atomic} (warunkowy \texttt{updateOne} na dokumencie biletu, potem
+  \texttt{insertOne} rezerwacji) i~\texttt{txn} (obie operacje w~transakcji, \texttt{WriteConflict} to konflikt);
+  \item Valkey: \texttt{lua} (sprawdzenie i~zapis w~jednym skrypcie),
+  \texttt{setnx} (klucz blokady \texttt{SET NX PX}, czyli ,,blokada miejsca z~TTL''
+  z~koncepcji, potem \texttt{MULTI}) i~\texttt{watch} (optymistyczne
+  \texttt{WATCH}/\texttt{MULTI}/\texttt{EXEC} na zbiorze wolnych miejsc).
+\end{itemize}
+Pierwsza strategia z~listy jest domyślna i~to ona jest używana do weryfikacji H1.
+
+\subsection{Środowisko}
+
+\begin{itemize}
+  \item Komputer: Apple M5 (10 rdzeni), 24\,GB RAM, macOS 27, Docker Desktop
+  (maszyna wirtualna Linux 6.12, 10 vCPU, 8\,GB RAM).
+  \item Każda z~trzech baz dyskowych dostaje 1\,GB pamięci podręcznej
+  (\texttt{shared\_buffers}, \texttt{innodb\_buffer\_pool\_size},
+  \texttt{wiredTigerCacheSizeGB}). Valkey trzyma cały zbiór w~RAM, bez RDB i~AOF.
+  \item Trwałość zostaje domyślna: \texttt{fsync} i~\texttt{synchronous\_commit}
+  w~PostgreSQL, \texttt{innodb\_flush\_log\_at\_trx\_commit=1} w~MariaDB,
+  \emph{write concern} \texttt{majority} z~dziennikiem w~MongoDB. Valkey
+  z~definicji nie zapisuje danych na dysk, co trzeba brać pod uwagę przy
+  porównaniu zapisów.
+  \item Poziomy izolacji są domyślne dla silnika: READ COMMITTED w~PostgreSQL,
+  REPEATABLE READ w~MariaDB, \emph{snapshot} w~transakcjach MongoDB.
+  \item Pule połączeń do 1100 sesji, \texttt{max\_connections=1200}.
+  \item Przy zbiorach 1 i~10 mln biletów, na początku każdego segmentu,
+  restartowane są kontenery pozostałych trzech baz. Mierzona baza ma wtedy do
+  dyspozycji całą pamięć maszyny wirtualnej, a~pamięć podręczna innych silników
+  jej nie zabiera.
+\end{itemize}

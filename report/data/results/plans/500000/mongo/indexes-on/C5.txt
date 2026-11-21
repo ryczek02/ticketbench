@@ -1,0 +1,3 @@
+-- mongo C5 tickets=500000 indexes=on trace=95ca5723d5c87bbc4cfa68b12e35b482
+-- insertOne/insertMany
+inserts have no query plan in MongoDB

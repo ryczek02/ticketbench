@@ -1,0 +1,33 @@
+-- postgres R4 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT r.id, r.utworzono, r.status, r.kwota, count(b.id) AS bilety
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			WHERE r.klient_id = $1
+			GROUP BY r.id
+			ORDER BY r.utworzono DESC
+			LIMIT 50
+Limit  (cost=9.73..9.74 rows=2 width=39) (actual time=0.033..0.033 rows=2 loops=1)
+  Buffers: shared hit=11 read=2
+  ->  Sort  (cost=9.73..9.74 rows=2 width=39) (actual time=0.032..0.033 rows=2 loops=1)
+        Sort Key: r.utworzono DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=11 read=2
+        ->  GroupAggregate  (cost=9.66..9.72 rows=2 width=39) (actual time=0.031..0.032 rows=2 loops=1)
+              Group Key: r.id
+              Buffers: shared hit=11 read=2
+              ->  Sort  (cost=9.66..9.67 rows=6 width=39) (actual time=0.029..0.029 rows=7 loops=1)
+                    Sort Key: r.id
+                    Sort Method: quicksort  Memory: 25kB
+                    Buffers: shared hit=11 read=2
+                    ->  Nested Loop Left Join  (cost=0.84..9.58 rows=6 width=39) (actual time=0.020..0.027 rows=7 loops=1)
+                          Buffers: shared hit=11 read=2
+                          ->  Index Scan using idx_rezerwacje_klient on rezerwacje r  (cost=0.42..3.75 rows=2 width=31) (actual time=0.005..0.006 rows=2 loops=1)
+                                Index Cond: (klient_id = '37364'::bigint)
+                                Buffers: shared hit=5
+                          ->  Index Scan using idx_bilety_rezerwacja on bilety b  (cost=0.42..2.87 rows=4 width=16) (actual time=0.010..0.010 rows=4 loops=2)
+                                Index Cond: (rezerwacja_id = r.id)
+                                Buffers: shared hit=6 read=2
+Planning:
+  Buffers: shared hit=176
+Planning Time: 0.379 ms
+Execution Time: 0.041 ms

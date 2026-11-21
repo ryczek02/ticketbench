@@ -1,0 +1,134 @@
+\section{Wyniki operacji CRUD}
+
+Macierz obejmuje \SizesList{} biletów i~dała \ScenarioRuns{} pomiarów
+scenariuszy oraz \ContentionRuns{} rund testu współbieżności. Wszystkie czasy
+w~tym rozdziale są czasami po stronie serwisu bazy, w~milisekundach, uśrednionymi
+z~5 powtórzeń.
+
+\subsection{Import danych i rozmiar}
+
+\begin{table}[H]
+\centering
+\caption{Czas importu i~tworzenia indeksów drugorzędnych [s].}
+\label{tab:load}
+\small
+\tbinput{generated/tables/load.tex}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Zajętość danych [MB]. Dla baz dyskowych jest to rozmiar plików bazy,
+dla Valkey zużycie pamięci (\texttt{used\_memory}).}
+\label{tab:storage}
+\small
+\tbinput{generated/tables/storage.tex}
+\end{table}
+
+\input{sekcje/05a-import}
+
+\subsection{Czasy scenariuszy}
+
+Tabele~\ref{tab:s500}--\ref{tab:s10m} zawierają średni czas każdego
+scenariusza. Pogrubiona jest najlepsza wartość w~danym wariancie indeksów.
+,,t/o'' oznacza przekroczenie limitu 60~s.
+
+\newcommand{\scentable}[3]{%
+\begin{table}[htbp]
+\centering
+\caption{Średni czas scenariuszy [ms], #2 biletów.}
+\label{#3}
+\resizebox{\linewidth}{!}{\tbinput{generated/tables/scenarios_#1.tex}}
+\end{table}}
+\scentable{500000}{500 tys.}{tab:s500}
+\scentable{1000000}{1 mln}{tab:s1m}
+\scentable{10000000}{10 mln}{tab:s10m}
+
+\newcommand{\scenplot}[2]{%
+  \nextgroupplot[title={#1 #2}]
+  \addplot[pg] table[x=tickets, y=postgres] {generated/plots/scen_#1_#2.dat};
+  \addplot[maria] table[x=tickets, y=mariadb] {generated/plots/scen_#1_#2.dat};
+  \addplot[mongo] table[x=tickets, y=mongo] {generated/plots/scen_#1_#2.dat};
+  \addplot[valkey] table[x=tickets, y=valkey] {generated/plots/scen_#1_#2.dat};}
+
+\begin{figure}[p]
+\centering
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=3 by 4, horizontal sep=1.3cm, vertical sep=1.5cm},
+  width=0.36\linewidth, height=4.4cm, xmode=log, ymode=log, grid=major, grid style={gray!25},
+  tick label style={font=\scriptsize}, title style={font=\footnotesize}, unbounded coords=jump, log ticks with fixed point, every axis plot/.append style={mark options={scale=0.7}},
+  xtick={500000,1000000,10000000}, xticklabels={0{,}5,1,10}]
+  \scenplot{R1}{off}
+  \scenplot{R2}{off}
+  \scenplot{R4}{off}
+  \scenplot{R1}{on}
+  \scenplot{R2}{on}
+  \scenplot{R4}{on}
+  \scenplot{R6}{off}
+  \scenplot{U6}{off}
+  \scenplot{D4}{off}
+  \scenplot{R6}{on}
+  \scenplot{U6}{on}
+  \scenplot{D4}{on}
+\end{groupplot}
+\end{tikzpicture}
+
+\vspace{2mm}
+\footnotesize
+\textcolor{cpg}{$\bullet$}~PostgreSQL\quad
+\textcolor{cmaria}{$\blacksquare$}~MariaDB\quad
+\textcolor{cmongo}{$\blacktriangle$}~MongoDB\quad
+\textcolor{cvalkey}{$\blacklozenge$}~Valkey
+\caption{Czas wybranych scenariuszy [ms] w~funkcji liczby biletów w~mln (obie osie
+logarytmiczne). ,,off'': bez indeksów drugorzędnych, ,,on'': z~indeksami.}
+\label{fig:scen}
+\end{figure}
+
+\input{sekcje/05b-scenariusze}
+
+\subsection{Wpływ indeksów}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[tb, ybar, bar width=1.6pt, ymode=log, log origin=infty, height=6.5cm,
+  ylabel={przyspieszenie (bez / z~indeksami)}, xtick={0,...,26},
+  xticklabels={C1,C2,C3,C4,C5,C6,R1,R2,R3,R4,R5,R6,U1,U2,U3,U4,U5,U6,D1,D2,D3,D4,D5,D6,J1,J2,J3},
+  x tick label style={font=\scriptsize, rotate=90}, enlarge x limits=0.02,
+  extra y ticks={1}, extra y tick style={grid=major, grid style={black, thick}}]
+  \addplot[fill=cpg, draw=none] table[x=i, y=postgres] {generated/plots/speedup_10000000.dat}; \addlegendentry{PostgreSQL}
+  \addplot[fill=cmaria, draw=none] table[x=i, y=mariadb] {generated/plots/speedup_10000000.dat}; \addlegendentry{MariaDB}
+  \addplot[fill=cmongo, draw=none] table[x=i, y=mongo] {generated/plots/speedup_10000000.dat}; \addlegendentry{MongoDB}
+  \addplot[fill=cvalkey, draw=none] table[x=i, y=valkey] {generated/plots/speedup_10000000.dat}; \addlegendentry{Valkey}
+\end{axis}
+\end{tikzpicture}
+\caption{Ile razy scenariusz jest szybszy z~indeksami, 10 mln biletów (skala
+logarytmiczna, wartość poniżej 1 oznacza spowolnienie). Brak słupka: brak
+pomiaru bez indeksów (np. przekroczony limit czasu).}
+\label{fig:speedup}
+\end{figure}
+
+\input{sekcje/05c-indeksy}
+
+\subsection{Narzut gRPC i śledzenia}
+\label{sec:grpc}
+
+\begin{table}[H]
+\centering
+\caption{Różnica między czasem wywołania mierzonym w~runnerze a~czasem
+w~serwisie bazy, uśredniona po wszystkich scenariuszach i~rozmiarach.}
+\label{tab:grpc}
+\small
+\tbinput{generated/tables/grpc.tex}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Narzut OpenTelemetry: mediana czasu wywołania (runner) dla tych
+samych scenariuszy z~próbkowanym i~niepróbkowanym spanem głównym, 500 tys.
+biletów, 30 powtórzeń.}
+\label{tab:otel}
+\small
+\tbinput{generated/tables/overhead.tex}
+\end{table}
+
+\input{sekcje/05d-narzut}

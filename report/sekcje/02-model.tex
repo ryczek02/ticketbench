@@ -1,0 +1,139 @@
+\section{Model danych}
+
+\subsection{Schemat relacyjny}
+
+PostgreSQL i MariaDB używają tego samego schematu z~12 tabel: \texttt{kategorie},
+\texttt{organizatorzy}, \texttt{obiekty}, \texttt{sektory}, \texttt{miejsca},
+\texttt{wydarzenia}, \texttt{cenniki}, \texttt{klienci}, \texttt{kody\_rabatowe},
+\texttt{rezerwacje}, \texttt{bilety} i \texttt{platnosci}.
+
+Bilet oznacza jedno miejsce oferowane na jedno wydarzenie. Jest pulą
+sprzedażową: przy imporcie powstaje bilet dla każdego miejsca obiektu, a jego
+status przechodzi z~\texttt{wolny} do \texttt{zablokowany},
+\texttt{zarezerwowany} albo \texttt{sprzedany}. Dzięki temu rezerwacja miejsca
+jest warunkową aktualizacją jednego wiersza
+(\texttt{UPDATE bilety SET status = 'zarezerwowany' ... WHERE id = ? AND status = 'wolny'}).
+Ta sama operacja istnieje w~każdym z~czterech modeli, co pozwala porównać
+silniki na identycznym problemie.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  tbl/.style={draw, rounded corners=2pt, fill=gray!8, font=\footnotesize\ttfamily, minimum width=2.3cm, minimum height=0.6cm},
+  rel/.style={-{Stealth[length=2mm]}, gray!70!black}]
+  \node[tbl] (obj) {obiekty};
+  \node[tbl, right=1.1cm of obj] (sek) {sektory};
+  \node[tbl, right=1.1cm of sek] (mie) {miejsca};
+  \node[tbl, below=0.9cm of obj] (wyd) {wydarzenia};
+  \node[tbl, left=0.8cm of wyd] (kat) {kategorie};
+  \node[tbl, below=0.9cm of kat] (org) {organizatorzy};
+  \node[tbl, below=0.9cm of wyd] (cen) {cenniki};
+  \node[tbl, below=0.9cm of mie] (bil) {bilety};
+  \node[tbl, below=0.9cm of bil] (rez) {rezerwacje};
+  \node[tbl, right=0.8cm of rez] (pla) {platnosci};
+  \node[tbl, below=0.9cm of rez] (kli) {klienci};
+  \node[tbl, left=0.8cm of kli] (kod) {kody\_rabatowe};
+  \draw[rel] (sek) -- (obj); \draw[rel] (mie) -- (sek);
+  \draw[rel] (wyd) -- (obj); \draw[rel] (wyd) -- (kat); \draw[rel] (wyd) -- (org);
+  \draw[rel] (cen) -- (wyd); \draw[rel] (cen.east) -| (sek.south);
+  \draw[rel] (bil) -- (mie); \draw[rel] (bil.west) -- ++(-1.2,0) |- (wyd.east);
+  \draw[rel] (bil) -- (rez); \draw[rel] (pla) -- (rez);
+  \draw[rel] (rez) -- (kli); \draw[rel] (rez.west) -| (kod.north);
+\end{tikzpicture}
+\caption{Schemat relacyjny (strzałka: kolumna odwołująca się do klucza głównego).}
+\end{figure}
+
+Klucze obce zostały celowo pominięte. InnoDB automatycznie tworzy indeks dla
+każdego klucza obcego, więc w~wariancie ,,bez indeksów'' MariaDB miałaby
+kilka indeksów, których PostgreSQL by nie miał. Spójność referencyjną
+zapewnia aplikacja, a~sprawdzają ją testy (rozdz.~\ref{sec:testy}).
+
+Wariant ,,z~indeksami'' dodaje w~obu bazach te same 15 indeksów drugorzędnych.
+Wśród nich są \texttt{bilety(wydarzenie\_id, status)},
+\texttt{bilety(rezerwacja\_id)}, \texttt{rezerwacje(klient\_id, utworzono)}
+i \texttt{rezerwacje(status, wygasa\_o)}. Na danych JSON indeksujemy pole
+\texttt{metadane->>'gatunek'}: w~PostgreSQL przez indeks na wyrażeniu
+i~indeks GIN \texttt{jsonb\_path\_ops}, w~MariaDB przez kolumnę wirtualną
+\texttt{gatunek} z~indeksem B-drzewa.
+
+\subsection{Model dokumentowy (MongoDB)}
+
+\begin{itemize}
+  \item \texttt{wydarzenia}: wydarzenie z~osadzonym cennikiem (tablica
+  \texttt{cennik}) oraz zdenormalizowanymi polami \texttt{miasto},
+  \texttt{obiekt\_nazwa} i \texttt{kategoria\_nazwa}, żeby wyszukiwanie po
+  mieście nie wymagało \texttt{\$lookup};
+  \item \texttt{obiekty}: obiekt z~osadzonymi sektorami;
+  \item \texttt{rezerwacje}: rezerwacja z~osadzonymi migawkami biletów
+  (\texttt{bilety}: id, wydarzenie, sektor, rząd, numer, cena) i~osadzoną
+  płatnością (\texttt{platnosc});
+  \item \texttt{bilety}: pula sprzedażowa jako osobna kolekcja, ponieważ to ją
+  modyfikują równolegli klienci; osadzenie 2--5 tys. biletów w~dokumencie
+  wydarzenia zamieniłoby rezerwację różnych miejsc w~konflikt o~jeden dokument;
+  \item \texttt{klienci}, \texttt{organizatorzy}, \texttt{kategorie},
+  \texttt{kody\_rabatowe}.
+\end{itemize}
+
+MongoDB działa jako jednowęzłowy \emph{replica set} \texttt{rs0}, bo
+transakcje wielodokumentowe wymagają replikacji. Operacje zmieniające kilka
+dokumentów (np. rezerwacja z~biletami, usunięcie konta klienta) wykonujemy
+w~transakcjach, tak jak w~bazach relacyjnych.
+
+\subsection{Model klucz--wartość (Valkey)}
+
+\begin{center}
+\small
+\begin{tabular}{llp{8.2cm}}
+\toprule
+klucz & typ & zawartość \\
+\midrule
+\texttt{w:\{id\}} & hash & wydarzenie: nazwa, miasto, data, organizator, metadane (JSON), cennik (JSON) \\
+\texttt{wb:\{wydarzenie\}} & hash & id biletu $\to$ JSON biletu (miejsce, sektor, cena, status, rezerwacja) \\
+\texttt{wf:\{wydarzenie\}} & set & identyfikatory wolnych biletów \\
+\texttt{r:\{id\}} & string & rezerwacja jako JSON z~biletami i~płatnością \\
+\texttt{k:\{id\}} & hash & klient, preferencje jako JSON \\
+\texttt{blok:\{bilet\}} & string z~TTL & czasowa blokada miejsca \\
+\texttt{sprzedaz}, \texttt{przychod} & zset, hash & liczniki sprzedaży i~przychodu per wydarzenie \\
+\texttt{ix:*} & set, zset & struktury indeksujące, tylko w~wariancie z~indeksami \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Valkey nie ma planera zapytań ani indeksów drugorzędnych. W~wariancie
+,,z~indeksami'' aplikacja utrzymuje dodatkowe zbiory posortowane, np.
+\texttt{ix:k:\{klient\}} (rezerwacje klienta według daty),
+\texttt{ix:miasto:\{miasto\}} (wydarzenia według daty) czy \texttt{ix:oczek}
+(rezerwacje według terminu wygaśnięcia). Bez nich zapytanie po atrybucie
+wymaga \texttt{SCAN} po całej przestrzeni kluczy i~dekodowania każdego
+dokumentu. Operacje zmieniające kilka kluczy są atomowe dzięki skryptom Lua.
+Liczniki sprzedaży są częścią modelu bazowego, bo w~tej domenie są naturalną
+strukturą, a~nie indeksem.
+
+\subsection{Dane i rozmiary zbiorów}
+
+Dane tworzy deterministyczny generator. Każda encja wynika z~trójki (ziarno,
+rodzaj, identyfikator), więc każdy serwis generuje dane u~siebie i~wszystkie
+cztery bazy dostają identyczne wiersze. Po imporcie serwis zwraca sumę
+kontrolną FNV-64 wygenerowanych danych. Raport porównuje ją między bazami.
+
+\begin{table}[H]
+\centering
+\caption{Rozmiary zbiorów (ziarno 42).}
+\begin{tabular}{rrrrrr}
+\toprule
+bilety & wydarzenia & obiekty & miejsca & klienci & rezerwacje \\
+\midrule
+\num{500000} & 244 & 8 & \num{16684} & \num{62500} & \num{82807} \\
+\num{1000000} & 476 & 16 & \num{33922} & \num{125000} & \num{170396} \\
+\num{10000000} & \num{4156} & 166 & \num{396795} & \num{1250000} & \num{1674389} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Około 60\% biletów jest sprzedanych albo zarezerwowanych, rezerwacja obejmuje
+od 1 do 6 sąsiednich miejsc, 85\% rezerwacji jest opłaconych, a~10\% ma kod
+rabatowy. Metadane wydarzeń (gatunek, wykonawcy, limit wiekowy, tagi),
+biletów, klientów, rezerwacji i~płatności są zapisane jako JSON. Cztery
+wydarzenia w~każdym zbiorze nie mają sprzedaży (,,piaskownica''). Korzystają
+z~nich scenariusze rezerwujące miejsca i~test współbieżności, więc nigdy nie
+kolidują z~danymi ani ze sobą nawzajem.

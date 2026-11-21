@@ -1,0 +1,23 @@
+Iloraz przepustowości rośnie z~liczbą klientów dla wszystkich par i~rozmiarów.
+Współczynnik Spearmana wynosi wszędzie 1 (zależność ściśle monotoniczna). Dla
+10 mln biletów przewaga Valkey nad PostgreSQL rośnie
+z~\cratio{valkey}{postgres}{10000000}{lua}{cond}{1}$\times$ przy jednym kliencie
+do \cratio{valkey}{postgres}{10000000}{lua}{cond}{1000}$\times$ przy tysiącu.
+Nad MariaDB rośnie z~\cratio{valkey}{mariadb}{10000000}{lua}{cond}{1}$\times$
+do \cratio{valkey}{mariadb}{10000000}{lua}{cond}{1000}$\times$.
+
+Wynik dla MongoDB trzeba czytać ostrożniej. Iloraz MongoDB do PostgreSQL rośnie
+z~\cratio{mongo}{postgres}{10000000}{atomic}{cond}{1} do
+\cratio{mongo}{postgres}{10000000}{atomic}{cond}{1000}: przy małej
+współbieżności MongoDB jest kilka razy wolniejszy, a~przy 1000 klientach
+dorównuje PostgreSQL. Względna pozycja MongoDB rośnie, ale realną przewagę
+ma on tylko nad MariaDB. Hipotezę H1 uznajemy za
+\textbf{potwierdzoną dla Valkey}. Dla MongoDB potwierdza się teza
+o~rosnącym stosunku wydajności, a~nie o~przewadze w~każdym punkcie.
+
+Dwa czynniki wzmacniają wynik Valkey i~trzeba je brać pod uwagę: brak zapisu
+na dysk oraz łączenie poleceń w~potoki przez sterownik. Strategia \texttt{watch}
+pokazuje też, że ten sam silnik z~nieodpowiednią metodą synchronizacji
+przegrywa ze wszystkimi bazami relacyjnymi. H1 jest więc prawdziwa dla
+właściwie zaprojektowanej operacji atomowej, a~nie dla silnika
+niezależnie od sposobu użycia.

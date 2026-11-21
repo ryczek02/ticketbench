@@ -1,0 +1,28 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.0125102
+  },
+  "query_block": {
+    "select_id": 1,
+    "r_total_time_ms": 2969.580382,
+    "table": {
+      "delete": 1,
+      "table_name": "bilety",
+      "access_type": "ALL",
+      "rows": 10170422,
+      "r_rows": 10078375,
+      "r_total_filtered": 0.023694296,
+      "r_table_time_ms": 2860.589426,
+      "r_other_time_ms": 108.9885286,
+      "r_engine_stats": {
+        "pages_accessed": 88480,
+        "pages_updated": 4808,
+        "pages_read_count": 50584,
+        "pages_read_time_ms": 1246.307681,
+        "pages_prefetch_read_count": 6508
+      },
+      "attached_condition": "bilety.wydarzenie_id = 1230450000000",
+      "r_filtered": 0.023694296
+    }
+  }
+}

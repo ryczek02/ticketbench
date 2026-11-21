@@ -1,0 +1,9 @@
+-- postgres U1 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- UPDATE rezerwacje SET status = 'oplacona', wygasa_o = NULL WHERE id = $1
+Update on rezerwacje  (cost=0.42..2.64 rows=0 width=0) (actual time=0.067..0.068 rows=0 loops=1)
+  Buffers: shared hit=19 read=1 dirtied=1
+  ->  Index Scan using rezerwacje_pkey on rezerwacje  (cost=0.42..2.64 rows=1 width=64) (actual time=0.007..0.008 rows=1 loops=1)
+        Index Cond: (id = '49258'::bigint)
+        Buffers: shared hit=4
+Planning Time: 0.050 ms
+Execution Time: 0.074 ms

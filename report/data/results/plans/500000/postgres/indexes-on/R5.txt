@@ -1,0 +1,22 @@
+-- postgres R5 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT w.id, w.nazwa, count(b.id) AS sprzedane, coalesce(sum(b.cena), 0) AS przychod
+			FROM wydarzenia w
+			LEFT JOIN bilety b ON b.wydarzenie_id = w.id AND b.status = 'sprzedany'
+			WHERE w.organizator_id = $1
+			GROUP BY w.id, w.nazwa
+GroupAggregate  (cost=0.57..10058.04 rows=81 width=72) (actual time=0.238..5.427 rows=121 loops=1)
+  Group Key: w.id
+  Buffers: shared hit=1382
+  ->  Nested Loop Left Join  (cost=0.57..9548.92 rows=67747 width=46) (actual time=0.008..3.936 rows=27840 loops=1)
+        Buffers: shared hit=1382
+        ->  Index Scan using wydarzenia_pkey on wydarzenia w  (cost=0.15..19.16 rows=81 width=32) (actual time=0.003..0.043 rows=121 loops=1)
+              Filter: (organizator_id = '1'::bigint)
+              Rows Removed by Filter: 218
+              Buffers: shared hit=34
+        ->  Index Scan using idx_bilety_wydarzenie_status on bilety b  (cost=0.42..108.26 rows=939 width=22) (actual time=0.002..0.017 rows=229 loops=121)
+              Index Cond: ((wydarzenie_id = w.id) AND ((status)::text = 'sprzedany'::text))
+              Buffers: shared hit=1348
+Planning:
+  Buffers: shared hit=132
+Planning Time: 0.326 ms
+Execution Time: 5.438 ms

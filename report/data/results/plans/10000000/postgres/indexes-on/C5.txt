@@ -1,0 +1,8 @@
+-- postgres C5 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- INSERT INTO wydarzenia (id, organizator_id, kategoria_id, obiekt_id, nazwa, data_rozpoczecia, status, metadane)
+			   VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+Insert on wydarzenia  (cost=0.00..0.01 rows=0 width=0) (actual time=0.034..0.034 rows=0 loops=1)
+  Buffers: shared hit=13
+  ->  Result  (cost=0.00..0.01 rows=1 width=154) (actual time=0.000..0.000 rows=1 loops=1)
+Planning Time: 0.006 ms
+Execution Time: 0.037 ms

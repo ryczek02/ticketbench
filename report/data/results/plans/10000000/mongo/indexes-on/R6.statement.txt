@@ -1,0 +1,1 @@
+bilety.aggregate top 10 {"aggregate":"bilety","pipeline":[{"$match":{"status":"sprzedany"}},{"$group":{"sprzedane":{"$sum":1},"_id":"$wydarzenie_id"}},{"$sort":{"sprzedane":-1}},{"$limit":10},{"$lookup":{"from":"wydarzenia","localField":"_id","foreignField":"_id","as":"wydarzenie"}},{"$project":{"sprzedane":1,"wydarzenie.nazwa":1}}],"cursor":{}}

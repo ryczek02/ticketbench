@@ -1,0 +1,1 @@
+wydarzenia.updateOne {"update":"wydarzenia","updates":[{"multi":false,"q":{"_id":22},"u":{"$set":{"status":"planowane"}}}]}

@@ -1,0 +1,21 @@
+-- postgres U3 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- UPDATE bilety b SET cena = round(b.cena * $3::numeric, 2)
+			   FROM miejsca m
+			   WHERE m.id = b.miejsce_id AND m.sektor_id = $2 AND b.wydarzenie_id = $1 AND b.status = 'wolny'
+Update on bilety b  (cost=0.29..20059.04 rows=0 width=0) (actual time=14.022..14.023 rows=0 loops=1)
+  Buffers: shared hit=15098
+  ->  Nested Loop  (cost=0.29..20059.04 rows=26 width=28) (actual time=7.865..13.776 rows=215 loops=1)
+        Buffers: shared hit=13575
+        ->  Seq Scan on bilety b  (cost=0.00..19611.01 rows=884 width=20) (actual time=7.752..13.339 rows=1020 loops=1)
+              Filter: ((wydarzenie_id = '133'::bigint) AND ((status)::text = 'wolny'::text))
+              Rows Removed by Filter: 574960
+              Buffers: shared hit=10515
+        ->  Index Scan using miejsca_pkey on miejsca m  (cost=0.29..0.51 rows=1 width=14) (actual time=0.000..0.000 rows=0 loops=1020)
+              Index Cond: (id = b.miejsce_id)
+              Filter: (sektor_id = '28'::bigint)
+              Rows Removed by Filter: 1
+              Buffers: shared hit=3060
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.038 ms
+Execution Time: 14.028 ms

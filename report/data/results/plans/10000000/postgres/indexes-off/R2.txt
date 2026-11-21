@@ -1,0 +1,38 @@
+-- postgres R2 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT b.id, s.nazwa, m.rzad, m.numer, b.cena
+			FROM bilety b
+			JOIN miejsca m ON m.id = b.miejsce_id
+			JOIN sektory s ON s.id = m.sektor_id
+			WHERE b.wydarzenie_id = $1 AND b.status = 'wolny'
+			ORDER BY s.nazwa, m.rzad, m.numer
+Gather Merge  (cost=240407.01..240512.49 rows=904 width=24) (actual time=133.475..135.802 rows=1112 loops=1)
+  Workers Planned: 2
+  Workers Launched: 2
+  Buffers: shared hit=50585 read=129234
+  ->  Sort  (cost=239406.99..239408.12 rows=452 width=24) (actual time=132.389..132.400 rows=371 loops=3)
+        Sort Key: s.nazwa, m.rzad, m.numer
+        Sort Method: quicksort  Memory: 37kB
+        Buffers: shared hit=50585 read=129234
+        Worker 0:  Sort Method: quicksort  Memory: 64kB
+        Worker 1:  Sort Method: quicksort  Memory: 25kB
+        ->  Hash Join  (cost=38.66..239387.05 rows=452 width=24) (actual time=111.983..132.326 rows=371 loops=3)
+              Hash Cond: (m.sektor_id = s.id)
+              Buffers: shared hit=50555 read=129234
+              ->  Nested Loop  (cost=0.42..239347.63 rows=452 width=30) (actual time=111.863..132.174 rows=371 loops=3)
+                    Buffers: shared hit=50486 read=129234
+                    ->  Parallel Seq Scan on bilety b  (cost=0.00..238406.61 rows=452 width=22) (actual time=111.629..131.598 rows=371 loops=3)
+                          Filter: ((wydarzenie_id = '3086'::bigint) AND ((status)::text = 'wolny'::text))
+                          Rows Removed by Filter: 3358292
+                          Buffers: shared hit=46058 read=129213
+                    ->  Index Scan using miejsca_pkey on miejsca m  (cost=0.42..2.08 rows=1 width=24) (actual time=0.001..0.001 rows=1 loops=1112)
+                          Index Cond: (id = b.miejsce_id)
+                          Buffers: shared hit=4428 read=21
+              ->  Hash  (cost=22.55..22.55 rows=1255 width=10) (actual time=0.138..0.138 rows=1255 loops=2)
+                    Buckets: 2048  Batches: 1  Memory Usage: 75kB
+                    Buffers: shared hit=20
+                    ->  Seq Scan on sektory s  (cost=0.00..22.55 rows=1255 width=10) (actual time=0.006..0.069 rows=1255 loops=2)
+                          Buffers: shared hit=20
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.115 ms
+Execution Time: 135.843 ms

@@ -1,0 +1,38 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.034141549
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.18343264,
+    "r_loops": 1,
+    "r_total_time_ms": 0.154013534,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "wydarzenia",
+          "access_type": "ref",
+          "possible_keys": ["idx_wydarzenia_gatunek"],
+          "key": "idx_wydarzenia_gatunek",
+          "key_length": "259",
+          "used_key_parts": ["gatunek"],
+          "ref": ["const"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 103,
+          "r_rows": 103,
+          "cost": 0.18343264,
+          "r_table_time_ms": 0.078743132,
+          "r_other_time_ms": 0.074475439,
+          "r_engine_stats": {
+            "pages_accessed": 210
+          },
+          "filtered": 100,
+          "r_total_filtered": 9.708737864,
+          "attached_condition": "json_contains(wydarzenia.metadane,'"akustycznie"','$.tagi') and wydarzenia.gatunek = 'komedia'",
+          "r_filtered": 9.708737864
+        }
+      }
+    ]
+  }
+}

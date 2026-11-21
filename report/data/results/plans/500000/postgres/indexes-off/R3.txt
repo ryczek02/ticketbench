@@ -1,0 +1,32 @@
+-- postgres R3 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = $1 AND w.data_rozpoczecia >= $2 AND w.data_rozpoczecia < $3
+			ORDER BY w.data_rozpoczecia
+Sort  (cost=16.60..16.61 rows=2 width=64) (actual time=0.027..0.027 rows=2 loops=1)
+  Sort Key: w.data_rozpoczecia
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=15
+  ->  Nested Loop  (cost=0.14..16.59 rows=2 width=64) (actual time=0.010..0.025 rows=2 loops=1)
+        Buffers: shared hit=15
+        ->  Nested Loop  (cost=0.00..15.91 rows=2 width=65) (actual time=0.008..0.023 rows=2 loops=1)
+              Join Filter: (o.id = w.obiekt_id)
+              Rows Removed by Join Filter: 12
+              Buffers: shared hit=11
+              ->  Seq Scan on obiekty o  (cost=0.00..1.10 rows=1 width=23) (actual time=0.002..0.002 rows=1 loops=1)
+                    Filter: (miasto = 'Szczecin'::text)
+                    Rows Removed by Filter: 7
+                    Buffers: shared hit=1
+              ->  Seq Scan on wydarzenia w  (cost=0.00..14.57 rows=19 width=58) (actual time=0.002..0.020 rows=14 loops=1)
+                    Filter: ((data_rozpoczecia >= '2026-07-15 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2026-08-14 00:00:00+00'::timestamp with time zone))
+                    Rows Removed by Filter: 277
+                    Buffers: shared hit=10
+        ->  Index Scan using kategorie_pkey on kategorie k  (cost=0.14..0.33 rows=1 width=15) (actual time=0.001..0.001 rows=1 loops=2)
+              Index Cond: (id = w.kategoria_id)
+              Buffers: shared hit=4
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.058 ms
+Execution Time: 0.032 ms

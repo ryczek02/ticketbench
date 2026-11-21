@@ -1,0 +1,1 @@
+klienci.updateOne {"update":"klienci","updates":[{"q":{"_id":22062},"u":{"$set":{"email":"x"}},"multi":false}]}

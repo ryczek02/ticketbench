@@ -1,0 +1,37 @@
+-- postgres R3 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = $1 AND w.data_rozpoczecia >= $2 AND w.data_rozpoczecia < $3
+			ORDER BY w.data_rozpoczecia
+Sort  (cost=201.80..201.94 rows=59 width=70) (actual time=0.417..0.419 rows=58 loops=1)
+  Sort Key: w.data_rozpoczecia
+  Sort Method: quicksort  Memory: 30kB
+  Buffers: shared hit=133
+  ->  Hash Join  (cost=7.82..200.06 rows=59 width=70) (actual time=0.026..0.409 rows=58 loops=1)
+        Hash Cond: (w.kategoria_id = k.id)
+        Buffers: shared hit=133
+        ->  Hash Join  (cost=6.55..198.58 rows=59 width=71) (actual time=0.019..0.398 rows=58 loops=1)
+              Hash Cond: (w.obiekt_id = o.id)
+              Buffers: shared hit=132
+              ->  Seq Scan on wydarzenia w  (cost=0.00..191.33 rows=258 width=59) (actual time=0.002..0.371 rows=248 loops=1)
+                    Filter: ((data_rozpoczecia >= '2026-07-15 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2026-08-14 00:00:00+00'::timestamp with time zone))
+                    Rows Removed by Filter: 3955
+                    Buffers: shared hit=128
+              ->  Hash  (cost=6.08..6.08 rows=38 width=28) (actual time=0.013..0.013 rows=38 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 11kB
+                    Buffers: shared hit=4
+                    ->  Seq Scan on obiekty o  (cost=0.00..6.08 rows=38 width=28) (actual time=0.002..0.011 rows=38 loops=1)
+                          Filter: (miasto = 'Warszawa'::text)
+                          Rows Removed by Filter: 128
+                          Buffers: shared hit=4
+        ->  Hash  (cost=1.12..1.12 rows=12 width=15) (actual time=0.005..0.005 rows=12 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 9kB
+              Buffers: shared hit=1
+              ->  Seq Scan on kategorie k  (cost=0.00..1.12 rows=12 width=15) (actual time=0.003..0.004 rows=12 loops=1)
+                    Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.092 ms
+Execution Time: 0.428 ms

@@ -1,0 +1,3 @@
+-- valkey R4 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- ZRANGE ix:k:{id} BYSCORE REV LIMIT 0 50 + MGET | SCAN r:* + MGET + JSON decode of every reservation
+SCAN r:* + MGET + JSON decode of every reservation

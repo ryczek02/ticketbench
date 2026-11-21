@@ -1,0 +1,79 @@
+Indeksy przyspieszają przede wszystkim scenariusze filtrujące po kolumnie
+obcej. Przy 10 mln biletów historia klienta (R4) w~PostgreSQL skraca się
+ze \val{postgres}{10000000}{off}{R4} do \val{postgres}{10000000}{on}{R4}\,ms,
+w~MariaDB z~\val{mariadb}{10000000}{off}{R4} do \val{mariadb}{10000000}{on}{R4}\,ms,
+a~w~MongoDB z~\val{mongo}{10000000}{off}{R4} do \val{mongo}{10000000}{on}{R4}\,ms.
+Wygaszanie rezerwacji (U6) w~MariaDB spada z~\val{mariadb}{10000000}{off}{U6}
+do \val{mariadb}{10000000}{on}{U6}\,ms.
+
+Koszt indeksów widać przy wstawianiu. Import \num{10000} biletów (C3)
+w~PostgreSQL wydłuża się z~\val{postgres}{10000000}{off}{C3} do
+\val{postgres}{10000000}{on}{C3}\,ms, w~MariaDB z~\val{mariadb}{10000000}{off}{C3}
+do \val{mariadb}{10000000}{on}{C3}\,ms, a~w~MongoDB z~\val{mongo}{10000000}{off}{C3}
+do \val{mongo}{10000000}{on}{C3}\,ms. Każdy nowy wiersz trzeba wstawić także
+do dwóch indeksów tabeli \texttt{bilety}. Pojedyncze zapisy po kluczu
+(C1, U1, U2) zmieniają się w~granicach zmienności pomiaru. Indeksy
+zwiększają też rozmiar bazy (tab.~\ref{tab:storage}) i~wymagają czasu na
+budowę (tab.~\ref{tab:load}).
+
+\subsection{Analiza planów zapytań}
+
+Tabele~\ref{tab:plans-rel} i~\ref{tab:plans-nosql} zestawiają automatycznie
+odczytane z~planów ścieżki dostępu (dla 13 scenariuszy odczytujących dane),
+liczbę przeczytanych wierszy lub dokumentów i~czas wykonania raportowany przez
+silnik. Komórki z~pełnym skanem są wyróżnione. Bez indeksów pełny skan
+występuje w~\fullscans{postgres}{10000000}{off} z~\PlanScenarioCount{} planów
+PostgreSQL, \fullscans{mariadb}{10000000}{off} MariaDB i~\fullscans{mongo}{10000000}{off}
+MongoDB. Po dodaniu indeksów zostaje ich odpowiednio \fullscans{postgres}{10000000}{on},
+\fullscans{mariadb}{10000000}{on} i~\fullscans{mongo}{10000000}{on}.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Plany zapytań, bazy relacyjne, 10 mln biletów: ścieżki dostępu,
+przeczytane wiersze, czas silnika. Tło: pełny skan tabeli.}
+\label{tab:plans-rel}
+\resizebox{\linewidth}{!}{\tbinput{generated/tables/plans_postgres_mariadb_10000000.tex}}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\caption{Plany zapytań, MongoDB (\texttt{explain} z~\texttt{executionStats})
+i~polecenia Valkey, 10 mln biletów.}
+\label{tab:plans-nosql}
+\resizebox{\linewidth}{!}{\tbinput{generated/tables/plans_mongo_valkey_10000000.tex}}
+\end{table}
+
+Wnioski z~planów:
+\begin{itemize}
+  \item W~R4 PostgreSQL po dodaniu indeksów zastępuje dwa skany sekwencyjne
+  dwoma skanami indeksów (\texttt{rezerwacje\_klient},
+  \texttt{bilety\_rezerwacja}). Czas silnika spada z~setek milisekund do
+  dziesiątych części milisekundy (rys.~\ref{lst:r4}). MariaDB
+  przechodzi z~\texttt{ALL} na \texttt{ref}: ponad 11 mln przeczytanych wierszy
+  zmienia się w~kilka.
+  \item R6 pokazuje, że indeks nie zawsze pomaga. PostgreSQL wykonuje
+  Index Only Scan na \texttt{bilety(wydarzenie\_id, status)}, bez czytania
+  tabeli. MariaDB czyta cały indeks (\texttt{index}). MongoDB nadal robi
+  \texttt{COLLSCAN}, bo \texttt{\$match} po samym polu \texttt{status} nie
+  pasuje do prefiksu indeksu złożonego \texttt{(wydarzenie\_id, status)}.
+  Kolejność pól w~indeksie złożonym ma znaczenie.
+  \item W~R2 z~indeksem PostgreSQL zostawia pełny skan małej tabeli
+  \texttt{sektory} (kilkaset wierszy). Planer uznaje go za tańszy od
+  indeksu, co jest poprawną decyzją kosztową, a~nie brakiem indeksu.
+  \item W~J1 PostgreSQL używa indeksu GIN na \texttt{metadane} (Bitmap Index
+  Scan), MongoDB indeksu na zagnieżdżonych polach \texttt{metadane.gatunek}
+  i~\texttt{metadane.tagi}. Dane JSON są indeksowane na równi z~kolumnami.
+  \item Valkey nie ma planów. Tabela pokazuje polecenia: bez struktur
+  \texttt{ix:*} zostaje \texttt{SCAN} po przestrzeni kluczy, z~nimi
+  \texttt{ZRANGE} po zbiorze posortowanym.
+\end{itemize}
+
+\begin{figure}[H]
+{\VerbatimInput[firstline=9,frame=single,breaklines=true,breakanywhere=true,fontsize=\tiny,label={bez indeksów}]{data/results/plans/10000000/postgres/indexes-off/R4.txt}}
+{\VerbatimInput[firstline=9,frame=single,breaklines=true,breakanywhere=true,fontsize=\tiny,label={z indeksami}]{data/results/plans/10000000/postgres/indexes-on/R4.txt}}
+\caption{Plan R4 w~PostgreSQL bez indeksów i~z~indeksami, 10 mln biletów.
+Surowe pliki z~\texttt{data/results/plans}, wstawione bez zmian.}
+\label{lst:r4}
+\end{figure}

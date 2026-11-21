@@ -1,0 +1,571 @@
+tickets,store,indexes,scenario,access,full_scan,examined,engine_time_ms
+10000000,postgres,off,C1,Index Scan bilety_pkey,false,-1.0000,0.0460
+10000000,postgres,on,C1,Index Scan bilety_pkey,false,-1.0000,0.0510
+10000000,mariadb,off,C1,range bilety.PK,false,1.0000,0.0979
+10000000,mariadb,on,C1,range bilety.PK,false,1.0000,0.2906
+10000000,mongo,off,C1,IXSCAN _id_,false,1.0000,0.0000
+10000000,mongo,on,C1,IXSCAN _id_,false,1.0000,0.0000
+10000000,valkey,off,C1,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+10000000,valkey,on,C1,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+10000000,postgres,off,C2,Index Scan bilety_pkey,false,-1.0000,0.0870
+10000000,postgres,on,C2,Index Scan bilety_pkey,false,-1.0000,0.0390
+10000000,mariadb,off,C2,range bilety.PK,false,4.0000,0.0459
+10000000,mariadb,on,C2,range bilety.PK,false,4.0000,0.1369
+10000000,mongo,off,C2,IXSCAN _id_,false,5.0000,0.0000
+10000000,mongo,on,C2,IXSCAN _id_,false,5.0000,0.0000
+10000000,valkey,off,C2,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+10000000,valkey,on,C2,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+10000000,valkey,off,C3,"pipelined, O(tickets)",false,-1.0000,-1.0000
+10000000,valkey,on,C3,"pipelined, O(tickets)",false,-1.0000,-1.0000
+10000000,mariadb,off,C4," klienci",false,-1.0000,-1.0000
+10000000,mariadb,on,C4," klienci",false,-1.0000,-1.0000
+10000000,valkey,off,C4,O(fields),false,-1.0000,-1.0000
+10000000,valkey,on,C4,O(fields),false,-1.0000,-1.0000
+10000000,mariadb,off,C5," wydarzenia",false,-1.0000,-1.0000
+10000000,mariadb,on,C5," wydarzenia",false,-1.0000,-1.0000
+10000000,valkey,off,C5,O(1),false,-1.0000,-1.0000
+10000000,valkey,on,C5,O(1),false,-1.0000,-1.0000
+10000000,mariadb,off,C6," platnosci",false,-1.0000,-1.0000
+10000000,mariadb,on,C6," platnosci",false,-1.0000,-1.0000
+10000000,valkey,off,C6,"GET + SET r:{id}, O(size of JSON)",false,-1.0000,-1.0000
+10000000,valkey,on,C6,"GET + SET r:{id}, O(size of JSON)",false,-1.0000,-1.0000
+10000000,postgres,off,D1,Index Scan rezerwacje_pkey,false,-1.0000,0.3790
+10000000,postgres,on,D1,Index Scan rezerwacje_pkey,false,-1.0000,0.0150
+10000000,mariadb,off,D1,range rezerwacje.PK,false,1.0000,0.0524
+10000000,mariadb,on,D1,range rezerwacje.PK,false,1.0000,0.0260
+10000000,mongo,off,D1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,mongo,on,D1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,valkey,off,D1,O(tickets of reservation),false,-1.0000,-1.0000
+10000000,valkey,on,D1,O(tickets of reservation),false,-1.0000,-1.0000
+10000000,postgres,off,D2,Index Scan rezerwacje_pkey,false,-1.0000,0.0290
+10000000,postgres,on,D2,Index Scan rezerwacje_pkey,false,-1.0000,0.2780
+10000000,mariadb,off,D2,range rezerwacje.PK,false,1.0000,0.0742
+10000000,mariadb,on,D2,range rezerwacje.PK,false,1.0000,0.0244
+10000000,mongo,off,D2,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,mongo,on,D2,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,valkey,off,D2,O(tickets of reservation),false,-1.0000,-1.0000
+10000000,valkey,on,D2,O(tickets of reservation),false,-1.0000,-1.0000
+10000000,postgres,off,D3,Seq Scan rezerwacje,true,1680392.0000,43.2240
+10000000,postgres,on,D3,Index Scan rezerwacje_status_wygasa,false,-1.0000,0.2150
+10000000,mariadb,off,D3,ALL rezerwacje,true,1681392.0000,311.1512
+10000000,mariadb,on,D3,range rezerwacje_status_wygasa,false,1000.0000,3.3132
+10000000,mongo,off,D3,COLLSCAN,true,1681392.0000,474.0000
+10000000,mongo,on,D3,IXSCAN status_1_wygasa_o_1,false,1000.0000,0.0000
+10000000,valkey,off,D3,SCAN r:* + filter + EVALSHA release,true,-1.0000,-1.0000
+10000000,valkey,on,D3,ZRANGE ix:wygasle BYSCORE + EVALSHA release,false,-1.0000,-1.0000
+10000000,postgres,off,D4,Seq Scan rezerwacje,true,1680389.0000,42.7570
+10000000,postgres,on,D4,Index Scan rezerwacje_klient,false,-1.0000,0.0070
+10000000,mariadb,off,D4,ALL rezerwacje,true,1680392.0000,258.2355
+10000000,mariadb,on,D4,range rezerwacje_klient,false,2.0000,0.0358
+10000000,mongo,off,D4,COLLSCAN,true,1680392.0000,528.0000
+10000000,mongo,on,D4,IXSCAN klient_id_1_utworzono_-1,false,2.0000,0.0000
+10000000,valkey,off,D4,SCAN r:* + filter + EVALSHA release,true,-1.0000,-1.0000
+10000000,valkey,on,D4,ZRANGE ix:k:{id} + EVALSHA release,false,-1.0000,-1.0000
+10000000,postgres,off,D5,Seq Scan bilety,true,10075987.0000,318.7860
+10000000,postgres,on,D5,Index Scan bilety_wydarzenie_status,false,-1.0000,0.4030
+10000000,mariadb,off,D5,ALL bilety,true,10078375.0000,2969.5804
+10000000,mariadb,on,D5,range bilety_wydarzenie_status,false,2388.0000,5.3078
+10000000,mongo,off,D5,COLLSCAN,true,10078375.0000,2734.0000
+10000000,mongo,on,D5,IXSCAN wydarzenie_id_1_status_1,false,2388.0000,1.0000
+10000000,valkey,off,D5,"DEL wb:{e} wf:{e} w:{e}, O(tickets)",false,-1.0000,-1.0000
+10000000,valkey,on,D5,"DEL wb:{e} wf:{e} w:{e}, O(tickets)",false,-1.0000,-1.0000
+10000000,postgres,off,D6,Seq Scan bilety; Seq Scan wydarzenia,true,4203.0000,773.7510
+10000000,postgres,on,D6,Bitmap Heap Scan wydarzenia; Bitmap Index Scan wydarzenia_data; Index Scan bilety_wydarzenie_status,false,-1.0000,0.4700
+10000000,mariadb,off,D6,ALL bilety; eq_ref wydarzenia.PK,true,20155974.0000,3447.4380
+10000000,mariadb,on,D6,range wydarzenia_data; ref bilety_wydarzenie_status,false,2001.0000,4.7144
+10000000,mongo,off,D6,COLLSCAN,true,1681392.0000,650.0000
+10000000,mongo,on,D6,IXSCAN utworzono_1,false,1000.0000,0.0000
+10000000,valkey,off,D6,SCAN r:* + SMEMBERS w:all + filter,true,-1.0000,-1.0000
+10000000,valkey,on,D6,ZRANGE ix:r:utw + ZRANGE ix:w:data + EVALSHA,false,-1.0000,-1.0000
+10000000,postgres,off,J1,Seq Scan wydarzenia,true,4187.0000,0.4060
+10000000,postgres,on,J1,Bitmap Heap Scan wydarzenia; Bitmap Index Scan wydarzenia_metadane,false,-1.0000,0.0410
+10000000,mongo,off,J1,COLLSCAN,true,4203.0000,2.0000
+10000000,mongo,on,J1,IXSCAN metadane.gatunek_1_metadane.tagi_1,false,10.0000,0.0000
+10000000,valkey,off,J1,SMEMBERS w:all + HGET metadane of every event,true,-1.0000,-1.0000
+10000000,valkey,on,J1,SMEMBERS ix:gatunek:{g} + HGET metadane,false,-1.0000,-1.0000
+10000000,postgres,off,J2,Seq Scan rezerwacje,true,551545.0000,27.2860
+10000000,postgres,on,J2,Bitmap Heap Scan rezerwacje; Bitmap Index Scan rezerwacje_utworzono,false,-1.0000,10.5670
+10000000,mariadb,off,J2,ALL rezerwacje,true,1680392.0000,287.3995
+10000000,mariadb,on,J2,range rezerwacje_utworzono,false,26835.0000,54.2096
+10000000,mongo,off,J2,COLLSCAN,true,1680392.0000,540.0000
+10000000,mongo,on,J2,IXSCAN utworzono_1,false,26835.0000,85.0000
+10000000,valkey,off,J2,SCAN r:* + MGET + JSON decode,true,-1.0000,-1.0000
+10000000,valkey,on,J2,ZRANGE ix:r:utw BYSCORE + MGET,false,-1.0000,-1.0000
+10000000,postgres,off,J3,Index Scan wydarzenia_pkey,false,-1.0000,0.0440
+10000000,postgres,on,J3,Index Scan wydarzenia_pkey,false,-1.0000,0.0760
+10000000,mariadb,off,J3,range wydarzenia.PK,false,1.0000,0.1368
+10000000,mariadb,on,J3,range wydarzenia.PK,false,1.0000,0.0374
+10000000,valkey,off,J3,O(size of JSON),false,-1.0000,-1.0000
+10000000,valkey,on,J3,O(size of JSON),false,-1.0000,-1.0000
+10000000,postgres,off,R1,Index Scan rezerwacje_pkey; Seq Scan bilety; Index Scan miejsca_pkey; Index Scan sektory_pkey,true,3358661.0000,138.9250
+10000000,postgres,on,R1,Index Scan rezerwacje_pkey; Index Scan bilety_rezerwacja; Index Scan miejsca_pkey; Index Scan sektory_pkey,false,-1.0000,0.5530
+10000000,mariadb,off,R1,const r.PK; ALL b; eq_ref m.PK; eq_ref s.PK,true,10075997.0000,2267.3422
+10000000,mariadb,on,R1,const r.PK; ref bilety_rezerwacja; eq_ref m.PK; eq_ref s.PK,false,12.0000,0.3728
+10000000,mongo,off,R1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,mongo,on,R1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,valkey,off,R1,O(1) key lookup,false,-1.0000,-1.0000
+10000000,valkey,on,R1,O(1) key lookup,false,-1.0000,-1.0000
+10000000,postgres,off,R2,Seq Scan bilety; Index Scan miejsca_pkey; Seq Scan sektory,true,3358292.0000,135.8430
+10000000,postgres,on,R2,Index Scan bilety_wydarzenie_status; Index Scan miejsca_pkey; Seq Scan sektory,true,-1.0000,3.8340
+10000000,mariadb,off,R2,ALL b; eq_ref m.PK; eq_ref s.PK,true,10078211.0000,2174.0863
+10000000,mariadb,on,R2,ref bilety_wydarzenie_status; eq_ref m.PK; eq_ref s.PK,false,7083.0000,3.6201
+10000000,mongo,off,R2,COLLSCAN,true,10075987.0000,2940.0000
+10000000,mongo,on,R2,IXSCAN wydarzenie_id_1_status_1,false,2361.0000,2.0000
+10000000,valkey,off,R2,"O(free seats), sorted in the client",false,-1.0000,-1.0000
+10000000,valkey,on,R2,"O(free seats), sorted in the client",false,-1.0000,-1.0000
+10000000,postgres,off,R3,Seq Scan wydarzenia; Seq Scan obiekty; Seq Scan kategorie,true,4083.0000,0.4280
+10000000,postgres,on,R3,Bitmap Heap Scan obiekty; Bitmap Index Scan obiekty_miasto; Index Scan wydarzenia_obiekt_data; Seq Scan kategorie,true,-1.0000,0.1080
+10000000,mariadb,off,R3,ALL w; eq_ref o.PK; eq_ref k.PK,true,4509.0000,1.7799
+10000000,mariadb,on,R3,range wydarzenia_data; eq_ref o.PK; eq_ref k.PK,false,508.0000,0.2859
+10000000,mongo,off,R3,COLLSCAN,true,4203.0000,2.0000
+10000000,mongo,on,R3,IXSCAN miasto_1_data_rozpoczecia_1,false,46.0000,1.0000
+10000000,valkey,off,R3,SMEMBERS w:all + HMGET every event,true,-1.0000,-1.0000
+10000000,valkey,on,R3,ZRANGE ix:miasto:{c} BYSCORE,false,-1.0000,-1.0000
+10000000,postgres,off,R4,Seq Scan bilety; Seq Scan rezerwacje,true,560130.0000,293.2270
+10000000,postgres,on,R4,Index Scan rezerwacje_klient; Index Scan bilety_rezerwacja,false,-1.0000,0.0480
+10000000,mariadb,off,R4,ALL r; ALL b,true,11756379.0000,2622.9062
+10000000,mariadb,on,R4,ref rezerwacje_klient; ref bilety_rezerwacja,false,7.0000,0.0436
+10000000,mongo,off,R4,COLLSCAN,true,1680392.0000,596.0000
+10000000,mongo,on,R4,IXSCAN klient_id_1_utworzono_-1,false,1.0000,0.0000
+10000000,valkey,off,R4,SCAN r:* + MGET + JSON decode of every reservation,true,-1.0000,-1.0000
+10000000,valkey,on,R4,ZRANGE ix:k:{id} BYSCORE REV LIMIT 0 50 + MGET,false,-1.0000,-1.0000
+10000000,postgres,off,R5,Seq Scan bilety; Seq Scan wydarzenia,true,5411226.0000,656.5080
+10000000,postgres,on,R5,Bitmap Heap Scan wydarzenia; Bitmap Index Scan wydarzenia_organizator; Index Scan bilety_wydarzenie_status,false,-1.0000,7.6530
+10000000,mariadb,off,R5,ALL w; ALL b,true,10080190.0000,5167.3775
+10000000,mariadb,on,R5,ref wydarzenia_organizator; ref bilety_wydarzenie_status,false,25411.0000,80.9679
+10000000,mongo,off,R5,COLLSCAN,true,4203.0000,1.0000
+10000000,mongo,on,R5,IXSCAN organizator_id_1,false,16.0000,0.0000
+10000000,valkey,off,R5,counters kept on write,false,-1.0000,-1.0000
+10000000,valkey,on,R5,counters kept on write,false,-1.0000,-1.0000
+10000000,postgres,off,R6,Seq Scan bilety; Index Scan wydarzenia_pkey,true,1802350.0000,269.1900
+10000000,postgres,on,R6,Index Only Scan bilety_wydarzenie_status; Index Scan wydarzenia_pkey,false,-1.0000,163.3680
+10000000,mariadb,off,R6,ALL <derived2>; ALL bilety; eq_ref w.PK,true,10076007.0000,2303.2836
+10000000,mariadb,on,R6,ALL <derived2>; index bilety_wydarzenie_status; eq_ref w.PK,true,10152993.0000,730.5243
+10000000,mongo,off,R6,COLLSCAN,true,10075987.0000,2469.0000
+10000000,mongo,on,R6,COLLSCAN,true,10152973.0000,2382.0000
+10000000,valkey,off,R6,"O(log N + 10), precomputed counter",false,-1.0000,-1.0000
+10000000,valkey,on,R6,"O(log N + 10), precomputed counter",false,-1.0000,-1.0000
+10000000,postgres,off,U1,Index Scan rezerwacje_pkey,false,-1.0000,0.0760
+10000000,postgres,on,U1,Index Scan rezerwacje_pkey,false,-1.0000,0.3950
+10000000,mariadb,off,U1,range rezerwacje.PK,false,1.0000,0.0505
+10000000,mariadb,on,U1,range rezerwacje.PK,false,1.0000,0.2001
+10000000,mongo,off,U1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,mongo,on,U1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+10000000,valkey,off,U1,O(size of JSON),false,-1.0000,-1.0000
+10000000,valkey,on,U1,O(size of JSON),false,-1.0000,-1.0000
+10000000,postgres,off,U2,Index Scan bilety_pkey,false,-1.0000,0.0400
+10000000,postgres,on,U2,Index Scan bilety_pkey,false,-1.0000,0.0550
+10000000,mariadb,off,U2,range bilety.PK,false,1.0000,0.1220
+10000000,mariadb,on,U2,range bilety.PK,false,1.0000,0.0313
+10000000,mongo,off,U2,IXSCAN _id_,false,1.0000,0.0000
+10000000,mongo,on,U2,IXSCAN _id_,false,1.0000,0.0000
+10000000,valkey,off,U2,SREM wf:{e} + HSET wb:{e} + SET blok:{t} PX,false,-1.0000,-1.0000
+10000000,valkey,on,U2,SREM wf:{e} + HSET wb:{e} + SET blok:{t} PX,false,-1.0000,-1.0000
+10000000,postgres,off,U3,Seq Scan bilety; Index Scan miejsca_pkey,true,10074565.0000,349.0480
+10000000,postgres,on,U3,Index Scan bilety_wydarzenie_status; Index Scan miejsca_sektor,false,-1.0000,0.3790
+10000000,mariadb,off,U3,ALL b; eq_ref m.PK,true,10077410.0000,3306.9985
+10000000,mariadb,on,U3,ref bilety_wydarzenie_status; eq_ref miejsca_sektor,false,554.0000,1.9892
+10000000,mongo,off,U3,COLLSCAN,true,10075987.0000,2715.0000
+10000000,mongo,on,U3,IXSCAN wydarzenie_id_1_status_1,false,510.0000,0.0000
+10000000,valkey,off,U3,"HGETALL wb:{e}, O(tickets of event)",false,-1.0000,-1.0000
+10000000,valkey,on,U3,"HGETALL wb:{e}, O(tickets of event)",false,-1.0000,-1.0000
+10000000,postgres,off,U4,Index Scan klienci_pkey,false,-1.0000,2.9880
+10000000,postgres,on,U4,Index Scan klienci_pkey,false,-1.0000,0.0380
+10000000,mariadb,off,U4,range klienci.PK,false,1.0000,0.3340
+10000000,mariadb,on,U4,range klienci.PK,false,1.0000,0.3352
+10000000,valkey,off,U4,O(1),false,-1.0000,-1.0000
+10000000,valkey,on,U4,O(1),false,-1.0000,-1.0000
+10000000,postgres,off,U5,Index Scan wydarzenia_pkey,false,-1.0000,0.0390
+10000000,postgres,on,U5,Index Scan wydarzenia_pkey,false,-1.0000,0.0400
+10000000,mariadb,off,U5,range wydarzenia.PK,false,1.0000,0.1629
+10000000,mariadb,on,U5,range wydarzenia.PK,false,1.0000,0.0626
+10000000,valkey,off,U5,O(log N),false,-1.0000,-1.0000
+10000000,valkey,on,U5,O(log N),false,-1.0000,-1.0000
+10000000,postgres,off,U6,Seq Scan rezerwacje; Seq Scan bilety,true,1680392.0000,863.8930
+10000000,postgres,on,U6,Index Scan rezerwacje_status_wygasa; Index Scan bilety_rezerwacja,false,-1.0000,6.3600
+10000000,mariadb,off,U6,ALL b; eq_ref r.PK,true,15466450.0000,4248.5440
+10000000,mariadb,on,U6,range rezerwacje_status_wygasa; ref bilety_rezerwacja,false,2000.0000,4.8438
+10000000,mongo,off,U6,COLLSCAN,true,1681392.0000,616.0000
+10000000,mongo,on,U6,IXSCAN status_1_wygasa_o_1,false,1000.0000,0.0000
+10000000,valkey,off,U6,"SCAN r:* + MGET + filter, then EVALSHA release",true,-1.0000,-1.0000
+10000000,valkey,on,U6,ZRANGE ix:oczek -inf asOf BYSCORE + EVALSHA release,false,-1.0000,-1.0000
+1000000,postgres,off,C1,Index Scan bilety_pkey,false,-1.0000,0.0230
+1000000,postgres,on,C1,Index Scan bilety_pkey,false,-1.0000,0.0230
+1000000,mariadb,off,C1,range bilety.PK,false,1.0000,0.0132
+1000000,mariadb,on,C1,range bilety.PK,false,1.0000,0.0342
+1000000,mongo,off,C1,IXSCAN _id_,false,1.0000,0.0000
+1000000,mongo,on,C1,IXSCAN _id_,false,1.0000,0.0000
+1000000,valkey,off,C1,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+1000000,valkey,on,C1,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+1000000,postgres,off,C2,Index Scan bilety_pkey,false,-1.0000,0.0220
+1000000,postgres,on,C2,Index Scan bilety_pkey,false,-1.0000,0.0280
+1000000,mariadb,off,C2,range bilety.PK,false,4.0000,0.0386
+1000000,mariadb,on,C2,range bilety.PK,false,4.0000,0.0454
+1000000,mongo,off,C2,IXSCAN _id_,false,5.0000,0.0000
+1000000,mongo,on,C2,IXSCAN _id_,false,5.0000,0.0000
+1000000,valkey,off,C2,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+1000000,valkey,on,C2,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+1000000,valkey,off,C3,"pipelined, O(tickets)",false,-1.0000,-1.0000
+1000000,valkey,on,C3,"pipelined, O(tickets)",false,-1.0000,-1.0000
+1000000,mariadb,off,C4," klienci",false,-1.0000,-1.0000
+1000000,mariadb,on,C4," klienci",false,-1.0000,-1.0000
+1000000,valkey,off,C4,O(fields),false,-1.0000,-1.0000
+1000000,valkey,on,C4,O(fields),false,-1.0000,-1.0000
+1000000,mariadb,off,C5," wydarzenia",false,-1.0000,-1.0000
+1000000,mariadb,on,C5," wydarzenia",false,-1.0000,-1.0000
+1000000,valkey,off,C5,O(1),false,-1.0000,-1.0000
+1000000,valkey,on,C5,O(1),false,-1.0000,-1.0000
+1000000,mariadb,off,C6," platnosci",false,-1.0000,-1.0000
+1000000,mariadb,on,C6," platnosci",false,-1.0000,-1.0000
+1000000,valkey,off,C6,"GET + SET r:{id}, O(size of JSON)",false,-1.0000,-1.0000
+1000000,valkey,on,C6,"GET + SET r:{id}, O(size of JSON)",false,-1.0000,-1.0000
+1000000,postgres,off,D1,Index Scan rezerwacje_pkey,false,-1.0000,0.0120
+1000000,postgres,on,D1,Index Scan rezerwacje_pkey,false,-1.0000,0.0090
+1000000,mariadb,off,D1,range rezerwacje.PK,false,1.0000,0.0128
+1000000,mariadb,on,D1,range rezerwacje.PK,false,1.0000,0.0138
+1000000,mongo,off,D1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,mongo,on,D1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,valkey,off,D1,O(tickets of reservation),false,-1.0000,-1.0000
+1000000,valkey,on,D1,O(tickets of reservation),false,-1.0000,-1.0000
+1000000,postgres,off,D2,Index Scan rezerwacje_pkey,false,-1.0000,0.0110
+1000000,postgres,on,D2,Index Scan rezerwacje_pkey,false,-1.0000,0.0070
+1000000,mariadb,off,D2,range rezerwacje.PK,false,1.0000,0.0124
+1000000,mariadb,on,D2,range rezerwacje.PK,false,1.0000,0.0114
+1000000,mongo,off,D2,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,mongo,on,D2,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,valkey,off,D2,O(tickets of reservation),false,-1.0000,-1.0000
+1000000,valkey,on,D2,O(tickets of reservation),false,-1.0000,-1.0000
+1000000,postgres,off,D3,Seq Scan rezerwacje,true,176395.0000,4.3450
+1000000,postgres,on,D3,Index Scan rezerwacje_status_wygasa,false,-1.0000,0.2190
+1000000,mariadb,off,D3,ALL rezerwacje,true,177395.0000,27.7453
+1000000,mariadb,on,D3,range rezerwacje_status_wygasa,false,1000.0000,2.4415
+1000000,mongo,off,D3,COLLSCAN,true,177395.0000,43.0000
+1000000,mongo,on,D3,IXSCAN status_1_wygasa_o_1,false,1000.0000,0.0000
+1000000,valkey,off,D3,SCAN r:* + filter + EVALSHA release,true,-1.0000,-1.0000
+1000000,valkey,on,D3,ZRANGE ix:wygasle BYSCORE + EVALSHA release,false,-1.0000,-1.0000
+1000000,postgres,off,D4,Seq Scan rezerwacje,true,176394.0000,3.6420
+1000000,postgres,on,D4,Index Scan rezerwacje_klient,false,-1.0000,0.0060
+1000000,mariadb,off,D4,ALL rezerwacje,true,176395.0000,26.9817
+1000000,mariadb,on,D4,range rezerwacje_klient,false,4.0000,0.0338
+1000000,mongo,off,D4,COLLSCAN,true,176395.0000,44.0000
+1000000,mongo,on,D4,IXSCAN klient_id_1_utworzono_-1,false,4.0000,0.0000
+1000000,valkey,off,D4,SCAN r:* + filter + EVALSHA release,true,-1.0000,-1.0000
+1000000,valkey,on,D4,ZRANGE ix:k:{id} + EVALSHA release,false,-1.0000,-1.0000
+1000000,postgres,off,D5,Seq Scan bilety,true,1075975.0000,22.6200
+1000000,postgres,on,D5,Index Scan bilety_wydarzenie_status,false,-1.0000,0.3930
+1000000,mariadb,off,D5,ALL bilety,true,1078363.0000,155.7507
+1000000,mariadb,on,D5,range bilety_wydarzenie_status,false,2388.0000,4.7647
+1000000,mongo,off,D5,COLLSCAN,true,1078363.0000,253.0000
+1000000,mongo,on,D5,IXSCAN wydarzenie_id_1_status_1,false,2388.0000,1.0000
+1000000,valkey,off,D5,"DEL wb:{e} wf:{e} w:{e}, O(tickets)",false,-1.0000,-1.0000
+1000000,valkey,on,D5,"DEL wb:{e} wf:{e} w:{e}, O(tickets)",false,-1.0000,-1.0000
+1000000,postgres,off,D6,Seq Scan bilety; Seq Scan wydarzenia,true,523.0000,73.8530
+1000000,postgres,on,D6,Index Scan wydarzenia_data; Index Scan bilety_wydarzenie_status,false,-1.0000,0.4510
+1000000,mariadb,off,D6,ALL bilety; eq_ref wydarzenia.PK,true,2155950.0000,194.6826
+1000000,mariadb,on,D6,range wydarzenia_data; ref bilety_wydarzenie_status,false,2001.0000,4.4480
+1000000,mongo,off,D6,COLLSCAN,true,177395.0000,45.0000
+1000000,mongo,on,D6,IXSCAN utworzono_1,false,1000.0000,0.0000
+1000000,valkey,off,D6,SCAN r:* + SMEMBERS w:all + filter,true,-1.0000,-1.0000
+1000000,valkey,on,D6,ZRANGE ix:r:utw + ZRANGE ix:w:data + EVALSHA,false,-1.0000,-1.0000
+1000000,postgres,off,J1,Seq Scan wydarzenia,true,520.0000,0.0580
+1000000,postgres,on,J1,Bitmap Heap Scan wydarzenia; Bitmap Index Scan wydarzenia_metadane,false,-1.0000,0.0800
+1000000,mongo,off,J1,COLLSCAN,true,523.0000,0.0000
+1000000,mongo,on,J1,IXSCAN metadane.gatunek_1_metadane.tagi_1,false,5.0000,0.0000
+1000000,valkey,off,J1,SMEMBERS w:all + HGET metadane of every event,true,-1.0000,-1.0000
+1000000,valkey,on,J1,SMEMBERS ix:gatunek:{g} + HGET metadane,false,-1.0000,-1.0000
+1000000,postgres,off,J2,Seq Scan rezerwacje,true,57938.0000,4.4700
+1000000,postgres,on,J2,Bitmap Heap Scan rezerwacje; Bitmap Index Scan rezerwacje_utworzono,false,-1.0000,1.0400
+1000000,mariadb,off,J2,ALL rezerwacje,true,176395.0000,22.9146
+1000000,mariadb,on,J2,range rezerwacje_utworzono,false,3023.0000,4.9181
+1000000,mongo,off,J2,COLLSCAN,true,176395.0000,33.0000
+1000000,mongo,on,J2,IXSCAN utworzono_1,false,3023.0000,4.0000
+1000000,valkey,off,J2,SCAN r:* + MGET + JSON decode,true,-1.0000,-1.0000
+1000000,valkey,on,J2,ZRANGE ix:r:utw BYSCORE + MGET,false,-1.0000,-1.0000
+1000000,postgres,off,J3,Index Scan wydarzenia_pkey,false,-1.0000,0.0290
+1000000,postgres,on,J3,Index Scan wydarzenia_pkey,false,-1.0000,0.0340
+1000000,mariadb,off,J3,range wydarzenia.PK,false,1.0000,0.0333
+1000000,mariadb,on,J3,range wydarzenia.PK,false,1.0000,0.0204
+1000000,valkey,off,J3,O(size of JSON),false,-1.0000,-1.0000
+1000000,valkey,on,J3,O(size of JSON),false,-1.0000,-1.0000
+1000000,postgres,off,R1,Index Scan rezerwacje_pkey; Seq Scan bilety; Index Scan miejsca_pkey; Index Scan sektory_pkey,true,358657.0000,14.3020
+1000000,postgres,on,R1,Index Scan rezerwacje_pkey; Index Scan bilety_rezerwacja; Index Scan miejsca_pkey; Index Scan sektory_pkey,false,-1.0000,0.0270
+1000000,mariadb,off,R1,const r.PK; ALL b; eq_ref m.PK; eq_ref s.PK,true,1075983.0000,89.4263
+1000000,mariadb,on,R1,const r.PK; ref bilety_rezerwacja; eq_ref m.PK; eq_ref s.PK,false,9.0000,0.0172
+1000000,mongo,off,R1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,mongo,on,R1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,valkey,off,R1,O(1) key lookup,false,-1.0000,-1.0000
+1000000,valkey,on,R1,O(1) key lookup,false,-1.0000,-1.0000
+1000000,postgres,off,R2,Seq Scan bilety; Index Scan miejsca_pkey; Seq Scan sektory,true,358418.0000,14.1230
+1000000,postgres,on,R2,Index Scan bilety_wydarzenie_status; Index Scan miejsca_pkey; Seq Scan sektory,true,-1.0000,0.6200
+1000000,mariadb,off,R2,ALL b; eq_ref m.PK; eq_ref s.PK,true,1077417.0000,86.9366
+1000000,mariadb,on,R2,ref bilety_wydarzenie_status; eq_ref m.PK; eq_ref s.PK,false,2118.0000,0.6297
+1000000,mongo,off,R2,COLLSCAN,true,1075975.0000,288.0000
+1000000,mongo,on,R2,IXSCAN wydarzenie_id_1_status_1,false,706.0000,0.0000
+1000000,valkey,off,R2,"O(free seats), sorted in the client",false,-1.0000,-1.0000
+1000000,valkey,on,R2,"O(free seats), sorted in the client",false,-1.0000,-1.0000
+1000000,postgres,off,R3,Seq Scan wydarzenia; Seq Scan obiekty; Index Scan kategorie_pkey,true,514.0000,0.0620
+1000000,postgres,on,R3,Seq Scan obiekty; Index Scan wydarzenia_obiekt_data; Index Scan kategorie_pkey,true,14.0000,0.0230
+1000000,mariadb,off,R3,ALL w; eq_ref o.PK; eq_ref k.PK,true,550.0000,0.0829
+1000000,mariadb,on,R3,range wydarzenia_data; range obiekty_miasto; eq_ref k.PK,false,38.0000,0.0355
+1000000,mongo,off,R3,COLLSCAN,true,523.0000,0.0000
+1000000,mongo,on,R3,IXSCAN miasto_1_data_rozpoczecia_1,false,4.0000,0.0000
+1000000,valkey,off,R3,SMEMBERS w:all + HMGET every event,true,-1.0000,-1.0000
+1000000,valkey,on,R3,ZRANGE ix:miasto:{c} BYSCORE,false,-1.0000,-1.0000
+1000000,postgres,off,R4,Seq Scan bilety; Seq Scan rezerwacje,true,58797.0000,32.9740
+1000000,postgres,on,R4,Index Scan rezerwacje_klient; Index Scan bilety_rezerwacja,false,-1.0000,0.0520
+1000000,mariadb,off,R4,ALL r; ALL b,true,1252370.0000,150.8364
+1000000,mariadb,on,R4,ref rezerwacje_klient; ref bilety_rezerwacja,false,21.0000,0.0567
+1000000,mongo,off,R4,COLLSCAN,true,176395.0000,43.0000
+1000000,mongo,on,R4,IXSCAN klient_id_1_utworzono_-1,false,5.0000,0.0000
+1000000,valkey,off,R4,SCAN r:* + MGET + JSON decode of every reservation,true,-1.0000,-1.0000
+1000000,valkey,on,R4,ZRANGE ix:k:{id} BYSCORE REV LIMIT 0 50 + MGET,false,-1.0000,-1.0000
+1000000,postgres,off,R5,Seq Scan bilety; Seq Scan wydarzenia,true,600899.0000,60.7840
+1000000,postgres,on,R5,Index Scan wydarzenia_pkey; Index Scan bilety_wydarzenie_status,false,546.0000,4.0950
+1000000,mariadb,off,R5,ALL w; ALL b,true,1076498.0000,396.3135
+1000000,mariadb,on,R5,ref wydarzenia_organizator; ref bilety_wydarzenie_status,false,26201.0000,19.1263
+1000000,mongo,off,R5,COLLSCAN,true,523.0000,0.0000
+1000000,mongo,on,R5,IXSCAN organizator_id_1,false,25.0000,0.0000
+1000000,valkey,off,R5,counters kept on write,false,-1.0000,-1.0000
+1000000,valkey,on,R5,counters kept on write,false,-1.0000,-1.0000
+1000000,postgres,off,R6,Seq Scan bilety; Index Scan wydarzenia_pkey,true,200135.0000,26.7590
+1000000,postgres,on,R6,Index Only Scan bilety_wydarzenie_status; Index Scan wydarzenia_pkey,false,-1.0000,20.1880
+1000000,mariadb,off,R6,ALL <derived2>; ALL bilety; eq_ref w.PK,true,1075995.0000,94.3207
+1000000,mariadb,on,R6,ALL <derived2>; index bilety_wydarzenie_status; eq_ref w.PK,true,1152974.0000,73.3039
+1000000,mongo,off,R6,COLLSCAN,true,1075975.0000,207.0000
+1000000,mongo,on,R6,COLLSCAN,true,1152954.0000,218.0000
+1000000,valkey,off,R6,"O(log N + 10), precomputed counter",false,-1.0000,-1.0000
+1000000,valkey,on,R6,"O(log N + 10), precomputed counter",false,-1.0000,-1.0000
+1000000,postgres,off,U1,Index Scan rezerwacje_pkey,false,-1.0000,0.0390
+1000000,postgres,on,U1,Index Scan rezerwacje_pkey,false,-1.0000,0.0810
+1000000,mariadb,off,U1,range rezerwacje.PK,false,1.0000,0.0155
+1000000,mariadb,on,U1,range rezerwacje.PK,false,1.0000,0.0092
+1000000,mongo,off,U1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,mongo,on,U1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+1000000,valkey,off,U1,O(size of JSON),false,-1.0000,-1.0000
+1000000,valkey,on,U1,O(size of JSON),false,-1.0000,-1.0000
+1000000,postgres,off,U2,Index Scan bilety_pkey,false,-1.0000,0.0260
+1000000,postgres,on,U2,Index Scan bilety_pkey,false,-1.0000,0.0230
+1000000,mariadb,off,U2,range bilety.PK,false,1.0000,0.0252
+1000000,mariadb,on,U2,range bilety.PK,false,1.0000,0.0279
+1000000,mongo,off,U2,IXSCAN _id_,false,1.0000,0.0000
+1000000,mongo,on,U2,IXSCAN _id_,false,1.0000,0.0000
+1000000,valkey,off,U2,SREM wf:{e} + HSET wb:{e} + SET blok:{t} PX,false,-1.0000,-1.0000
+1000000,valkey,on,U2,SREM wf:{e} + HSET wb:{e} + SET blok:{t} PX,false,-1.0000,-1.0000
+1000000,postgres,off,U3,Seq Scan bilety; Index Scan miejsca_pkey,true,1075020.0000,28.3910
+1000000,postgres,on,U3,Index Scan bilety_wydarzenie_status; Index Scan miejsca_sektor,false,-1.0000,1.1200
+1000000,mariadb,off,U3,ALL b; eq_ref m.PK,true,1076931.0000,159.6085
+1000000,mariadb,on,U3,ref bilety_wydarzenie_status; eq_ref miejsca_sektor,false,1654.0000,1.1284
+1000000,mongo,off,U3,COLLSCAN,true,1075975.0000,250.0000
+1000000,mongo,on,U3,IXSCAN wydarzenie_id_1_status_1,false,1447.0000,1.0000
+1000000,valkey,off,U3,"HGETALL wb:{e}, O(tickets of event)",false,-1.0000,-1.0000
+1000000,valkey,on,U3,"HGETALL wb:{e}, O(tickets of event)",false,-1.0000,-1.0000
+1000000,postgres,off,U4,Index Scan klienci_pkey,false,-1.0000,0.0240
+1000000,postgres,on,U4,Index Scan klienci_pkey,false,-1.0000,0.0180
+1000000,mariadb,off,U4,range klienci.PK,false,1.0000,0.0238
+1000000,mariadb,on,U4,range klienci.PK,false,1.0000,0.0281
+1000000,valkey,off,U4,O(1),false,-1.0000,-1.0000
+1000000,valkey,on,U4,O(1),false,-1.0000,-1.0000
+1000000,postgres,off,U5,Index Scan wydarzenia_pkey,false,-1.0000,0.0270
+1000000,postgres,on,U5,Index Scan wydarzenia_pkey,false,-1.0000,0.0270
+1000000,mariadb,off,U5,range wydarzenia.PK,false,1.0000,0.0129
+1000000,mariadb,on,U5,range wydarzenia.PK,false,1.0000,0.0211
+1000000,valkey,off,U5,O(log N),false,-1.0000,-1.0000
+1000000,valkey,on,U5,O(log N),false,-1.0000,-1.0000
+1000000,postgres,off,U6,Seq Scan rezerwacje; Seq Scan bilety,true,176395.0000,90.3320
+1000000,postgres,on,U6,Index Scan rezerwacje_status_wygasa; Index Scan bilety_rezerwacja,false,-1.0000,7.2090
+1000000,mariadb,off,U6,ALL b; eq_ref r.PK,true,1627158.0000,222.6696
+1000000,mariadb,on,U6,range rezerwacje_status_wygasa; ref bilety_rezerwacja,false,2000.0000,4.5271
+1000000,mongo,off,U6,COLLSCAN,true,177395.0000,42.0000
+1000000,mongo,on,U6,IXSCAN status_1_wygasa_o_1,false,1000.0000,0.0000
+1000000,valkey,off,U6,"SCAN r:* + MGET + filter, then EVALSHA release",true,-1.0000,-1.0000
+1000000,valkey,on,U6,ZRANGE ix:oczek -inf asOf BYSCORE + EVALSHA release,false,-1.0000,-1.0000
+500000,postgres,off,C1,Index Scan bilety_pkey,false,-1.0000,0.0260
+500000,postgres,on,C1,Index Scan bilety_pkey,false,-1.0000,0.0260
+500000,mariadb,off,C1,range bilety.PK,false,1.0000,0.0125
+500000,mariadb,on,C1,range bilety.PK,false,1.0000,0.0333
+500000,mongo,off,C1,IXSCAN _id_,false,1.0000,0.0000
+500000,mongo,on,C1,IXSCAN _id_,false,1.0000,0.0000
+500000,valkey,off,C1,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+500000,valkey,on,C1,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+500000,postgres,off,C2,Index Scan bilety_pkey,false,-1.0000,0.0270
+500000,postgres,on,C2,Index Scan bilety_pkey,false,-1.0000,0.0270
+500000,mariadb,off,C2,range bilety.PK,false,4.0000,0.0140
+500000,mariadb,on,C2,range bilety.PK,false,4.0000,0.0423
+500000,mongo,off,C2,IXSCAN _id_,false,5.0000,0.0000
+500000,mongo,on,C2,IXSCAN _id_,false,5.0000,0.0000
+500000,valkey,off,C2,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+500000,valkey,on,C2,"SISMEMBER wf:{e} + SREM + HSET wb:{e} + SET r:{id}, O(tickets)",false,-1.0000,-1.0000
+500000,valkey,off,C3,"pipelined, O(tickets)",false,-1.0000,-1.0000
+500000,valkey,on,C3,"pipelined, O(tickets)",false,-1.0000,-1.0000
+500000,mariadb,off,C4," klienci",false,-1.0000,-1.0000
+500000,mariadb,on,C4," klienci",false,-1.0000,-1.0000
+500000,valkey,off,C4,O(fields),false,-1.0000,-1.0000
+500000,valkey,on,C4,O(fields),false,-1.0000,-1.0000
+500000,mariadb,off,C5," wydarzenia",false,-1.0000,-1.0000
+500000,mariadb,on,C5," wydarzenia",false,-1.0000,-1.0000
+500000,valkey,off,C5,O(1),false,-1.0000,-1.0000
+500000,valkey,on,C5,O(1),false,-1.0000,-1.0000
+500000,mariadb,off,C6," platnosci",false,-1.0000,-1.0000
+500000,mariadb,on,C6," platnosci",false,-1.0000,-1.0000
+500000,valkey,off,C6,"GET + SET r:{id}, O(size of JSON)",false,-1.0000,-1.0000
+500000,valkey,on,C6,"GET + SET r:{id}, O(size of JSON)",false,-1.0000,-1.0000
+500000,postgres,off,D1,Index Scan rezerwacje_pkey,false,-1.0000,0.0100
+500000,postgres,on,D1,Index Scan rezerwacje_pkey,false,-1.0000,0.0060
+500000,mariadb,off,D1,range rezerwacje.PK,false,1.0000,0.0086
+500000,mariadb,on,D1,range rezerwacje.PK,false,1.0000,0.0094
+500000,mongo,off,D1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,mongo,on,D1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,valkey,off,D1,O(tickets of reservation),false,-1.0000,-1.0000
+500000,valkey,on,D1,O(tickets of reservation),false,-1.0000,-1.0000
+500000,postgres,off,D2,Index Scan rezerwacje_pkey,false,-1.0000,0.0120
+500000,postgres,on,D2,Index Scan rezerwacje_pkey,false,-1.0000,0.0070
+500000,mariadb,off,D2,range rezerwacje.PK,false,1.0000,0.0088
+500000,mariadb,on,D2,range rezerwacje.PK,false,1.0000,0.0117
+500000,mongo,off,D2,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,mongo,on,D2,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,valkey,off,D2,O(tickets of reservation),false,-1.0000,-1.0000
+500000,valkey,on,D2,O(tickets of reservation),false,-1.0000,-1.0000
+500000,postgres,off,D3,Seq Scan rezerwacje,true,88806.0000,2.5140
+500000,postgres,on,D3,Index Scan rezerwacje_status_wygasa,false,-1.0000,0.2300
+500000,mariadb,off,D3,ALL rezerwacje,true,89806.0000,13.1911
+500000,mariadb,on,D3,range rezerwacje_status_wygasa,false,1000.0000,2.3697
+500000,mongo,off,D3,COLLSCAN,true,89806.0000,22.0000
+500000,mongo,on,D3,IXSCAN status_1_wygasa_o_1,false,1000.0000,0.0000
+500000,valkey,off,D3,SCAN r:* + filter + EVALSHA release,true,-1.0000,-1.0000
+500000,valkey,on,D3,ZRANGE ix:wygasle BYSCORE + EVALSHA release,false,-1.0000,-1.0000
+500000,postgres,off,D4,Seq Scan rezerwacje,true,88804.0000,1.8000
+500000,postgres,on,D4,Index Scan rezerwacje_klient,false,-1.0000,0.0070
+500000,mariadb,off,D4,ALL rezerwacje,true,88806.0000,13.7500
+500000,mariadb,on,D4,range rezerwacje_klient,false,1.0000,0.0134
+500000,mongo,off,D4,COLLSCAN,true,88806.0000,22.0000
+500000,mongo,on,D4,IXSCAN klient_id_1_utworzono_-1,false,1.0000,0.0000
+500000,valkey,off,D4,SCAN r:* + filter + EVALSHA release,true,-1.0000,-1.0000
+500000,valkey,on,D4,ZRANGE ix:k:{id} + EVALSHA release,false,-1.0000,-1.0000
+500000,postgres,off,D5,Seq Scan bilety,true,575980.0000,12.0530
+500000,postgres,on,D5,Index Scan bilety_wydarzenie_status,false,-1.0000,0.4030
+500000,mariadb,off,D5,ALL bilety,true,578368.0000,78.0987
+500000,mariadb,on,D5,range bilety_wydarzenie_status,false,2388.0000,4.8694
+500000,mongo,off,D5,COLLSCAN,true,578368.0000,134.0000
+500000,mongo,on,D5,IXSCAN wydarzenie_id_1_status_1,false,2388.0000,1.0000
+500000,valkey,off,D5,"DEL wb:{e} wf:{e} w:{e}, O(tickets)",false,-1.0000,-1.0000
+500000,valkey,on,D5,"DEL wb:{e} wf:{e} w:{e}, O(tickets)",false,-1.0000,-1.0000
+500000,postgres,off,D6,Seq Scan bilety; Seq Scan wydarzenia,true,291.0000,42.1610
+500000,postgres,on,D6,Index Scan wydarzenia_data; Index Scan bilety_wydarzenie_status,false,-1.0000,0.4530
+500000,mariadb,off,D6,ALL bilety; eq_ref wydarzenia.PK,true,1155960.0000,95.5794
+500000,mariadb,on,D6,range wydarzenia_data; ref bilety_wydarzenie_status,false,2001.0000,4.3718
+500000,mongo,off,D6,COLLSCAN,true,89806.0000,25.0000
+500000,mongo,on,D6,IXSCAN utworzono_1,false,1000.0000,0.0000
+500000,valkey,off,D6,SCAN r:* + SMEMBERS w:all + filter,true,-1.0000,-1.0000
+500000,valkey,on,D6,ZRANGE ix:r:utw + ZRANGE ix:w:data + EVALSHA,false,-1.0000,-1.0000
+500000,postgres,off,J1,Seq Scan wydarzenia,true,291.0000,0.0350
+500000,postgres,on,J1,Bitmap Heap Scan wydarzenia; Bitmap Index Scan wydarzenia_metadane,false,-1.0000,0.0190
+500000,mongo,off,J1,COLLSCAN,true,291.0000,0.0000
+500000,mongo,on,J1,IXSCAN metadane.gatunek_1_metadane.tagi_1,false,0.0000,0.0000
+500000,valkey,off,J1,SMEMBERS w:all + HGET metadane of every event,true,-1.0000,-1.0000
+500000,valkey,on,J1,SMEMBERS ix:gatunek:{g} + HGET metadane,false,-1.0000,-1.0000
+500000,postgres,off,J2,Seq Scan rezerwacje,true,87964.0000,2.1480
+500000,postgres,on,J2,Bitmap Heap Scan rezerwacje; Bitmap Index Scan rezerwacje_utworzono,false,-1.0000,0.6480
+500000,mariadb,off,J2,ALL rezerwacje,true,88806.0000,10.3514
+500000,mariadb,on,J2,range rezerwacje_utworzono,false,1818.0000,2.8813
+500000,mongo,off,J2,COLLSCAN,true,88806.0000,21.0000
+500000,mongo,on,J2,IXSCAN utworzono_1,false,1818.0000,1.0000
+500000,valkey,off,J2,SCAN r:* + MGET + JSON decode,true,-1.0000,-1.0000
+500000,valkey,on,J2,ZRANGE ix:r:utw BYSCORE + MGET,false,-1.0000,-1.0000
+500000,postgres,off,J3,Index Scan wydarzenia_pkey,false,-1.0000,0.0210
+500000,postgres,on,J3,Index Scan wydarzenia_pkey,false,-1.0000,0.0310
+500000,mariadb,off,J3,range wydarzenia.PK,false,1.0000,0.0233
+500000,mariadb,on,J3,range wydarzenia.PK,false,1.0000,0.0197
+500000,valkey,off,J3,O(size of JSON),false,-1.0000,-1.0000
+500000,valkey,on,J3,O(size of JSON),false,-1.0000,-1.0000
+500000,postgres,off,R1,Index Scan rezerwacje_pkey; Seq Scan bilety; Index Scan miejsca_pkey; Index Scan sektory_pkey,true,191991.0000,7.5920
+500000,postgres,on,R1,Index Scan rezerwacje_pkey; Index Scan bilety_rezerwacja; Index Scan miejsca_pkey; Index Scan sektory_pkey,false,-1.0000,0.0300
+500000,mariadb,off,R1,const r.PK; ALL b; eq_ref m.PK; eq_ref s.PK,true,575992.0000,43.3713
+500000,mariadb,on,R1,const r.PK; ref bilety_rezerwacja; eq_ref m.PK; eq_ref s.PK,false,6.0000,0.0105
+500000,mongo,off,R1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,mongo,on,R1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,valkey,off,R1,O(1) key lookup,false,-1.0000,-1.0000
+500000,valkey,on,R1,O(1) key lookup,false,-1.0000,-1.0000
+500000,postgres,off,R2,Seq Scan bilety; Index Scan miejsca_pkey; Seq Scan sektory,true,191560.0000,8.3930
+500000,postgres,on,R2,Index Scan bilety_wydarzenie_status; Index Scan miejsca_pkey; Seq Scan sektory,true,-1.0000,0.6440
+500000,mariadb,off,R2,ALL b; eq_ref m.PK; eq_ref s.PK,true,578580.0000,45.7118
+500000,mariadb,on,R2,ref bilety_wydarzenie_status; eq_ref m.PK; eq_ref s.PK,false,1953.0000,0.5401
+500000,mongo,off,R2,COLLSCAN,true,575980.0000,171.0000
+500000,mongo,on,R2,IXSCAN wydarzenie_id_1_status_1,false,651.0000,0.0000
+500000,valkey,off,R2,"O(free seats), sorted in the client",false,-1.0000,-1.0000
+500000,valkey,on,R2,"O(free seats), sorted in the client",false,-1.0000,-1.0000
+500000,postgres,off,R3,Seq Scan obiekty; Seq Scan wydarzenia; Index Scan kategorie_pkey,true,284.0000,0.0320
+500000,postgres,on,R3,Seq Scan obiekty; Bitmap Heap Scan wydarzenia; Bitmap Index Scan wydarzenia_obiekt_data; Index Scan kategorie_pkey,true,7.0000,0.0130
+500000,mariadb,off,R3,ALL w; eq_ref k.PK; eq_ref o.PK,true,319.0000,0.0515
+500000,mariadb,on,R3,ref obiekty_miasto; range wydarzenia_data; eq_ref k.PK,false,20.0000,0.0215
+500000,mongo,off,R3,COLLSCAN,true,291.0000,0.0000
+500000,mongo,on,R3,IXSCAN miasto_1_data_rozpoczecia_1,false,0.0000,0.0000
+500000,valkey,off,R3,SMEMBERS w:all + HMGET every event,true,-1.0000,-1.0000
+500000,valkey,on,R3,ZRANGE ix:miasto:{c} BYSCORE,false,-1.0000,-1.0000
+500000,postgres,off,R4,Seq Scan bilety; Seq Scan rezerwacje,true,29601.0000,17.2500
+500000,postgres,on,R4,Index Scan rezerwacje_klient; Index Scan bilety_rezerwacja,false,-1.0000,0.0410
+500000,mariadb,off,R4,ALL r; ALL b,true,664786.0000,77.0553
+500000,mariadb,on,R4,ref rezerwacje_klient; ref bilety_rezerwacja,false,9.0000,0.0174
+500000,mongo,off,R4,COLLSCAN,true,88806.0000,23.0000
+500000,mongo,on,R4,IXSCAN klient_id_1_utworzono_-1,false,2.0000,0.0000
+500000,valkey,off,R4,SCAN r:* + MGET + JSON decode of every reservation,true,-1.0000,-1.0000
+500000,valkey,on,R4,ZRANGE ix:k:{id} BYSCORE REV LIMIT 0 50 + MGET,false,-1.0000,-1.0000
+500000,postgres,off,R5,Seq Scan bilety; Seq Scan wydarzenia,true,346663.0000,28.8940
+500000,postgres,on,R5,Index Scan wydarzenia_pkey; Index Scan bilety_wydarzenie_status,false,218.0000,5.4380
+500000,mariadb,off,R5,ALL w; ALL b,true,576271.0000,161.8720
+500000,mariadb,on,R5,ALL w; ref bilety_wydarzenie_status,true,28083.0000,20.9444
+500000,mongo,off,R5,COLLSCAN,true,291.0000,0.0000
+500000,mongo,on,R5,IXSCAN organizator_id_1,false,121.0000,0.0000
+500000,valkey,off,R5,counters kept on write,false,-1.0000,-1.0000
+500000,valkey,on,R5,counters kept on write,false,-1.0000,-1.0000
+500000,postgres,off,R6,Seq Scan bilety; Index Scan wydarzenia_pkey,true,115465.0000,13.7910
+500000,postgres,on,R6,Index Only Scan bilety_wydarzenie_status; Index Scan wydarzenia_pkey,false,-1.0000,10.5550
+500000,mariadb,off,R6,ALL <derived2>; ALL bilety; eq_ref w.PK,true,576000.0000,46.6836
+500000,mariadb,on,R6,ALL <derived2>; index bilety_wydarzenie_status; eq_ref w.PK,true,652987.0000,40.3119
+500000,mongo,off,R6,COLLSCAN,true,575980.0000,115.0000
+500000,mongo,on,R6,COLLSCAN,true,652967.0000,126.0000
+500000,valkey,off,R6,"O(log N + 10), precomputed counter",false,-1.0000,-1.0000
+500000,valkey,on,R6,"O(log N + 10), precomputed counter",false,-1.0000,-1.0000
+500000,postgres,off,U1,Index Scan rezerwacje_pkey,false,-1.0000,0.0370
+500000,postgres,on,U1,Index Scan rezerwacje_pkey,false,-1.0000,0.0740
+500000,mariadb,off,U1,range rezerwacje.PK,false,1.0000,0.0164
+500000,mariadb,on,U1,range rezerwacje.PK,false,1.0000,0.0084
+500000,mongo,off,U1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,mongo,on,U1,EXPRESS_IXSCAN _id_,false,1.0000,0.0000
+500000,valkey,off,U1,O(size of JSON),false,-1.0000,-1.0000
+500000,valkey,on,U1,O(size of JSON),false,-1.0000,-1.0000
+500000,postgres,off,U2,Index Scan bilety_pkey,false,-1.0000,0.0190
+500000,postgres,on,U2,Index Scan bilety_pkey,false,-1.0000,0.0330
+500000,mariadb,off,U2,range bilety.PK,false,1.0000,0.0299
+500000,mariadb,on,U2,range bilety.PK,false,1.0000,0.0249
+500000,mongo,off,U2,IXSCAN _id_,false,1.0000,0.0000
+500000,mongo,on,U2,IXSCAN _id_,false,1.0000,0.0000
+500000,valkey,off,U2,SREM wf:{e} + HSET wb:{e} + SET blok:{t} PX,false,-1.0000,-1.0000
+500000,valkey,on,U2,SREM wf:{e} + HSET wb:{e} + SET blok:{t} PX,false,-1.0000,-1.0000
+500000,postgres,off,U3,Seq Scan bilety; Index Scan miejsca_pkey,true,574961.0000,14.0280
+500000,postgres,on,U3,Index Scan bilety_wydarzenie_status; Index Scan miejsca_sektor,false,-1.0000,1.3900
+500000,mariadb,off,U3,ALL b; eq_ref m.PK,true,577000.0000,93.2475
+500000,mariadb,on,U3,ref bilety_wydarzenie_status; eq_ref miejsca_sektor,false,1889.0000,1.2521
+500000,mongo,off,U3,COLLSCAN,true,575980.0000,137.0000
+500000,mongo,on,U3,IXSCAN wydarzenie_id_1_status_1,false,1600.0000,1.0000
+500000,valkey,off,U3,"HGETALL wb:{e}, O(tickets of event)",false,-1.0000,-1.0000
+500000,valkey,on,U3,"HGETALL wb:{e}, O(tickets of event)",false,-1.0000,-1.0000
+500000,postgres,off,U4,Index Scan klienci_pkey,false,-1.0000,0.0190
+500000,postgres,on,U4,Index Scan klienci_pkey,false,-1.0000,0.0320
+500000,mariadb,off,U4,range klienci.PK,false,1.0000,0.0275
+500000,mariadb,on,U4,range klienci.PK,false,1.0000,0.0177
+500000,valkey,off,U4,O(1),false,-1.0000,-1.0000
+500000,valkey,on,U4,O(1),false,-1.0000,-1.0000
+500000,postgres,off,U5,Index Scan wydarzenia_pkey,false,-1.0000,0.0160
+500000,postgres,on,U5,Index Scan wydarzenia_pkey,false,-1.0000,0.0270
+500000,mariadb,off,U5,range wydarzenia.PK,false,1.0000,0.0150
+500000,mariadb,on,U5,range wydarzenia.PK,false,1.0000,0.0147
+500000,valkey,off,U5,O(log N),false,-1.0000,-1.0000
+500000,valkey,on,U5,O(log N),false,-1.0000,-1.0000
+500000,postgres,off,U6,Seq Scan rezerwacje; Seq Scan bilety,true,88806.0000,46.2700
+500000,postgres,on,U6,Index Scan rezerwacje_status_wygasa; Index Scan bilety_rezerwacja,false,-1.0000,5.8260
+500000,mariadb,off,U6,ALL b; eq_ref r.PK,true,844707.0000,112.1078
+500000,mariadb,on,U6,range rezerwacje_status_wygasa; ref bilety_rezerwacja,false,2000.0000,4.4458
+500000,mongo,off,U6,COLLSCAN,true,89806.0000,21.0000
+500000,mongo,on,U6,IXSCAN status_1_wygasa_o_1,false,1000.0000,0.0000
+500000,valkey,off,U6,"SCAN r:* + MGET + filter, then EVALSHA release",true,-1.0000,-1.0000
+500000,valkey,on,U6,ZRANGE ix:oczek -inf asOf BYSCORE + EVALSHA release,false,-1.0000,-1.0000

@@ -1,0 +1,34 @@
+-- postgres R1 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT r.id, r.status, r.kwota, r.utworzono, b.id, b.cena, b.status, s.nazwa, m.rzad, m.numer
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			LEFT JOIN miejsca m ON m.id = b.miejsce_id
+			LEFT JOIN sektory s ON s.id = m.sektor_id
+			WHERE r.id = $1
+Nested Loop Left Join  (cost=1001.13..228912.34 rows=20 width=63) (actual time=136.187..138.911 rows=5 loops=1)
+  Buffers: shared hit=46001 read=129311
+  ->  Index Scan using rezerwacje_pkey on rezerwacje r  (cost=0.43..2.65 rows=1 width=31) (actual time=0.007..0.009 rows=1 loops=1)
+        Index Cond: (id = '832506'::bigint)
+        Buffers: shared hit=4
+  ->  Gather  (cost=1000.70..228909.49 rows=20 width=40) (actual time=136.177..138.898 rows=5 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=45997 read=129311
+        ->  Nested Loop Left Join  (cost=0.70..227907.49 rows=8 width=40) (actual time=113.597..135.152 rows=2 loops=3)
+              Buffers: shared hit=45997 read=129311
+              ->  Nested Loop Left Join  (cost=0.42..227905.13 rows=8 width=46) (actual time=113.589..135.143 rows=2 loops=3)
+                    Buffers: shared hit=45981 read=129311
+                    ->  Parallel Seq Scan on bilety b  (cost=0.00..227884.01 rows=8 width=38) (actual time=113.402..134.954 rows=2 loops=3)
+                          Filter: (rezerwacja_id = '832506'::bigint)
+                          Rows Removed by Filter: 3358661
+                          Buffers: shared hit=45962 read=129309
+                    ->  Index Scan using miejsca_pkey on miejsca m  (cost=0.42..2.64 rows=1 width=24) (actual time=0.112..0.112 rows=1 loops=5)
+                          Index Cond: (id = b.miejsce_id)
+                          Buffers: shared hit=19 read=2
+              ->  Index Scan using sektory_pkey on sektory s  (cost=0.28..0.30 rows=1 width=10) (actual time=0.005..0.005 rows=1 loops=5)
+                    Index Cond: (id = m.sektor_id)
+                    Buffers: shared hit=16
+Planning:
+  Buffers: shared hit=28
+Planning Time: 0.142 ms
+Execution Time: 138.925 ms

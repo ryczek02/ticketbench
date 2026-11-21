@@ -1,0 +1,34 @@
+-- postgres R3 tickets=1000000 indexes=off trace=1a8079f87549bfc399cde31511d43ee9
+-- SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = $1 AND w.data_rozpoczecia >= $2 AND w.data_rozpoczecia < $3
+			ORDER BY w.data_rozpoczecia
+Sort  (cost=27.27..27.28 rows=3 width=67) (actual time=0.053..0.054 rows=4 loops=1)
+  Sort Key: w.data_rozpoczecia
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=26
+  ->  Nested Loop  (cost=1.36..27.25 rows=3 width=67) (actual time=0.014..0.051 rows=4 loops=1)
+        Buffers: shared hit=26
+        ->  Hash Join  (cost=1.22..26.40 rows=3 width=68) (actual time=0.013..0.048 rows=4 loops=1)
+              Hash Cond: (w.obiekt_id = o.id)
+              Buffers: shared hit=18
+              ->  Seq Scan on wydarzenia w  (cost=0.00..25.09 rows=27 width=58) (actual time=0.003..0.042 rows=23 loops=1)
+                    Filter: ((data_rozpoczecia >= '2026-07-15 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2026-08-14 00:00:00+00'::timestamp with time zone))
+                    Rows Removed by Filter: 500
+                    Buffers: shared hit=17
+              ->  Hash  (cost=1.20..1.20 rows=2 width=26) (actual time=0.003..0.003 rows=2 loops=1)
+                    Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                    Buffers: shared hit=1
+                    ->  Seq Scan on obiekty o  (cost=0.00..1.20 rows=2 width=26) (actual time=0.001..0.002 rows=2 loops=1)
+                          Filter: (miasto = 'Szczecin'::text)
+                          Rows Removed by Filter: 14
+                          Buffers: shared hit=1
+        ->  Index Scan using kategorie_pkey on kategorie k  (cost=0.14..0.27 rows=1 width=15) (actual time=0.001..0.001 rows=1 loops=4)
+              Index Cond: (id = w.kategoria_id)
+              Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.070 ms
+Execution Time: 0.062 ms

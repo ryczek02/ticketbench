@@ -1,0 +1,34 @@
+-- postgres R1 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT r.id, r.status, r.kwota, r.utworzono, b.id, b.cena, b.status, s.nazwa, m.rzad, m.numer
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			LEFT JOIN miejsca m ON m.id = b.miejsce_id
+			LEFT JOIN sektory s ON s.id = m.sektor_id
+			WHERE r.id = $1
+Nested Loop Left Join  (cost=1000.85..14681.74 rows=4 width=63) (actual time=3.038..7.582 rows=6 loops=1)
+  Buffers: shared hit=10549
+  ->  Index Scan using rezerwacje_pkey on rezerwacje r  (cost=0.42..2.64 rows=1 width=31) (actual time=0.004..0.005 rows=1 loops=1)
+        Index Cond: (id = '41172'::bigint)
+        Buffers: shared hit=4
+  ->  Gather  (cost=1000.43..14679.06 rows=4 width=40) (actual time=3.033..7.576 rows=6 loops=1)
+        Workers Planned: 2
+        Workers Launched: 2
+        Buffers: shared hit=10545
+        ->  Nested Loop Left Join  (cost=0.43..13678.66 rows=2 width=40) (actual time=4.450..5.623 rows=2 loops=3)
+              Buffers: shared hit=10545
+              ->  Nested Loop Left Join  (cost=0.29..13678.35 rows=2 width=46) (actual time=4.449..5.621 rows=2 loops=3)
+                    Buffers: shared hit=10533
+                    ->  Parallel Seq Scan on bilety b  (cost=0.00..13673.34 rows=2 width=38) (actual time=4.447..5.618 rows=2 loops=3)
+                          Filter: (rezerwacja_id = '41172'::bigint)
+                          Rows Removed by Filter: 191991
+                          Buffers: shared hit=10515
+                    ->  Index Scan using miejsca_pkey on miejsca m  (cost=0.29..2.51 rows=1 width=24) (actual time=0.001..0.001 rows=1 loops=6)
+                          Index Cond: (id = b.miejsce_id)
+                          Buffers: shared hit=18
+              ->  Index Scan using sektory_pkey on sektory s  (cost=0.14..0.16 rows=1 width=10) (actual time=0.000..0.000 rows=1 loops=6)
+                    Index Cond: (id = m.sektor_id)
+                    Buffers: shared hit=12
+Planning:
+  Buffers: shared hit=20
+Planning Time: 0.089 ms
+Execution Time: 7.592 ms

@@ -1,0 +1,29 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.00726808
+  },
+  "query_block": {
+    "select_id": 1,
+    "r_total_time_ms": 0.013408354,
+    "table": {
+      "delete": 1,
+      "table_name": "rezerwacje",
+      "access_type": "range",
+      "possible_keys": ["idx_rezerwacje_klient"],
+      "key": "idx_rezerwacje_klient",
+      "key_length": "8",
+      "used_key_parts": ["klient_id"],
+      "rows": 1,
+      "r_rows": 1,
+      "r_total_filtered": 100,
+      "r_table_time_ms": 0.011904614,
+      "r_other_time_ms": 5.012469e-4,
+      "r_engine_stats": {
+        "pages_accessed": 17,
+        "pages_updated": 5
+      },
+      "attached_condition": "rezerwacje.klient_id = 1042",
+      "r_filtered": 100
+    }
+  }
+}

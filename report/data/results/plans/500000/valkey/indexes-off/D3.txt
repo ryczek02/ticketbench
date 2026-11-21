@@ -1,0 +1,3 @@
+-- valkey D3 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- ZRANGE ix:wygasle BYSCORE + EVALSHA release | SCAN r:* + filter + EVALSHA release
+SCAN r:* + filter + EVALSHA release

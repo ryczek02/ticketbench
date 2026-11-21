@@ -1,0 +1,59 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.047190942
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 1144.104648,
+    "r_loops": 1,
+    "r_total_time_ms": 159.6084956,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ALL",
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 1074952,
+          "r_rows": 1075975,
+          "cost": 182.5451188,
+          "r_table_time_ms": 139.1400716,
+          "r_other_time_ms": 20.15959476,
+          "r_engine_stats": {
+            "pages_accessed": 10227,
+            "pages_updated": 519
+          },
+          "filtered": 100,
+          "r_total_filtered": 0.088849648,
+          "attached_condition": "b.wydarzenie_id = 259 and b.`status` = 'wolny'",
+          "r_filtered": 0.088849648
+        }
+      },
+      {
+        "table": {
+          "table_name": "m",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.b.miejsce_id"],
+          "loops": 1074952,
+          "r_loops": 956,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 961.5595293,
+          "r_table_time_ms": 0.24823271,
+          "r_other_time_ms": 0.059093083,
+          "r_engine_stats": {
+            "pages_accessed": 1914
+          },
+          "filtered": 100,
+          "r_total_filtered": 26.9874477,
+          "attached_condition": "m.sektor_id = 44",
+          "r_filtered": 26.9874477
+        }
+      }
+    ]
+  }
+}

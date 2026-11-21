@@ -1,0 +1,29 @@
+-- postgres R3 tickets=1000000 indexes=on trace=1a8079f87549bfc399cde31511d43ee9
+-- SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = $1 AND w.data_rozpoczecia >= $2 AND w.data_rozpoczecia < $3
+			ORDER BY w.data_rozpoczecia
+Sort  (cost=9.48..9.49 rows=4 width=66) (actual time=0.017..0.018 rows=4 loops=1)
+  Sort Key: w.data_rozpoczecia
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=18
+  ->  Nested Loop  (cost=0.41..9.44 rows=4 width=66) (actual time=0.007..0.015 rows=4 loops=1)
+        Buffers: shared hit=18
+        ->  Nested Loop  (cost=0.28..8.45 rows=4 width=67) (actual time=0.006..0.013 rows=4 loops=1)
+              Buffers: shared hit=10
+              ->  Seq Scan on obiekty o  (cost=0.00..1.20 rows=2 width=26) (actual time=0.003..0.004 rows=2 loops=1)
+                    Filter: (miasto = 'Wrocław'::text)
+                    Rows Removed by Filter: 14
+                    Buffers: shared hit=1
+              ->  Index Scan using idx_wydarzenia_obiekt_data on wydarzenia w  (cost=0.28..3.61 rows=2 width=57) (actual time=0.002..0.004 rows=2 loops=2)
+                    Index Cond: ((obiekt_id = o.id) AND (data_rozpoczecia >= '2025-10-23 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2025-11-22 00:00:00+00'::timestamp with time zone))
+                    Buffers: shared hit=9
+        ->  Index Scan using kategorie_pkey on kategorie k  (cost=0.14..0.24 rows=1 width=15) (actual time=0.000..0.000 rows=1 loops=4)
+              Index Cond: (id = w.kategoria_id)
+              Buffers: shared hit=8
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.109 ms
+Execution Time: 0.023 ms

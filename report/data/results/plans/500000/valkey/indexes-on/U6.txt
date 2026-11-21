@@ -1,0 +1,3 @@
+-- valkey U6 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- ZRANGE ix:oczek -inf asOf BYSCORE + EVALSHA release | SCAN r:* + MGET + filter, then EVALSHA release
+ZRANGE ix:oczek -inf asOf BYSCORE + EVALSHA release

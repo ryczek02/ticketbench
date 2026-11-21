@@ -1,0 +1,74 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.032114898
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 31116059.13,
+    "r_loops": 1,
+    "r_total_time_ms": 150.8364093,
+    "filesort": {
+      "sort_key": "r.utworzono desc",
+      "r_loops": 1,
+      "r_total_time_ms": 0.006180761,
+      "r_limit": 50,
+      "r_used_priority_queue": true,
+      "r_output_rows": 3,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "r",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 177267,
+              "r_rows": 176395,
+              "cost": 30.357681,
+              "r_table_time_ms": 11.15497827,
+              "r_other_time_ms": 1.917121596,
+              "r_engine_stats": {
+                "pages_accessed": 1499
+              },
+              "filtered": 100,
+              "r_total_filtered": 0.001700728,
+              "attached_condition": "r.klient_id = 19386",
+              "r_filtered": 0.001700728
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "b",
+                "access_type": "ALL",
+                "loops": 177267,
+                "r_loops": 1,
+                "rows": 1074952,
+                "r_rows": 1075975,
+                "cost": 31116028.77,
+                "r_table_time_ms": 49.02441496,
+                "r_other_time_ms": 5.953492366,
+                "r_engine_stats": {
+                  "pages_accessed": 8435
+                },
+                "filtered": 100,
+                "r_total_filtered": 100,
+                "r_filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "256KiB",
+              "join_type": "BNL",
+              "attached_condition": "trigcond(b.rezerwacja_id = r.`id`)",
+              "r_loops": 3,
+              "r_filtered": 2.788169e-4,
+              "r_unpack_time_ms": 53.77253373,
+              "r_other_time_ms": 28.99791537,
+              "r_effective_rows": 1075975
+            }
+          }
+        ]
+      }
+    }
+  }
+}

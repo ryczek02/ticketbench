@@ -1,0 +1,210 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.bilety",
+    "parsedQuery": {
+      "$and": [
+        {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        {
+          "wydarzenie_id": {
+            "$eq": 146
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "CD0232D2",
+    "planCacheShapeHash": "CD0232D2",
+    "planCacheKey": "456DF057",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "SORT",
+      "sortPattern": {
+        "sektor_id": 1,
+        "rzad": 1,
+        "numer": 1
+      },
+      "memLimit": 104857600,
+      "type": "simple",
+      "inputStage": {
+        "stage": "FETCH",
+        "inputStage": {
+          "stage": "IXSCAN",
+          "keyPattern": {
+            "wydarzenie_id": 1,
+            "status": 1
+          },
+          "indexName": "wydarzenie_id_1_status_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "wydarzenie_id": [],
+            "status": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "wydarzenie_id": [
+              "[146, 146]"
+            ],
+            "status": [
+              "[\"wolny\", \"wolny\"]"
+            ]
+          }
+        }
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 651,
+    "executionTimeMillis": 0,
+    "totalKeysExamined": 651,
+    "totalDocsExamined": 651,
+    "executionStages": {
+      "isCached": false,
+      "stage": "SORT",
+      "nReturned": 651,
+      "executionTimeMillisEstimate": 0,
+      "works": 1304,
+      "advanced": 651,
+      "needTime": 652,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "sortPattern": {
+        "sektor_id": 1,
+        "rzad": 1,
+        "numer": 1
+      },
+      "memLimit": 104857600,
+      "type": "simple",
+      "totalDataSizeSorted": 210800,
+      "usedDisk": false,
+      "spills": 0,
+      "spilledDataStorageSize": 0,
+      "inputStage": {
+        "stage": "FETCH",
+        "nReturned": 651,
+        "executionTimeMillisEstimate": 0,
+        "works": 652,
+        "advanced": 651,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "docsExamined": 651,
+        "alreadyHasObj": 0,
+        "inputStage": {
+          "stage": "IXSCAN",
+          "nReturned": 651,
+          "executionTimeMillisEstimate": 0,
+          "works": 652,
+          "advanced": 651,
+          "needTime": 0,
+          "needYield": 0,
+          "saveState": 0,
+          "restoreState": 0,
+          "isEOF": 1,
+          "keyPattern": {
+            "wydarzenie_id": 1,
+            "status": 1
+          },
+          "indexName": "wydarzenie_id_1_status_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "wydarzenie_id": [],
+            "status": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "wydarzenie_id": [
+              "[146, 146]"
+            ],
+            "status": [
+              "[\"wolny\", \"wolny\"]"
+            ]
+          },
+          "keysExamined": 651,
+          "seeks": 1,
+          "dupsTested": 0,
+          "dupsDropped": 0
+        }
+      }
+    }
+  },
+  "queryShapeHash": "6F81D65D5F9BA3390576496123A1FDD6FDC3941A8BB0278044704EEA130E8745",
+  "command": {
+    "find": "bilety",
+    "filter": {
+      "wydarzenie_id": 146,
+      "status": "wolny"
+    },
+    "sort": {
+      "sektor_id": 1,
+      "rzad": 1,
+      "numer": 1
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795298643,
+        "i": 140
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795298643,
+      "i": 140
+    }
+  }
+}

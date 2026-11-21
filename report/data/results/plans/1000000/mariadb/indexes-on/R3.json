@@ -1,0 +1,115 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.055125703
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.10943127,
+    "r_loops": 1,
+    "r_total_time_ms": 0.035539373,
+    "filesort": {
+      "sort_key": "w.data_rozpoczecia",
+      "r_loops": 1,
+      "r_total_time_ms": 0.001044047,
+      "r_used_priority_queue": false,
+      "r_output_rows": 4,
+      "r_buffer_size": "360",
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "w",
+              "access_type": "range",
+              "possible_keys": [
+                "idx_wydarzenia_obiekt_data",
+                "idx_wydarzenia_data"
+              ],
+              "key": "idx_wydarzenia_data",
+              "key_length": "8",
+              "used_key_parts": ["data_rozpoczecia"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 34,
+              "r_index_rows": 32,
+              "r_rows": 32,
+              "cost": 0.0427676,
+              "r_table_time_ms": 0.015702473,
+              "r_other_time_ms": 0.002714523,
+              "r_engine_stats": {
+                "pages_accessed": 66
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "index_condition": "w.data_rozpoczecia >= '2025-10-23' and w.data_rozpoczecia < '2025-11-22'",
+              "r_icp_filtered": 100,
+              "r_filtered": 100
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "o",
+                "access_type": "range",
+                "possible_keys": ["PRIMARY", "idx_obiekty_miasto"],
+                "key": "idx_obiekty_miasto",
+                "key_length": "258",
+                "used_key_parts": ["miasto"],
+                "loops": 34,
+                "r_loops": 1,
+                "rows": 2,
+                "r_index_rows": 2,
+                "r_rows": 2,
+                "cost": 0.013627452,
+                "r_table_time_ms": 0.002547476,
+                "r_other_time_ms": 6.681903e-4,
+                "r_engine_stats": {
+                  "pages_accessed": 5
+                },
+                "filtered": 50,
+                "r_total_filtered": 100,
+                "index_condition": "o.miasto = 'Wrocław'",
+                "r_icp_filtered": 100,
+                "attached_condition": "o.miasto = 'Wrocław'",
+                "r_filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "23KiB",
+              "join_type": "BNL",
+              "attached_condition": "o.`id` = w.obiekt_id",
+              "r_loops": 32,
+              "r_filtered": 6.25,
+              "r_unpack_time_ms": 0.001336381,
+              "r_other_time_ms": 0.005804904,
+              "r_effective_rows": 2
+            }
+          },
+          {
+            "table": {
+              "table_name": "k",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.w.kategoria_id"],
+              "loops": 34,
+              "r_loops": 4,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 0.03123016,
+              "r_table_time_ms": 0.001586952,
+              "r_other_time_ms": 0.001795762,
+              "r_engine_stats": {
+                "pages_accessed": 4
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          }
+        ]
+      }
+    }
+  }
+}

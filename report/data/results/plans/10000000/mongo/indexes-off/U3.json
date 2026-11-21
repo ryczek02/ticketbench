@@ -1,0 +1,179 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.bilety",
+    "parsedQuery": {
+      "$and": [
+        {
+          "sektor_id": {
+            "$eq": 228
+          }
+        },
+        {
+          "status": {
+            "$eq": "wolny"
+          }
+        },
+        {
+          "wydarzenie_id": {
+            "$eq": 2255
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "EBE19761",
+    "planCacheShapeHash": "EBE19761",
+    "planCacheKey": "B62693D5",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "UPDATE",
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "sektor_id": {
+                "$eq": 228
+              }
+            },
+            {
+              "status": {
+                "$eq": "wolny"
+              }
+            },
+            {
+              "wydarzenie_id": {
+                "$eq": 2255
+              }
+            }
+          ]
+        },
+        "direction": "forward"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 2715,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 10075987,
+    "executionStages": {
+      "isCached": false,
+      "stage": "UPDATE",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 2649,
+      "works": 10075988,
+      "advanced": 0,
+      "needTime": 10075987,
+      "needYield": 0,
+      "saveState": 176,
+      "restoreState": 176,
+      "isEOF": 1,
+      "nMatched": 345,
+      "nWouldModify": 345,
+      "nWouldUpsert": 0,
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "sektor_id": {
+                "$eq": 228
+              }
+            },
+            {
+              "status": {
+                "$eq": "wolny"
+              }
+            },
+            {
+              "wydarzenie_id": {
+                "$eq": 2255
+              }
+            }
+          ]
+        },
+        "nReturned": 345,
+        "executionTimeMillisEstimate": 2547,
+        "works": 10075988,
+        "advanced": 345,
+        "needTime": 10075642,
+        "needYield": 0,
+        "saveState": 521,
+        "restoreState": 521,
+        "isEOF": 1,
+        "direction": "forward",
+        "docsExamined": 10075987
+      }
+    }
+  },
+  "command": {
+    "update": "bilety",
+    "updates": [
+      {
+        "q": {
+          "wydarzenie_id": 2255,
+          "sektor_id": 228,
+          "status": "wolny"
+        },
+        "u": {
+          "$mul": {
+            "cena": 1.1
+          }
+        },
+        "multi": true
+      }
+    ],
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299952,
+        "i": 1
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299952,
+      "i": 1
+    }
+  }
+}

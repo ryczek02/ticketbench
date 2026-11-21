@@ -1,0 +1,1 @@
+bilety.deleteMany {"delete":"bilety","deletes":[{"q":{"wydarzenie_id":1230950000000},"limit":0}]}

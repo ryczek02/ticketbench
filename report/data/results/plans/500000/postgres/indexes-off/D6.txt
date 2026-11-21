@@ -1,0 +1,20 @@
+-- postgres D6 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- DELETE FROM bilety WHERE wydarzenie_id IN (SELECT id FROM wydarzenia WHERE data_rozpoczecia < $1)
+Delete on bilety  (cost=13.82..18206.75 rows=0 width=0) (actual time=42.156..42.156 rows=0 loops=1)
+  Buffers: shared hit=12525
+  ->  Hash Join  (cost=13.82..18206.75 rows=1988 width=12) (actual time=41.713..41.943 rows=2000 loops=1)
+        Hash Cond: (bilety.wydarzenie_id = wydarzenia.id)
+        Buffers: shared hit=10525
+        ->  Seq Scan on bilety  (cost=0.00..16579.01 rows=606401 width=14) (actual time=0.001..26.654 rows=577980 loops=1)
+              Buffers: shared hit=10515
+        ->  Hash  (cost=13.81..13.81 rows=1 width=14) (actual time=0.017..0.017 rows=1 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 9kB
+              Buffers: shared hit=10
+              ->  Seq Scan on wydarzenia  (cost=0.00..13.81 rows=1 width=14) (actual time=0.016..0.016 rows=1 loops=1)
+                    Filter: (data_rozpoczecia < '2024-01-01 00:00:00+00'::timestamp with time zone)
+                    Rows Removed by Filter: 291
+                    Buffers: shared hit=10
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.053 ms
+Execution Time: 42.161 ms

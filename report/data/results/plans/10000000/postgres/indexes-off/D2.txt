@@ -1,0 +1,9 @@
+-- postgres D2 tickets=10000000 indexes=off trace=d5541ab7c0f418365920263c267cfb7a
+-- DELETE FROM rezerwacje WHERE id = $1
+Delete on rezerwacje  (cost=0.43..2.65 rows=0 width=0) (actual time=0.022..0.022 rows=0 loops=1)
+  Buffers: shared hit=6 dirtied=1
+  ->  Index Scan using rezerwacje_pkey on rezerwacje  (cost=0.43..2.65 rows=1 width=6) (actual time=0.018..0.019 rows=1 loops=1)
+        Index Cond: (id = '1318047'::bigint)
+        Buffers: shared hit=4
+Planning Time: 0.032 ms
+Execution Time: 0.029 ms

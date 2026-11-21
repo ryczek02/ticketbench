@@ -1,0 +1,1 @@
+rezerwacje.updateOne {"update":"rezerwacje","updates":[{"u":{"$set":{"status":"oplacona"}},"multi":false,"q":{"_id":1060450000000}}]}

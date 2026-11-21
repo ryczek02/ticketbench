@@ -1,0 +1,1 @@
+bilety.updateMany {"update":"bilety","updates":[{"q":{"status":"wolny","wydarzenie_id":249,"sektor_id":7},"u":{"$mul":{"cena":1.1}},"multi":true}]}

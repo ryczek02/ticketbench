@@ -1,0 +1,9 @@
+-- postgres D3 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- DELETE FROM rezerwacje WHERE status = 'wygasla' AND wygasa_o < $1
+Delete on rezerwacje  (cost=0.29..2.51 rows=0 width=0) (actual time=0.228..0.228 rows=0 loops=1)
+  Buffers: shared hit=1049
+  ->  Index Scan using idx_rezerwacje_status_wygasa on rezerwacje  (cost=0.29..2.51 rows=1 width=6) (actual time=0.039..0.112 rows=1000 loops=1)
+        Index Cond: (((status)::text = 'wygasla'::text) AND (wygasa_o < '2025-12-25 00:00:00+00'::timestamp with time zone))
+        Buffers: shared hit=49
+Planning Time: 0.015 ms
+Execution Time: 0.230 ms

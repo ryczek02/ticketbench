@@ -1,0 +1,3 @@
+-- valkey J3 tickets=500000 indexes=on trace=5845554c18c19dd33cb685a38164103f
+-- EVALSHA hjson push
+O(size of JSON)

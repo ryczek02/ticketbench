@@ -1,0 +1,45 @@
+\section{Temat i cel}
+
+Temat projektu to porównanie wydajności relacyjnych i nierelacyjnych systemów
+zarządzania bazą danych na przykładzie systemu rezerwacji biletów na
+wydarzenia. Badamy cztery silniki: PostgreSQL~17, MariaDB~11.8, MongoDB~8.0
+oraz Valkey~8.1.
+
+Celem jest zmierzenie, jak te silniki wykonują operacje CRUD na zbiorach
+danych o rozmiarze od pół miliona do dziesięciu milionów biletów. Drugim celem
+jest sprawdzenie, jak radzą sobie z problemem typowym dla tej domeny: wielu
+klientów jednocześnie próbuje zarezerwować te same miejsca. Domena łączy
+transakcje, blokady, dane półstrukturalne (metadane wydarzeń i biletów w~JSON)
+i duży ruch równoległy, więc każdy z tych elementów wynika z~zadania, a~nie
+został dopisany na potrzeby testu.
+
+\begin{table}[H]
+\centering
+\caption{Badane SZBD i ich rola w projekcie.}
+\begin{tabular}{llp{7.4cm}}
+\toprule
+SZBD & model danych & rola \\
+\midrule
+PostgreSQL 17 & relacyjny + JSONB & 12 tabel, transakcje, blokady wierszy przy rezerwacji miejsca \\
+MariaDB 11.8 & relacyjny (InnoDB) + JSON & ten sam schemat, bezpośrednie porównanie dwóch silników relacyjnych \\
+MongoDB 8.0 & dokumentowy & wydarzenie z osadzonym cennikiem, rezerwacja z osadzonymi biletami i płatnością \\
+Valkey 8.1 & klucz--wartość w pamięci & zbiory wolnych miejsc, blokady miejsc z TTL, liczniki sprzedaży, rezerwacje jako JSON \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Hipotezy badawcze sformułowane we wstępnej koncepcji:
+
+\begin{description}
+  \item[H1] Wraz ze wzrostem liczby równoległych klientów rezerwujących te same
+  miejsca przewaga wydajnościowa Valkey i MongoDB nad bazami relacyjnymi rośnie.
+  \item[H2] (zapasowa) Różnice wydajności między silnikami rosną wraz ze
+  wzrostem liczby rekordów.
+\end{description}
+
+W stosunku do wstępnej koncepcji zmieniliśmy technologię aplikacji testowej.
+Zamiast skryptu w Pythonie powstała aplikacja w języku Go podzielona na
+mikroserwisy: osobny serwis gRPC dla każdej bazy, serwis wykonujący plan
+testów i klient wiersza poleceń. Każdą operację śledzimy przez
+OpenTelemetry, a identyfikator śladu (\emph{trace id}) zapisujemy przy każdym
+wyniku. Kod znajduje się w~pięciu publicznych repozytoriach: repozytorium spinającym \texttt{ticketbench} i~czterech repozytoriach komponentów~\cite{repo}.

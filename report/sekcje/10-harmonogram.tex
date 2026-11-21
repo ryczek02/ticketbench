@@ -1,0 +1,21 @@
+\section{Harmonogram i podział pracy}
+
+Projekt realizowaliśmy w~zespole dwuosobowym według harmonogramu ze wstępnej
+koncepcji. Na zajęciach przedstawialiśmy postęp kolejnych etapów.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Etapy projektu i~odpowiedzialność.}
+\begin{tabular}{c>{\raggedright\arraybackslash}p{8.2cm}>{\raggedright\arraybackslash}p{5cm}}
+\toprule
+etap & zakres & odpowiedzialni \\
+\midrule
+1 & temat, model danych (12 tabel, model dokumentowy i~klucz--wartość), środowisko Docker z~czterema bazami & Łukasz Ryczko, Łukasz Pacholec \\
+2 & deterministyczny generator danych, import do wszystkich baz, kontrakty gRPC & Łukasz Ryczko \\
+3 & implementacja 24 scenariuszy CRUD i~3 JSON w~czterech serwisach, automatyzacja pomiarów (runner, CLI) & Łukasz Pacholec \\
+4 & indeksy, plany zapytań, test współbieżności i~strategie blokowania, OpenTelemetry, CI, Ansible & Łukasz Ryczko, Łukasz Pacholec \\
+5 & pomiary, analiza wyników, weryfikacja hipotez, sprawozdanie i~prezentacja & Łukasz Ryczko, Łukasz Pacholec \\
+\bottomrule
+\end{tabular}
+\end{table}

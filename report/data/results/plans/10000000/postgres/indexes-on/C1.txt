@@ -1,0 +1,10 @@
+-- postgres C1 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- UPDATE bilety SET status = 'zarezerwowany', rezerwacja_id = $1 WHERE id = ANY($2) AND status = 'wolny'
+Update on bilety  (cost=0.43..2.66 rows=0 width=0) (actual time=0.047..0.047 rows=0 loops=1)
+  Buffers: shared hit=20 read=1 dirtied=2 written=3
+  ->  Index Scan using bilety_pkey on bilety  (cost=0.43..2.66 rows=1 width=64) (actual time=0.021..0.021 rows=1 loops=1)
+        Index Cond: (id = ANY ('{2497702}'::bigint[]))
+        Filter: ((status)::text = 'wolny'::text)
+        Buffers: shared hit=3 read=1 written=1
+Planning Time: 0.025 ms
+Execution Time: 0.051 ms

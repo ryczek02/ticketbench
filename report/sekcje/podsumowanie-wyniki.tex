@@ -1,0 +1,23 @@
+\section*{Najważniejsze wyniki (10 mln biletów)}
+\begin{itemize}
+  \item Import: Valkey \lval{valkey}{10000000}{load}\,s, PostgreSQL \lval{postgres}{10000000}{load}\,s,
+  MariaDB \lval{mariadb}{10000000}{load}\,s, MongoDB \lval{mongo}{10000000}{load}\,s.
+  Valkey trzyma \sval{valkey}{10000000}{off}\,MB w~RAM.
+  \item Operacje po kluczu (C1, U1, U2): poniżej 2\,ms wszędzie, niezależnie od rozmiaru.
+  MongoDB najwolniejszy, bo czeka na dziennik (\texttt{majority}).
+  \item Bez indeksów zapytania rosną liniowo: R2 w~MongoDB \val{mongo}{10000000}{off}{R2}\,ms,
+  w~PostgreSQL \val{postgres}{10000000}{off}{R2}\,ms. Valkey bez struktur \texttt{ix:*}
+  musi skanować wszystko: R4 \val{valkey}{10000000}{off}{R4}\,ms.
+  \item Indeksy: R4 w~PostgreSQL \val{postgres}{10000000}{off}{R4}\,ms $\to$
+  \val{postgres}{10000000}{on}{R4}\,ms; koszt: C3 \val{postgres}{10000000}{off}{C3} $\to$
+  \val{postgres}{10000000}{on}{C3}\,ms.
+  \item Plany: pełne skany w~13 planach odczytu PostgreSQL \fullscans{postgres}{10000000}{off}
+  $\to$ \fullscans{postgres}{10000000}{on}. R6 w~MongoDB zostaje \texttt{COLLSCAN}:
+  zły prefiks indeksu złożonego.
+  \item Współbieżność (1000 klientów): Valkey Lua \cval{valkey}{10000000}{lua}{1000}\,rez./s,
+  PostgreSQL \cval{postgres}{10000000}{cond}{1000}, MongoDB \cval{mongo}{10000000}{atomic}{1000},
+  MariaDB \cval{mariadb}{10000000}{cond}{1000} (\texttt{nowait}: \cval{mariadb}{10000000}{nowait}{1000}).
+  Zero podwójnych sprzedaży w~\ContentionRuns{} rundach.
+  \item H1 \HOneVerdict{} (\HOneGrows/\HOneCases): pełna dla Valkey, dla MongoDB rośnie tylko stosunek.
+  H2 \HTwoVerdict{} (\HTwoGrows/\HTwoCases).
+\end{itemize}

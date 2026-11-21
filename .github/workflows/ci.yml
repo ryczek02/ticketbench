@@ -1,0 +1,92 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: shellcheck ticketbench.sh
+      - run: bash -n ticketbench.sh && ./ticketbench.sh help
+
+  runbook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: W3C Nu HTML validator
+        run: docker run --rm -v "$PWD/docs:/w" ghcr.io/validator/validator:latest vnu --errors-only /w/runbook.html
+
+  # Rebuild every table from the committed raw results; any difference means
+  # a number in the report did not come from the measurements.
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+      - name: tables match the raw results
+        run: |
+          go install github.com/ryczek02/ticketbench-cli/cmd/tbench@v0.2.0
+          tbench report report/data/results --out /tmp/generated
+          diff -r report/generated /tmp/generated
+      - uses: xu-cheng/latex-action@v4
+        with:
+          working_directory: report
+          root_file: |
+            sprawozdanie.tex
+            podsumowanie.tex
+            prezentacja.tex
+          latexmk_use_xelatex: true
+      - uses: actions/upload-artifact@v5
+        with:
+          name: pdf
+          path: report/*.pdf
+
+  # The shell program end to end: GitHub sources, GHCR images, released
+  # tbench, smoke matrix.
+  e2e:
+    runs-on: ubuntu-latest
+    needs: [script]
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+      - run: ./ticketbench.sh doctor
+      - run: ./ticketbench.sh install
+      - run: ./ticketbench.sh up
+      - run: ./ticketbench.sh smoke
+      - name: no errors, consistent contention
+        run: |
+          test "$(wc -l < results/latest/errors.csv)" -eq 1
+          ! grep -q ',false$' results/latest/report/data/contention_summary.csv
+      - if: always()
+        run: ./ticketbench.sh destroy
+      - uses: actions/upload-artifact@v5
+        if: always()
+        with:
+          name: smoke-results
+          path: results/
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [report, e2e]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          name: pdf
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: "*.pdf"

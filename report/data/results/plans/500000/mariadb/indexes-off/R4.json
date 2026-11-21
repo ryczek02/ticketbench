@@ -1,0 +1,74 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.032998754
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 8149236.324,
+    "r_loops": 1,
+    "r_total_time_ms": 77.05534827,
+    "filesort": {
+      "sort_key": "r.utworzono desc",
+      "r_loops": 1,
+      "r_total_time_ms": 0.005513716,
+      "r_limit": 50,
+      "r_used_priority_queue": true,
+      "r_output_rows": 3,
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "r",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 89453,
+              "r_rows": 88806,
+              "cost": 15.2755338,
+              "r_table_time_ms": 5.796460846,
+              "r_other_time_ms": 0.974507502,
+              "r_engine_stats": {
+                "pages_accessed": 769
+              },
+              "filtered": 100,
+              "r_total_filtered": 0.00337815,
+              "attached_condition": "r.klient_id = 9693",
+              "r_filtered": 0.00337815
+            }
+          },
+          {
+            "block-nl-join": {
+              "table": {
+                "table_name": "b",
+                "access_type": "ALL",
+                "loops": 89453,
+                "r_loops": 1,
+                "rows": 557920,
+                "r_rows": 575980,
+                "cost": 8149221.049,
+                "r_table_time_ms": 24.75027671,
+                "r_other_time_ms": 3.004766273,
+                "r_engine_stats": {
+                  "pages_accessed": 4524
+                },
+                "filtered": 100,
+                "r_total_filtered": 100,
+                "r_filtered": 100
+              },
+              "buffer_type": "flat",
+              "buffer_size": "256KiB",
+              "join_type": "BNL",
+              "attached_condition": "trigcond(b.rezerwacja_id = r.`id`)",
+              "r_loops": 3,
+              "r_filtered": 6.365962e-4,
+              "r_unpack_time_ms": 27.82906044,
+              "r_other_time_ms": 14.68674283,
+              "r_effective_rows": 575980
+            }
+          }
+        ]
+      }
+    }
+  }
+}

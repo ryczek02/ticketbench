@@ -1,0 +1,1 @@
+UPDATE bilety SET status = 'zarezerwowany', rezerwacja_id = ? WHERE id IN (?) AND status = 'wolny'

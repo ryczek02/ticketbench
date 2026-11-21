@@ -1,0 +1,31 @@
+-- postgres R3 tickets=500000 indexes=on trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = $1 AND w.data_rozpoczecia >= $2 AND w.data_rozpoczecia < $3
+			ORDER BY w.data_rozpoczecia
+Sort  (cost=6.59..6.60 rows=3 width=62) (actual time=0.007..0.007 rows=0 loops=1)
+  Sort Key: w.data_rozpoczecia
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2
+  ->  Nested Loop  (cost=1.42..6.57 rows=3 width=62) (actual time=0.006..0.006 rows=0 loops=1)
+        Buffers: shared hit=2
+        ->  Nested Loop  (cost=1.29..5.61 rows=3 width=63) (actual time=0.006..0.006 rows=0 loops=1)
+              Buffers: shared hit=2
+              ->  Seq Scan on obiekty o  (cost=0.00..1.10 rows=1 width=23) (actual time=0.003..0.003 rows=1 loops=1)
+                    Filter: (miasto = 'Wrocław'::text)
+                    Rows Removed by Filter: 7
+                    Buffers: shared hit=1
+              ->  Bitmap Heap Scan on wydarzenia w  (cost=1.29..4.48 rows=3 width=56) (actual time=0.003..0.003 rows=0 loops=1)
+                    Recheck Cond: ((obiekt_id = o.id) AND (data_rozpoczecia >= '2025-10-23 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2025-11-22 00:00:00+00'::timestamp with time zone))
+                    Buffers: shared hit=1
+                    ->  Bitmap Index Scan on idx_wydarzenia_obiekt_data  (cost=0.00..1.29 rows=3 width=0) (actual time=0.002..0.002 rows=0 loops=1)
+                          Index Cond: ((obiekt_id = o.id) AND (data_rozpoczecia >= '2025-10-23 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2025-11-22 00:00:00+00'::timestamp with time zone))
+                          Buffers: shared hit=1
+        ->  Index Scan using kategorie_pkey on kategorie k  (cost=0.14..0.31 rows=1 width=15) (never executed)
+              Index Cond: (id = w.kategoria_id)
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.081 ms
+Execution Time: 0.013 ms

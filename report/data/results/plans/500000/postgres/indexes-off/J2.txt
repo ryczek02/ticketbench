@@ -1,0 +1,15 @@
+-- postgres J2 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT metadane ->> 'kanal' AS kanal, count(*), sum(kwota)
+			FROM rezerwacje
+			WHERE utworzono >= $1 AND utworzono < $2
+			GROUP BY 1
+HashAggregate  (cost=3566.35..3567.85 rows=100 width=72) (actual time=2.139..2.140 rows=4 loops=1)
+  Group Key: (metadane ->> 'kanal'::text)
+  Batches: 1  Memory Usage: 24kB
+  Buffers: shared hit=1935
+  ->  Seq Scan on rezerwacje  (cost=0.00..3557.53 rows=1175 width=38) (actual time=0.113..2.067 rows=842 loops=1)
+        Filter: ((utworzono >= '2025-07-21 00:00:00+00'::timestamp with time zone) AND (utworzono < '2025-07-28 00:00:00+00'::timestamp with time zone))
+        Rows Removed by Filter: 87964
+        Buffers: shared hit=1935
+Planning Time: 0.022 ms
+Execution Time: 2.148 ms

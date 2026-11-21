@@ -1,0 +1,8 @@
+-- postgres J1 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT id, nazwa, data_rozpoczecia FROM wydarzenia WHERE metadane @> $1::jsonb
+Seq Scan on wydarzenia  (cost=0.00..13.81 rows=1 width=42) (actual time=0.032..0.032 rows=0 loops=1)
+  Filter: (metadane @> '{"tagi": ["plener"], "gatunek": "taniec wspolczesny"}'::jsonb)
+  Rows Removed by Filter: 291
+  Buffers: shared hit=10
+Planning Time: 0.028 ms
+Execution Time: 0.035 ms

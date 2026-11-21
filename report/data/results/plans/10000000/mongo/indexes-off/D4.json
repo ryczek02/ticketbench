@@ -1,0 +1,143 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.rezerwacje",
+    "parsedQuery": {
+      "klient_id": {
+        "$eq": 435357
+      }
+    },
+    "indexFilterSet": false,
+    "queryHash": "CA4634BF",
+    "planCacheShapeHash": "CA4634BF",
+    "planCacheKey": "CBAD1193",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "SORT",
+      "sortPattern": {
+        "utworzono": -1
+      },
+      "memLimit": 104857600,
+      "limitAmount": 50,
+      "type": "simple",
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "klient_id": {
+            "$eq": 435357
+          }
+        },
+        "direction": "forward"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 3,
+    "executionTimeMillis": 528,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 1680392,
+    "executionStages": {
+      "isCached": false,
+      "stage": "SORT",
+      "nReturned": 3,
+      "executionTimeMillisEstimate": 515,
+      "works": 1680397,
+      "advanced": 3,
+      "needTime": 1680393,
+      "needYield": 0,
+      "saveState": 32,
+      "restoreState": 32,
+      "isEOF": 1,
+      "sortPattern": {
+        "utworzono": -1
+      },
+      "memLimit": 104857600,
+      "limitAmount": 50,
+      "type": "simple",
+      "totalDataSizeSorted": 2203,
+      "usedDisk": false,
+      "spills": 0,
+      "spilledDataStorageSize": 0,
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "klient_id": {
+            "$eq": 435357
+          }
+        },
+        "nReturned": 3,
+        "executionTimeMillisEstimate": 504,
+        "works": 1680393,
+        "advanced": 3,
+        "needTime": 1680389,
+        "needYield": 0,
+        "saveState": 32,
+        "restoreState": 32,
+        "isEOF": 1,
+        "direction": "forward",
+        "docsExamined": 1680392
+      }
+    }
+  },
+  "queryShapeHash": "598297668646985077068CB3EB24B0611C79CD22CD192A24F0456194B4A3E8C9",
+  "command": {
+    "find": "rezerwacje",
+    "filter": {
+      "klient_id": 435357
+    },
+    "sort": {
+      "utworzono": -1
+    },
+    "limit": 50,
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299943,
+        "i": 100
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299943,
+      "i": 100
+    }
+  }
+}

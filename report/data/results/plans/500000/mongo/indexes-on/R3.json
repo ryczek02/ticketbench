@@ -1,0 +1,222 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.wydarzenia",
+    "parsedQuery": {
+      "$and": [
+        {
+          "miasto": {
+            "$eq": "Wrocław"
+          }
+        },
+        {
+          "data_rozpoczecia": {
+            "$lt": {
+              "$date": "2025-11-22T00:00:00Z"
+            }
+          }
+        },
+        {
+          "data_rozpoczecia": {
+            "$gte": {
+              "$date": "2025-10-23T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "510E711E",
+    "planCacheShapeHash": "510E711E",
+    "planCacheKey": "C37BAAC7",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "FETCH",
+      "inputStage": {
+        "stage": "IXSCAN",
+        "keyPattern": {
+          "miasto": 1,
+          "data_rozpoczecia": 1
+        },
+        "indexName": "miasto_1_data_rozpoczecia_1",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+          "miasto": [],
+          "data_rozpoczecia": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+          "miasto": [
+            "[\"Wrocław\", \"Wrocław\"]"
+          ],
+          "data_rozpoczecia": [
+            "[new Date(1761177600000), new Date(1763769600000))"
+          ]
+        }
+      }
+    },
+    "rejectedPlans": [
+      {
+        "isCached": false,
+        "stage": "FETCH",
+        "filter": {
+          "miasto": {
+            "$eq": "Wrocław"
+          }
+        },
+        "inputStage": {
+          "stage": "IXSCAN",
+          "keyPattern": {
+            "data_rozpoczecia": 1
+          },
+          "indexName": "data_rozpoczecia_1",
+          "isMultiKey": false,
+          "multiKeyPaths": {
+            "data_rozpoczecia": []
+          },
+          "isUnique": false,
+          "isSparse": false,
+          "isPartial": false,
+          "indexVersion": 2,
+          "direction": "forward",
+          "indexBounds": {
+            "data_rozpoczecia": [
+              "[new Date(1761177600000), new Date(1763769600000))"
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 0,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 0,
+    "executionStages": {
+      "isCached": false,
+      "stage": "FETCH",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 0,
+      "works": 2,
+      "advanced": 0,
+      "needTime": 0,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "docsExamined": 0,
+      "alreadyHasObj": 0,
+      "inputStage": {
+        "stage": "IXSCAN",
+        "nReturned": 0,
+        "executionTimeMillisEstimate": 0,
+        "works": 1,
+        "advanced": 0,
+        "needTime": 0,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "keyPattern": {
+          "miasto": 1,
+          "data_rozpoczecia": 1
+        },
+        "indexName": "miasto_1_data_rozpoczecia_1",
+        "isMultiKey": false,
+        "multiKeyPaths": {
+          "miasto": [],
+          "data_rozpoczecia": []
+        },
+        "isUnique": false,
+        "isSparse": false,
+        "isPartial": false,
+        "indexVersion": 2,
+        "direction": "forward",
+        "indexBounds": {
+          "miasto": [
+            "[\"Wrocław\", \"Wrocław\"]"
+          ],
+          "data_rozpoczecia": [
+            "[new Date(1761177600000), new Date(1763769600000))"
+          ]
+        },
+        "keysExamined": 0,
+        "seeks": 1,
+        "dupsTested": 0,
+        "dupsDropped": 0
+      }
+    }
+  },
+  "queryShapeHash": "DAB3BAD0C2552E43E2A4AE8FA66917307511D717789AFCF3134D1A2B28EEB2E1",
+  "command": {
+    "find": "wydarzenia",
+    "filter": {
+      "miasto": "Wrocław",
+      "data_rozpoczecia": {
+        "$gte": {
+          "$date": "2025-10-23T00:00:00Z"
+        },
+        "$lt": {
+          "$date": "2025-11-22T00:00:00Z"
+        }
+      }
+    },
+    "sort": {
+      "data_rozpoczecia": 1
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795298643,
+        "i": 140
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795298643,
+      "i": 140
+    }
+  }
+}

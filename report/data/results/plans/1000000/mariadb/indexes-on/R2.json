@@ -1,0 +1,100 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.046856847
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 2.62631024,
+    "r_loops": 1,
+    "r_total_time_ms": 0.629685867,
+    "filesort": {
+      "sort_key": "s.nazwa, m.rzad, m.numer",
+      "r_loops": 1,
+      "r_total_time_ms": 0.077510079,
+      "r_used_priority_queue": false,
+      "r_output_rows": 706,
+      "r_buffer_size": "195KiB",
+      "r_sort_mode": "sort_key,rowid",
+      "temporary_table": {
+        "nested_loop": [
+          {
+            "table": {
+              "table_name": "b",
+              "access_type": "ref",
+              "possible_keys": ["idx_bilety_wydarzenie_status"],
+              "key": "idx_bilety_wydarzenie_status",
+              "key_length": "74",
+              "used_key_parts": ["wydarzenie_id", "status"],
+              "ref": ["const", "const"],
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 706,
+              "r_index_rows": 706,
+              "r_rows": 706,
+              "cost": 1.28307936,
+              "r_table_time_ms": 0.270408276,
+              "r_other_time_ms": 0.012695616,
+              "r_engine_stats": {
+                "pages_accessed": 2126
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "index_condition": "b.`status` = 'wolny'",
+              "r_icp_filtered": 100,
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "m",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY", "idx_miejsca_sektor"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.b.miejsce_id"],
+              "loops": 706,
+              "r_loops": 706,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 0.71093704,
+              "r_table_time_ms": 0.190810103,
+              "r_other_time_ms": 0.053246417,
+              "r_engine_stats": {
+                "pages_accessed": 1414
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          },
+          {
+            "table": {
+              "table_name": "s",
+              "access_type": "eq_ref",
+              "possible_keys": ["PRIMARY"],
+              "key": "PRIMARY",
+              "key_length": "8",
+              "used_key_parts": ["id"],
+              "ref": ["ticketbench.m.sektor_id"],
+              "loops": 706,
+              "r_loops": 706,
+              "r_table_loops": 5,
+              "rows": 1,
+              "r_rows": 1,
+              "cost": 0.63229384,
+              "r_table_time_ms": 0.001503428,
+              "r_other_time_ms": 0.002296904,
+              "r_engine_stats": {
+                "pages_accessed": 5
+              },
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100
+            }
+          }
+        ]
+      }
+    }
+  }
+}

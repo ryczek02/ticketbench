@@ -1,0 +1,106 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.07137108
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.03231323,
+    "r_loops": 1,
+    "r_total_time_ms": 94.33874485,
+    "nested_loop": [
+      {
+        "read_sorted_file": {
+          "r_rows": 10,
+          "filesort": {
+            "sort_key": "t.sprzedane desc",
+            "r_loops": 1,
+            "r_total_time_ms": 0.001294619,
+            "r_used_priority_queue": false,
+            "r_output_rows": 10,
+            "r_buffer_size": "480",
+            "r_sort_mode": "sort_key,rowid",
+            "table": {
+              "table_name": "<derived2>",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 10,
+              "r_rows": 10,
+              "cost": 0.010446846,
+              "r_table_time_ms": 0.001044047,
+              "r_other_time_ms": 0.00705776,
+              "filtered": 100,
+              "r_total_filtered": 100,
+              "r_filtered": 100,
+              "materialized": {
+                "query_block": {
+                  "select_id": 2,
+                  "cost": 182.5451188,
+                  "r_loops": 1,
+                  "r_total_time_ms": 94.32070371,
+                  "filesort": {
+                    "sort_key": "count(0) desc",
+                    "r_loops": 1,
+                    "r_total_time_ms": 0.014783711,
+                    "r_limit": 10,
+                    "r_used_priority_queue": true,
+                    "r_output_rows": 11,
+                    "r_sort_mode": "sort_key,rowid",
+                    "temporary_table": {
+                      "nested_loop": [
+                        {
+                          "table": {
+                            "table_name": "bilety",
+                            "access_type": "ALL",
+                            "loops": 1,
+                            "r_loops": 1,
+                            "rows": 1074952,
+                            "r_rows": 1075975,
+                            "cost": 182.5451188,
+                            "r_table_time_ms": 61.25325863,
+                            "r_other_time_ms": 33.042555,
+                            "r_engine_stats": {
+                              "pages_accessed": 8418
+                            },
+                            "filtered": 100,
+                            "r_total_filtered": 44.19907526,
+                            "attached_condition": "bilety.`status` = 'sprzedany'",
+                            "r_filtered": 44.19907526
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "table": {
+          "table_name": "w",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["t.wydarzenie_id"],
+          "loops": 10,
+          "r_loops": 10,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.015498,
+          "r_table_time_ms": 0.007684189,
+          "r_other_time_ms": 0.002255142,
+          "r_engine_stats": {
+            "pages_accessed": 20
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

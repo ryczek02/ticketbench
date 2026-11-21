@@ -1,0 +1,38 @@
+Hop gRPC między runnerem a~serwisem bazy dodaje w~medianie dziesiąte części
+milisekundy (tab.~\ref{tab:grpc}). Przy najszybszych operacjach, takich jak
+odczyt rezerwacji po kluczu, to od jednej piątej do prawie połowy całego czasu
+wywołania. Gdyby czas mierzył klient, różnice między bazami w~operacjach
+punktowych byłyby rozmyte przez transport. Dlatego porównujemy czas mierzony
+w~serwisie bazy. Średni narzut jest wyższy od mediany, bo obejmuje też
+przesłanie dużych odpowiedzi (np. tysięcy wolnych miejsc w~R2).
+
+Pomiar narzutu OpenTelemetry (tab.~\ref{tab:otel}) porównuje te same
+scenariusze ze śladem próbkowanym i~niepróbkowanym, w~którym identyfikator
+śladu nadal jest propagowany. Różnice mają oba znaki i~mieszczą się w~rozrzucie
+pomiaru operacji trwających ułamek milisekundy. Pełne śledzenie z~eksportem
+spanów nie zmienia więc wyników w~sposób mierzalny w~tym teście. Pozostaje
+pomijalne także dlatego, że import hurtowy i~test współbieżności zapisują
+spany tylko dla części operacji.
+
+\subsection{Dane półstrukturalne (JSON)}
+\label{sec:json}
+
+Metadane wydarzeń, biletów, klientów, rezerwacji i~płatności są zapisane jako
+JSON w~każdej bazie, choć na różne sposoby. PostgreSQL używa \texttt{JSONB}
+(binarnie, z~operatorami i~indeksem GIN). MariaDB używa \texttt{JSON}
+(tekst z~kontrolą poprawności, kolumna wirtualna do indeksu). W~MongoDB
+metadane są natywnymi poddokumentami BSON. Valkey zapisuje JSON jako napis
+w~polu hasza, a~częściową aktualizację wykonuje skrypt Lua z~biblioteką
+\texttt{cjson}.
+
+Filtr po polach JSON (J1) z~indeksem trwa przy 10 mln biletów
+\val{postgres}{10000000}{on}{J1}\,ms w~PostgreSQL, \val{mariadb}{10000000}{on}{J1}\,ms
+w~MariaDB, \val{mongo}{10000000}{on}{J1}\,ms w~MongoDB i~\val{valkey}{10000000}{on}{J1}\,ms
+w~Valkey. Agregacja po polu \texttt{metadane.kanal} rezerwacji z~tygodnia (J2)
+pokazuje koszt wyłuskiwania pola z~każdego dokumentu: PostgreSQL
+\val{postgres}{10000000}{on}{J2}\,ms, MariaDB \val{mariadb}{10000000}{on}{J2}\,ms,
+MongoDB \val{mongo}{10000000}{on}{J2}\,ms, Valkey \val{valkey}{10000000}{on}{J2}\,ms
+(dekodowanie JSON-a po stronie klienta). Dopisanie elementu do tablicy w~JSON
+(J3) jest operacją punktową we wszystkich bazach. PostgreSQL i~MariaDB
+przepisują wtedy całą wartość kolumny, MongoDB wykonuje \texttt{\$push} na
+miejscu, a~Valkey dekoduje i~koduje JSON w~skrypcie Lua.

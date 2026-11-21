@@ -1,0 +1,50 @@
+We wszystkich \ContentionRuns{} rundach testu (4 bazy, 13 strategii, 4 poziomy
+współbieżności, 3 rozmiary, 3 powtórzenia) liczba rezerwacji w~bazie zgadzała
+się z~liczbą zajętych miejsc. Liczba niespójnych rund wynosi
+\ContentionInconsistent. Żadna strategia nie dopuściła do podwójnej sprzedaży,
+więc wyniki różnią się wydajnością, a~nie poprawnością.
+
+\paragraph{Valkey.} Skrypt Lua przy 10 mln biletów obsługuje
+\cval{valkey}{10000000}{lua}{1}\,rezerwacji/s z~jednym klientem
+i~\cval{valkey}{10000000}{lua}{1000}\,rez./s z~tysiącem klientów. Przepustowość
+rośnie z~liczbą klientów, bo jednowątkowy serwer wykonuje skrypty jeden po
+drugim bez blokad, a~sterownik valkey-go łączy równoległe wywołania w~potoki.
+95.~percentyl czasu próby przy 1000 klientach to \cpn{valkey}{10000000}{lua}{1000}\,ms.
+Strategia \texttt{watch} (optymistyczna, na całym zbiorze wolnych miejsc)
+załamuje się: \ckn{valkey}{10000000}{watch}{1000} przerwanych transakcji na
+rundę i~\cval{valkey}{10000000}{watch}{1000}\,rez./s. Ten sam silnik daje więc
+wyniki różniące się o~kilka rzędów wielkości w~zależności od sposobu blokowania.
+
+\paragraph{PostgreSQL.} Warunkowy \texttt{UPDATE} (\texttt{cond}) osiąga
+maksimum przy 100 klientach (\cval{postgres}{10000000}{cond}{100}\,rez./s),
+a~przy 1000 klientach spada do \cval{postgres}{10000000}{cond}{1000}\,rez./s
+z~p95 równym \cpn{postgres}{10000000}{cond}{1000}\,ms. Tysiąc procesów
+serwera na 10 rdzeniach czeka w~kolejce na blokady tych samych 500 wierszy.
+\texttt{SELECT ... FOR UPDATE} przy 1000 klientach daje więcej
+(\cval{postgres}{10000000}{forupdate}{1000}\,rez./s), choć przy 100 klientach
+kolejność jest odwrotna. Przy dużej współbieżności sposób oczekiwania na
+blokadę wiersza ma więc znaczenie.
+\texttt{serializable} traci najwięcej na ponowieniach
+(\ckn{postgres}{10000000}{serializable}{1000} konfliktów na rundę).
+
+\paragraph{MariaDB.} Do 100 klientów MariaDB dorównuje PostgreSQL, a~z~\texttt{nowait}
+osiąga nawet \cval{mariadb}{10000000}{nowait}{100}\,rez./s. Przy 1000 klientach
+strategie czekające na blokadę spadają do kilkudziesięciu rezerwacji na
+sekundę (\texttt{cond}: \cval{mariadb}{10000000}{cond}{1000}\,rez./s,
+p95 \cpn{mariadb}{10000000}{cond}{1000}\,ms). Rundy trwają wtedy dziesiątki
+sekund. Obserwujemy kolejki tysiąca wątków czekających na blokady rekordów
+InnoDB w~trybie REPEATABLE READ. \texttt{nowait} nie czeka, tylko od razu
+zgłasza konflikt, i~zachowuje \cval{mariadb}{10000000}{nowait}{1000}\,rez./s.
+Przy wysokiej współbieżności lepiej szybko odrzucić próbę niż kolejkować.
+
+\paragraph{MongoDB.} Z~jednym klientem MongoDB jest najwolniejszy
+(\cval{mongo}{10000000}{atomic}{1}\,rez./s), bo każdy zapis czeka na dziennik.
+Przepustowość rośnie z~liczbą klientów, bo zapisy wielu klientów dzielą
+jeden zapis dziennika (\emph{group commit}). Przy 1000 klientach osiąga
+\cval{mongo}{10000000}{atomic}{1000}\,rez./s, więcej niż PostgreSQL
+i~MariaDB w~strategiach domyślnych. Transakcje wielodokumentowe (\texttt{txn})
+są wolniejsze od pojedynczej atomowej aktualizacji dokumentu.
+
+\paragraph{Rozmiar zbioru.} Wykresy dla 500 tys. i~10 mln biletów mają ten
+sam kształt. Test dotyczy 500 gorących wierszy, więc decyduje o~nim sposób
+blokowania, a~nie rozmiar tabeli.

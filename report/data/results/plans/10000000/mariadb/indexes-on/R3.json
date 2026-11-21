@@ -1,0 +1,89 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.062090759
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.603379792,
+    "r_loops": 1,
+    "r_total_time_ms": 0.285851796,
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "w",
+          "access_type": "range",
+          "possible_keys": ["idx_wydarzenia_obiekt_data", "idx_wydarzenia_data"],
+          "key": "idx_wydarzenia_data",
+          "key_length": "8",
+          "used_key_parts": ["data_rozpoczecia"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 231,
+          "r_index_rows": 231,
+          "r_rows": 231,
+          "cost": 0.31138408,
+          "r_table_time_ms": 0.19334326,
+          "r_other_time_ms": 0.008953789,
+          "r_engine_stats": {
+            "pages_accessed": 466
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "index_condition": "w.data_rozpoczecia >= '2025-10-23' and w.data_rozpoczecia < '2025-11-22'",
+          "r_icp_filtered": 100,
+          "r_filtered": 100
+        }
+      },
+      {
+        "table": {
+          "table_name": "o",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY", "idx_obiekty_miasto"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.w.obiekt_id"],
+          "loops": 231,
+          "r_loops": 231,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.20989244,
+          "r_table_time_ms": 0.057990426,
+          "r_other_time_ms": 0.008619068,
+          "r_engine_stats": {
+            "pages_accessed": 470
+          },
+          "filtered": 22.89156532,
+          "r_total_filtered": 19.91341991,
+          "attached_condition": "o.miasto = 'Warszawa'",
+          "r_filtered": 19.91341991
+        }
+      },
+      {
+        "table": {
+          "table_name": "k",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.w.kategoria_id"],
+          "loops": 52.87951807,
+          "r_loops": 46,
+          "r_table_loops": 38,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.048116756,
+          "r_table_time_ms": 0.007280183,
+          "r_other_time_ms": 0.007614904,
+          "r_engine_stats": {
+            "pages_accessed": 38
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

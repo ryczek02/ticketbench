@@ -1,0 +1,10 @@
+-- postgres U2 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- UPDATE bilety SET status = 'zablokowany', zablokowany_do = $2 WHERE id = $1 AND status = 'wolny'
+Update on bilety  (cost=0.42..2.65 rows=0 width=0) (actual time=0.016..0.016 rows=0 loops=1)
+  Buffers: shared hit=13
+  ->  Index Scan using bilety_pkey on bilety  (cost=0.42..2.65 rows=1 width=64) (actual time=0.005..0.005 rows=1 loops=1)
+        Index Cond: (id = '127484'::bigint)
+        Filter: ((status)::text = 'wolny'::text)
+        Buffers: shared hit=4
+Planning Time: 0.016 ms
+Execution Time: 0.019 ms

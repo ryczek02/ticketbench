@@ -1,0 +1,42 @@
+\section{Weryfikacja hipotez}
+\label{sec:hipotezy}
+
+\subsection{H1: przewaga Valkey i MongoDB rośnie z liczbą klientów}
+
+Dla każdego rozmiaru i~każdej pary (baza nierelacyjna, baza relacyjna)
+liczymy przewagę jako iloraz przepustowości przy strategiach domyślnych, dla
+1, 10, 100 i~1000 klientów. Przewaga ,,rośnie'', jeśli współczynnik korelacji
+rang Spearmana między liczbą klientów a~przewagą jest dodatni i~przewaga przy
+1000 klientów jest większa niż przy jednym.
+
+\begin{table}[H]
+\centering
+\caption{H1: przewaga przepustowości (iloraz) przy 1 i~przy 1000 klientach.}
+\label{tab:h1}
+\small
+\tbinput{generated/tables/h1.tex}
+\end{table}
+
+Przewaga rośnie w~\HOneGrows{} z~\HOneCases{} przypadków. Wynik
+automatycznej oceny: hipoteza H1 \textbf{\HOneVerdict}.
+
+\input{sekcje/07a-h1}
+
+\subsection{H2: różnice między silnikami rosną z liczbą rekordów}
+
+Dla każdego scenariusza i~wariantu indeksów liczymy iloraz czasu
+najwolniejszej i~najszybszej bazy. Różnica ,,rośnie'', jeśli ten iloraz przy
+10 mln biletów jest większy niż przy 500 tys.
+
+\begin{table}[H]
+\centering
+\caption{H2: iloraz czasu najwolniejszej i~najszybszej bazy.}
+\label{tab:h2}
+\footnotesize
+\IfFileExists{generated/tables/h2.tex}{\begin{minipage}{\linewidth}\centering\input{generated/tables/h2.tex}\end{minipage}}{brak danych}
+\end{table}
+
+Różnica rośnie w~\HTwoGrows{} z~\HTwoCases{} przypadków. Wynik automatycznej
+oceny: hipoteza H2 \textbf{\HTwoVerdict}.
+
+\input{sekcje/07b-h2}

@@ -1,0 +1,46 @@
+\section{Zgodność z wymaganiami regulaminu}
+\label{sec:zgodnosc}
+
+\begin{table}[H]
+\centering
+\footnotesize
+\caption{Wymagania z~§3 regulaminu zajęć i~miejsce ich realizacji.}
+\begin{tabular}{>{\raggedright\arraybackslash}p{0.8cm}>{\raggedright\arraybackslash}p{7.2cm}>{\raggedright\arraybackslash}p{7.2cm}}
+\toprule
+ocena & wymaganie & realizacja \\
+\midrule
+3.0 & cel i~zakres pracy & rozdz.~1 \\
+3.0 & opis SZBD, zalety i~wady & rozdz.~\ref{sec:szbd}, tab.~\ref{tab:zalety} \\
+3.0 & awaryjność, bezpieczeństwo, migracje, integracje, skalowalność & tab.~\ref{tab:ops} \\
+3.0 & obszary zastosowań biznesowych & rozdz.~\ref{sec:szbd} \\
+3.0 & opis zbioru danych, min. 5 tabel & rozdz.~3: 12 tabel, model dokumentowy i~klucz--wartość \\
+3.0 & aplikacja: wymagania, technologie, działanie & rozdz.~4 \\
+3.0 & CRUD dla małego, średniego i~dużego zbioru & 0,5 mln, 1 mln, 10 mln biletów, tab.~\ref{tab:s500}--\ref{tab:s10m} \\
+3.0 & min. 4 SZBD (2 relacyjne, 2 nierelacyjne) & PostgreSQL, MariaDB, MongoDB, Valkey \\
+3.0 & min. 12 scenariuszy, min. 3 na operację CRUD & 24 CRUD (6 na operację) + 3 JSON \\
+3.0 & średnia z~min. 3 prób & 5 prób + rozgrzewka, średnia, mediana, odchylenie, p95 \\
+3.0 & opis i~wizualizacja wyników, sprawozdanie i~prezentacja & rozdz.~5--8, wykresy, \texttt{prezentacja.pdf} \\
+\midrule
+4.0 & min. dwa modele danych & trzy: relacyjny, dokumentowy, klucz--wartość \\
+4.0 & indeksy & 15 indeksów drugorzędnych w~każdej bazie, zbiory \texttt{ix:*} w~Valkey \\
+4.0 & min. 10 tabel & 12 tabel \\
+4.0 & analiza planów zapytań & EXPLAIN ANALYZE, ANALYZE FORMAT=JSON, explain executionStats; tab.~\ref{tab:plans-rel}, \ref{tab:plans-nosql}, rys.~\ref{lst:r4} \\
+4.0 & porównanie przed i~po indeksach & każdy scenariusz w~obu wariantach, rys.~\ref{fig:speedup} \\
+4.0 & 24 scenariusze, min. 6 na operację, min. 3 próby & 24 + 3, po 5 prób \\
+4.0 & rozszerzona analiza wyników i~wnioski & rozdz.~5--8, zagrożenia trafności \\
+4.0 & zbiory 0,5 mln, 1 mln, 10 mln & tak \\
+\midrule
+5.0 & testy skalowalności (równoległe zapytania, wielu użytkowników) & rozdz.~6: 1--1000 klientów, 13 strategii, kontrola spójności \\
+5.0 & dane półstrukturalne & JSONB, JSON, BSON, JSON w~Valkey; scenariusze J1--J3, rozdz.~\ref{sec:json} \\
+5.0 & automatyzacja testów i~generowania wyników & \texttt{ticketbench.sh}, Docker Compose, CI, Ansible, \texttt{tbench report} \\
+5.0 & sformułowanie i~weryfikacja hipotezy & H1 (rozdz.~\ref{sec:hipotezy}), dodatkowo H2 \\
+\midrule
+§3 & harmonogram i~podział zadań & rozdz.~9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Z~czterech elementów zaawansowanych na ocenę 5.0 (wymagane dwa) projekt
+realizuje trzy: testy skalowalności, dane półstrukturalne i~automatyzację.
+Analiza bezpieczeństwa jest opisana teoretycznie (tab.~\ref{tab:ops}), bez
+pomiaru jej wpływu na operacje CRUD.

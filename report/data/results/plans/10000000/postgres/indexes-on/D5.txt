@@ -1,0 +1,9 @@
+-- postgres D5 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- DELETE FROM bilety WHERE wydarzenie_id = $1
+Delete on bilety  (cost=0.43..1194.80 rows=0 width=0) (actual time=0.402..0.402 rows=0 loops=1)
+  Buffers: shared hit=2432
+  ->  Index Scan using idx_bilety_wydarzenie_status on bilety  (cost=0.43..1194.80 rows=2355 width=6) (actual time=0.003..0.136 rows=2388 loops=1)
+        Index Cond: (wydarzenie_id = '1230950000000'::bigint)
+        Buffers: shared hit=44
+Planning Time: 0.014 ms
+Execution Time: 0.403 ms

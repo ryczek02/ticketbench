@@ -1,0 +1,109 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.043557657
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 0.01572728,
+    "r_loops": 1,
+    "r_total_time_ms": 0.017164139,
+    "const_condition": "1",
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "r",
+          "access_type": "const",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["const"],
+          "r_loops": 0,
+          "rows": 1,
+          "r_rows": null,
+          "r_engine_stats": {
+            "pages_accessed": 3
+          },
+          "filtered": 100,
+          "r_total_filtered": null,
+          "r_filtered": null
+        }
+      },
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ref",
+          "possible_keys": ["idx_bilety_rezerwacja"],
+          "key": "idx_bilety_rezerwacja",
+          "key_length": "9",
+          "used_key_parts": ["rezerwacja_id"],
+          "ref": ["const"],
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 3,
+          "r_rows": 3,
+          "cost": 0.00708384,
+          "r_table_time_ms": 0.010440474,
+          "r_other_time_ms": 0.001712238,
+          "r_engine_stats": {
+            "pages_accessed": 15
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      },
+      {
+        "table": {
+          "table_name": "m",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.b.miejsce_id"],
+          "loops": 3,
+          "r_loops": 3,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.00514092,
+          "r_table_time_ms": 0.00221338,
+          "r_other_time_ms": 6.264284e-4,
+          "r_engine_stats": {
+            "pages_accessed": 6
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "trigcond(trigcond(b.miejsce_id is not null))",
+          "r_filtered": 100
+        }
+      },
+      {
+        "table": {
+          "table_name": "s",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.m.sektor_id"],
+          "loops": 3,
+          "r_loops": 3,
+          "r_table_loops": 1,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 0.00350252,
+          "r_table_time_ms": 0.001127571,
+          "r_other_time_ms": 3.758571e-4,
+          "r_engine_stats": {
+            "pages_accessed": 1
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "trigcond(trigcond(m.sektor_id is not null))",
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

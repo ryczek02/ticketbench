@@ -1,0 +1,12 @@
+[submodule "contracts"]
+	path = contracts
+	url = https://github.com/ryczek02/ticketbench-contracts.git
+[submodule "services"]
+	path = services
+	url = https://github.com/ryczek02/ticketbench-services.git
+[submodule "cli"]
+	path = cli
+	url = https://github.com/ryczek02/ticketbench-cli.git
+[submodule "infra"]
+	path = infra
+	url = https://github.com/ryczek02/ticketbench-infra.git

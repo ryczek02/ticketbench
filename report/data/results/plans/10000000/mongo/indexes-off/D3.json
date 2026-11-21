@@ -1,0 +1,166 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.rezerwacje",
+    "parsedQuery": {
+      "$and": [
+        {
+          "status": {
+            "$eq": "wygasla"
+          }
+        },
+        {
+          "wygasa_o": {
+            "$lt": {
+              "$date": "2025-12-25T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "FC55E40E",
+    "planCacheShapeHash": "FC55E40E",
+    "planCacheKey": "1E44218E",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "BATCHED_DELETE",
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "status": {
+                "$eq": "wygasla"
+              }
+            },
+            {
+              "wygasa_o": {
+                "$lt": {
+                  "$date": "2025-12-25T00:00:00Z"
+                }
+              }
+            }
+          ]
+        },
+        "direction": "forward"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 0,
+    "executionTimeMillis": 474,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 1681392,
+    "executionStages": {
+      "isCached": false,
+      "stage": "BATCHED_DELETE",
+      "nReturned": 0,
+      "executionTimeMillisEstimate": 455,
+      "works": 1681393,
+      "advanced": 0,
+      "needTime": 1681392,
+      "needYield": 0,
+      "saveState": 33,
+      "restoreState": 33,
+      "isEOF": 1,
+      "nWouldDelete": 1000,
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "status": {
+                "$eq": "wygasla"
+              }
+            },
+            {
+              "wygasa_o": {
+                "$lt": {
+                  "$date": "2025-12-25T00:00:00Z"
+                }
+              }
+            }
+          ]
+        },
+        "nReturned": 1000,
+        "executionTimeMillisEstimate": 454,
+        "works": 1681393,
+        "advanced": 1000,
+        "needTime": 1680392,
+        "needYield": 0,
+        "saveState": 33,
+        "restoreState": 33,
+        "isEOF": 1,
+        "direction": "forward",
+        "docsExamined": 1681392
+      }
+    }
+  },
+  "command": {
+    "delete": "rezerwacje",
+    "deletes": [
+      {
+        "q": {
+          "status": "wygasla",
+          "wygasa_o": {
+            "$lt": {
+              "$date": "2025-12-25T00:00:00Z"
+            }
+          }
+        },
+        "limit": 0
+      }
+    ],
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795299942,
+        "i": 25
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795299942,
+      "i": 25
+    }
+  }
+}

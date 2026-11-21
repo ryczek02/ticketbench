@@ -1,0 +1,7 @@
+SELECT r.id, r.utworzono, r.status, r.kwota, count(b.id) AS bilety
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			WHERE r.klient_id = ?
+			GROUP BY r.id, r.utworzono, r.status, r.kwota
+			ORDER BY r.utworzono DESC
+			LIMIT 50

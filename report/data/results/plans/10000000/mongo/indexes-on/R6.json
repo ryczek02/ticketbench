@@ -1,0 +1,288 @@
+{
+  "explainVersion": "2",
+  "stages": [
+    {
+      "$cursor": {
+        "queryPlanner": {
+          "namespace": "ticketbench.bilety",
+          "parsedQuery": {
+            "status": {
+              "$eq": "sprzedany"
+            }
+          },
+          "indexFilterSet": false,
+          "queryHash": "6A758FFF",
+          "planCacheShapeHash": "6A758FFF",
+          "planCacheKey": "B70EC3EF",
+          "optimizationTimeMillis": 0,
+          "maxIndexedOrSolutionsReached": false,
+          "maxIndexedAndSolutionsReached": false,
+          "maxScansToExplodeReached": false,
+          "prunedSimilarIndexes": false,
+          "winningPlan": {
+            "isCached": false,
+            "queryPlan": {
+              "stage": "GROUP",
+              "planNodeId": 3,
+              "inputStage": {
+                "stage": "COLLSCAN",
+                "planNodeId": 1,
+                "filter": {
+                  "status": {
+                    "$eq": "sprzedany"
+                  }
+                },
+                "direction": "forward"
+              }
+            },
+            "slotBasedPlan": {
+              "slots": "$$RESULT=s9 env: {  }",
+              "stages": "[3] project [s9 = newObj(\"_id\", s6, \"sprzedane\", s8)] \n[3] project [s8 = (convert ( s7, int32) ?: s7)] \n[3] group [s6] [s7 = count()] spillSlots[s5] mergingExprs[sum(s5)] \n[3] project [s6 = (s1 ?: null)] \n[1] filter {traverseF(s2, lambda(l2.0) { ((move(l2.0) == \"sprzedany\") ?: false) }, false)} \n[1] scan s3 s4 none none none none none none lowPriority [s1 = wydarzenie_id, s2 = status] @\"f2e79347-a00b-451f-b529-ff1deacfbcc0\" true false "
+            }
+          },
+          "rejectedPlans": []
+        },
+        "executionStats": {
+          "executionSuccess": true,
+          "nReturned": 4010,
+          "executionTimeMillis": 2382,
+          "totalKeysExamined": 0,
+          "totalDocsExamined": 10152973,
+          "executionStages": {
+            "stage": "project",
+            "planNodeId": 3,
+            "nReturned": 4010,
+            "executionTimeMillisEstimate": 2370,
+            "opens": 1,
+            "closes": 1,
+            "saveState": 176,
+            "restoreState": 176,
+            "isEOF": 1,
+            "projections": {
+              "9": "newObj(\"_id\", s6, \"sprzedane\", s8) "
+            },
+            "inputStage": {
+              "stage": "project",
+              "planNodeId": 3,
+              "nReturned": 4010,
+              "executionTimeMillisEstimate": 2370,
+              "opens": 1,
+              "closes": 1,
+              "saveState": 176,
+              "restoreState": 176,
+              "isEOF": 1,
+              "projections": {
+                "8": "(convert ( s7, int32) ?: s7) "
+              },
+              "inputStage": {
+                "stage": "group",
+                "planNodeId": 3,
+                "nReturned": 4010,
+                "executionTimeMillisEstimate": 2370,
+                "opens": 1,
+                "closes": 1,
+                "saveState": 176,
+                "restoreState": 176,
+                "isEOF": 1,
+                "groupBySlots": [
+                  6
+                ],
+                "expressions": {
+                  "7": "count() ",
+                  "initExprs": {
+                    "7": null
+                  }
+                },
+                "mergingExprs": {
+                  "5": "sum(s5) "
+                },
+                "usedDisk": false,
+                "spills": 0,
+                "spilledBytes": 0,
+                "spilledRecords": 0,
+                "spilledDataStorageSize": 0,
+                "inputStage": {
+                  "stage": "project",
+                  "planNodeId": 3,
+                  "nReturned": 4668873,
+                  "executionTimeMillisEstimate": 2207,
+                  "opens": 1,
+                  "closes": 1,
+                  "saveState": 176,
+                  "restoreState": 176,
+                  "isEOF": 1,
+                  "projections": {
+                    "6": "(s1 ?: null) "
+                  },
+                  "inputStage": {
+                    "stage": "filter",
+                    "planNodeId": 1,
+                    "nReturned": 4668873,
+                    "executionTimeMillisEstimate": 2185,
+                    "opens": 1,
+                    "closes": 1,
+                    "saveState": 176,
+                    "restoreState": 176,
+                    "isEOF": 1,
+                    "numTested": 10152973,
+                    "filter": "traverseF(s2, lambda(l2.0) { ((move(l2.0) == \"sprzedany\") ?: false) }, false) ",
+                    "inputStage": {
+                      "stage": "scan",
+                      "planNodeId": 1,
+                      "nReturned": 10152973,
+                      "executionTimeMillisEstimate": 1918,
+                      "opens": 1,
+                      "closes": 1,
+                      "saveState": 176,
+                      "restoreState": 176,
+                      "isEOF": 1,
+                      "numReads": 10152973,
+                      "recordSlot": 3,
+                      "recordIdSlot": 4,
+                      "scanFieldNames": [
+                        "wydarzenie_id",
+                        "status"
+                      ],
+                      "scanFieldSlots": [
+                        1,
+                        2
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "nReturned": 4010,
+      "executionTimeMillisEstimate": 2380
+    },
+    {
+      "$sort": {
+        "sortKey": {
+          "sprzedane": -1
+        },
+        "limit": 10
+      },
+      "totalDataSizeSortedBytesEstimate": 2530,
+      "usedDisk": false,
+      "spills": 0,
+      "spilledDataStorageSize": 0,
+      "nReturned": 10,
+      "executionTimeMillisEstimate": 2380
+    },
+    {
+      "$lookup": {
+        "from": "wydarzenia",
+        "as": "wydarzenie",
+        "localField": "_id",
+        "foreignField": "_id"
+      },
+      "totalDocsExamined": 10,
+      "totalKeysExamined": 10,
+      "collectionScans": 0,
+      "indexesUsed": [
+        "_id_"
+      ],
+      "nReturned": 10,
+      "executionTimeMillisEstimate": 2382
+    },
+    {
+      "$project": {
+        "_id": true,
+        "sprzedane": true,
+        "wydarzenie": {
+          "nazwa": true
+        }
+      },
+      "nReturned": 10,
+      "executionTimeMillisEstimate": 2382
+    }
+  ],
+  "queryShapeHash": "5CB01E335DC325CF4E629BB8128EC53C57F8162F6A2D23211F5023D1F55288FA",
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "command": {
+    "aggregate": "bilety",
+    "pipeline": [
+      {
+        "$match": {
+          "status": "sprzedany"
+        }
+      },
+      {
+        "$group": {
+          "sprzedane": {
+            "$sum": 1
+          },
+          "_id": "$wydarzenie_id"
+        }
+      },
+      {
+        "$sort": {
+          "sprzedane": -1
+        }
+      },
+      {
+        "$limit": 10
+      },
+      {
+        "$lookup": {
+          "from": "wydarzenia",
+          "localField": "_id",
+          "foreignField": "_id",
+          "as": "wydarzenie"
+        }
+      },
+      {
+        "$project": {
+          "sprzedane": 1,
+          "wydarzenie.nazwa": 1
+        }
+      }
+    ],
+    "cursor": {},
+    "$db": "ticketbench"
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795300004,
+        "i": 165
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795300004,
+      "i": 165
+    }
+  }
+}

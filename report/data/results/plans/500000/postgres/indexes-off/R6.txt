@@ -1,0 +1,42 @@
+-- postgres R6 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT w.id, w.nazwa, t.sprzedane
+			FROM (SELECT wydarzenie_id, count(*) AS sprzedane FROM bilety WHERE status = 'sprzedany'
+			      GROUP BY wydarzenie_id ORDER BY sprzedane DESC LIMIT 10) t
+			JOIN wydarzenia w ON w.id = t.wydarzenie_id
+			ORDER BY t.sprzedane DESC
+Nested Loop  (cost=15337.14..15348.67 rows=10 width=42) (actual time=12.775..13.777 rows=10 loops=1)
+  Buffers: shared hit=10551
+  ->  Limit  (cost=15336.99..15337.01 rows=10 width=16) (actual time=12.770..13.765 rows=10 loops=1)
+        Buffers: shared hit=10531
+        ->  Sort  (cost=15336.99..15337.60 rows=244 width=16) (actual time=12.769..13.764 rows=10 loops=1)
+              Sort Key: (count(*)) DESC
+              Sort Method: top-N heapsort  Memory: 25kB
+              Buffers: shared hit=10531
+              ->  Finalize GroupAggregate  (cost=15269.90..15331.72 rows=244 width=16) (actual time=12.668..13.751 rows=229 loops=1)
+                    Group Key: bilety.wydarzenie_id
+                    Buffers: shared hit=10531
+                    ->  Gather Merge  (cost=15269.90..15326.84 rows=488 width=16) (actual time=12.665..13.705 rows=669 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          Buffers: shared hit=10531
+                          ->  Sort  (cost=14269.87..14270.48 rows=244 width=16) (actual time=11.777..11.782 rows=223 loops=3)
+                                Sort Key: bilety.wydarzenie_id
+                                Sort Method: quicksort  Memory: 32kB
+                                Buffers: shared hit=10531
+                                Worker 0:  Sort Method: quicksort  Memory: 31kB
+                                Worker 1:  Sort Method: quicksort  Memory: 31kB
+                                ->  Partial HashAggregate  (cost=14257.76..14260.20 rows=244 width=16) (actual time=11.742..11.754 rows=223 loops=3)
+                                      Group Key: bilety.wydarzenie_id
+                                      Batches: 1  Memory Usage: 45kB
+                                      Buffers: shared hit=10515
+                                      Worker 0:  Batches: 1  Memory Usage: 45kB
+                                      Worker 1:  Batches: 1  Memory Usage: 45kB
+                                      ->  Parallel Seq Scan on bilety  (cost=0.00..13673.34 rows=116884 width=8) (actual time=0.024..8.049 rows=76529 loops=3)
+                                            Filter: ((status)::text = 'sprzedany'::text)
+                                            Rows Removed by Filter: 115465
+                                            Buffers: shared hit=10515
+  ->  Index Scan using wydarzenia_pkey on wydarzenia w  (cost=0.15..1.16 rows=1 width=34) (actual time=0.001..0.001 rows=1 loops=10)
+        Index Cond: (id = bilety.wydarzenie_id)
+        Buffers: shared hit=20
+Planning Time: 0.056 ms
+Execution Time: 13.791 ms

@@ -1,0 +1,1 @@
+UPDATE bilety SET status = 'zablokowany', zablokowany_do = ? WHERE id = ? AND status = 'wolny'

@@ -1,0 +1,33 @@
+-- postgres R6 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT w.id, w.nazwa, t.sprzedane
+			FROM (SELECT wydarzenie_id, count(*) AS sprzedane FROM bilety WHERE status = 'sprzedany'
+			      GROUP BY wydarzenie_id ORDER BY sprzedane DESC LIMIT 10) t
+			JOIN wydarzenia w ON w.id = t.wydarzenie_id
+			ORDER BY t.sprzedane DESC
+Nested Loop  (cost=121302.57..121325.22 rows=10 width=43) (actual time=161.316..163.354 rows=10 loops=1)
+  Buffers: shared hit=9354
+  ->  Limit  (cost=121302.29..121302.32 rows=10 width=16) (actual time=161.304..163.322 rows=10 loops=1)
+        Buffers: shared hit=9324
+        ->  Sort  (cost=121302.29..121312.67 rows=4150 width=16) (actual time=161.303..163.320 rows=10 loops=1)
+              Sort Key: (count(*)) DESC
+              Sort Method: top-N heapsort  Memory: 25kB
+              Buffers: shared hit=9324
+              ->  Finalize GroupAggregate  (cost=1000.46..121212.61 rows=4150 width=16) (actual time=21.465..163.146 rows=4010 loops=1)
+                    Group Key: bilety.wydarzenie_id
+                    Buffers: shared hit=9324
+                    ->  Gather Merge  (cost=1000.46..121129.61 rows=8300 width=16) (actual time=21.424..162.702 rows=6302 loops=1)
+                          Workers Planned: 2
+                          Workers Launched: 2
+                          Buffers: shared hit=9324
+                          ->  Partial GroupAggregate  (cost=0.43..119171.56 rows=4150 width=16) (actual time=0.071..106.478 rows=2101 loops=3)
+                                Group Key: bilety.wydarzenie_id
+                                Buffers: shared hit=9324
+                                ->  Parallel Index Only Scan using idx_bilety_wydarzenie_status on bilety  (cost=0.43..109187.15 rows=1988582 width=8) (actual time=0.011..54.744 rows=1556291 loops=3)
+                                      Index Cond: (status = 'sprzedany'::text)
+                                      Heap Fetches: 4321
+                                      Buffers: shared hit=9324
+  ->  Index Scan using wydarzenia_pkey on wydarzenia w  (cost=0.28..2.28 rows=1 width=35) (actual time=0.003..0.003 rows=1 loops=10)
+        Index Cond: (id = bilety.wydarzenie_id)
+        Buffers: shared hit=30
+Planning Time: 0.083 ms
+Execution Time: 163.368 ms

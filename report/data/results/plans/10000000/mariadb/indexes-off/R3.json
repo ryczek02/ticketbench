@@ -1,0 +1,102 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.053890093
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 10.9179586,
+    "r_loops": 1,
+    "r_total_time_ms": 1.779921146,
+    "nested_loop": [
+      {
+        "read_sorted_file": {
+          "r_rows": 248,
+          "filesort": {
+            "sort_key": "w.data_rozpoczecia",
+            "r_loops": 1,
+            "r_total_time_ms": 1.535616602,
+            "r_used_priority_queue": false,
+            "r_output_rows": 248,
+            "r_buffer_size": "2047KiB",
+            "r_sort_mode": "sort_key,packed_addon_fields",
+            "table": {
+              "table_name": "w",
+              "access_type": "ALL",
+              "loops": 1,
+              "r_loops": 1,
+              "rows": 4143,
+              "r_rows": 4203,
+              "cost": 0.7682246,
+              "r_table_time_ms": 1.355745866,
+              "r_other_time_ms": 0.176732727,
+              "r_engine_stats": {
+                "pages_accessed": 54,
+                "pages_read_count": 33,
+                "pages_read_time_ms": 0.991527498
+              },
+              "filtered": 100,
+              "r_total_filtered": 5.900547228,
+              "attached_condition": "w.data_rozpoczecia >= '2026-07-15' and w.data_rozpoczecia < '2026-08-14'",
+              "r_filtered": 5.900547228
+            }
+          }
+        }
+      },
+      {
+        "table": {
+          "table_name": "o",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.w.obiekt_id"],
+          "loops": 4143,
+          "r_loops": 248,
+          "r_table_loops": 247,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 3.70894172,
+          "r_table_time_ms": 0.182004583,
+          "r_other_time_ms": 0.019915904,
+          "r_engine_stats": {
+            "pages_accessed": 507,
+            "pages_read_count": 4,
+            "pages_read_time_ms": 0.116357413
+          },
+          "filtered": 100,
+          "r_total_filtered": 23.38709677,
+          "attached_condition": "o.miasto = 'Warszawa'",
+          "r_filtered": 23.38709677
+        }
+      },
+      {
+        "table": {
+          "table_name": "k",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.w.kategoria_id"],
+          "loops": 4143,
+          "r_loops": 58,
+          "r_table_loops": 54,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 3.70648412,
+          "r_table_time_ms": 0.033764988,
+          "r_other_time_ms": 0.004267694,
+          "r_engine_stats": {
+            "pages_accessed": 54,
+            "pages_read_count": 1,
+            "pages_read_time_ms": 0.023388635
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

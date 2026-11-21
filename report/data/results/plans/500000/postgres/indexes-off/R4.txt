@@ -1,0 +1,46 @@
+-- postgres R4 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- SELECT r.id, r.utworzono, r.status, r.kwota, count(b.id) AS bilety
+			FROM rezerwacje r
+			LEFT JOIN bilety b ON b.rezerwacja_id = r.id
+			WHERE r.klient_id = $1
+			GROUP BY r.id
+			ORDER BY r.utworzono DESC
+			LIMIT 50
+Limit  (cost=17434.44..17434.45 rows=2 width=39) (actual time=16.088..17.239 rows=3 loops=1)
+  Buffers: shared hit=12548
+  ->  Sort  (cost=17434.44..17434.45 rows=2 width=39) (actual time=16.088..17.238 rows=3 loops=1)
+        Sort Key: r.utworzono DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=12548
+        ->  Finalize GroupAggregate  (cost=17433.90..17434.43 rows=2 width=39) (actual time=16.085..17.236 rows=3 loops=1)
+              Group Key: r.id
+              Buffers: shared hit=12548
+              ->  Gather Merge  (cost=17433.90..17434.39 rows=4 width=39) (actual time=16.082..17.233 rows=3 loops=1)
+                    Workers Planned: 2
+                    Workers Launched: 2
+                    Buffers: shared hit=12548
+                    ->  Partial GroupAggregate  (cost=16433.87..16433.91 rows=2 width=39) (actual time=15.344..15.346 rows=1 loops=3)
+                          Group Key: r.id
+                          Buffers: shared hit=12548
+                          ->  Sort  (cost=16433.87..16433.88 rows=2 width=39) (actual time=15.342..15.343 rows=4 loops=3)
+                                Sort Key: r.id
+                                Sort Method: quicksort  Memory: 25kB
+                                Buffers: shared hit=12548
+                                Worker 0:  Sort Method: quicksort  Memory: 25kB
+                                Worker 1:  Sort Method: quicksort  Memory: 25kB
+                                ->  Parallel Hash Right Join  (cost=2728.93..16433.86 rows=2 width=39) (actual time=8.790..15.328 rows=4 loops=3)
+                                      Hash Cond: (b.rezerwacja_id = r.id)
+                                      Buffers: shared hit=12474
+                                      ->  Parallel Seq Scan on bilety b  (cost=0.00..13041.67 rows=252667 width=16) (actual time=0.007..6.944 rows=191993 loops=3)
+                                            Buffers: shared hit=10515
+                                      ->  Parallel Hash  (cost=2728.92..2728.92 rows=1 width=31) (actual time=0.907..0.907 rows=1 loops=3)
+                                            Buckets: 1024  Batches: 1  Memory Usage: 72kB
+                                            Buffers: shared hit=1935
+                                            ->  Parallel Seq Scan on rezerwacje r  (cost=0.00..2728.92 rows=1 width=31) (actual time=0.475..0.883 rows=1 loops=3)
+                                                  Filter: (klient_id = '9693'::bigint)
+                                                  Rows Removed by Filter: 29601
+                                                  Buffers: shared hit=1935
+Planning:
+  Buffers: shared hit=81
+Planning Time: 0.151 ms
+Execution Time: 17.250 ms

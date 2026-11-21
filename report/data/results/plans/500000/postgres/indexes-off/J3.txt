@@ -1,0 +1,9 @@
+-- postgres J3 tickets=500000 indexes=off trace=4d6956339a89877cb8b1a240625231ac
+-- UPDATE wydarzenia SET metadane = jsonb_set(metadane, '{tagi}', (metadane -> 'tagi') || to_jsonb($2::text)) WHERE id = $1
+Update on wydarzenia  (cost=0.15..2.38 rows=0 width=0) (actual time=0.018..0.018 rows=0 loops=1)
+  Buffers: shared hit=4
+  ->  Index Scan using wydarzenia_pkey on wydarzenia  (cost=0.15..2.38 rows=1 width=38) (actual time=0.006..0.006 rows=1 loops=1)
+        Index Cond: (id = '125'::bigint)
+        Buffers: shared hit=2
+Planning Time: 0.014 ms
+Execution Time: 0.021 ms

@@ -1,0 +1,40 @@
+\section{Repozytoria i uruchomienie}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{lp{10.5cm}}
+\toprule
+repozytorium & zawartość \\
+\midrule
+\texttt{ryczek02/ticketbench} & repozytorium spinające: README, \texttt{ticketbench.sh}, runbook (\texttt{docs/runbook.html}), to sprawozdanie z~surowymi wynikami, submoduły pozostałych repozytoriów \\
+\texttt{ticketbench-contracts} & pliki \texttt{.proto}, wygenerowany kod, model, generator danych, scenariusze, telemetria \\
+\texttt{ticketbench-services} & \texttt{bench-runner}, \texttt{store-postgres}, \texttt{store-mariadb}, \texttt{store-mongo}, \texttt{store-valkey}, testy zgodności \\
+\texttt{ticketbench-cli} & \texttt{tbench}: plany, zapis wyników, generator tabel i~wykresów \\
+\texttt{ticketbench-infra} & Docker Compose, OTel/Jaeger/Prometheus/Grafana, macierze, Ansible, \texttt{bench.sh} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Odtworzenie wszystkich wyników:
+\begin{Verbatim}[frame=single,fontsize=\small]
+git clone --recursive https://github.com/ryczek02/ticketbench
+cd ticketbench
+./ticketbench.sh all                # narzędzia, pobranie z GitHuba, stos, test dymny
+./ticketbench.sh bench              # pełna macierz
+./ticketbench.sh report             # tabele, wykresy, PDF
+\end{Verbatim}
+
+Wybrane polecenia CLI:
+\begin{Verbatim}[frame=single,fontsize=\small]
+tbench ping
+tbench run --stores postgres,valkey --tickets 1M --scenarios R4,U6 --reps 10
+tbench contend --clients 1,10,100,1000 --strategies all
+tbench report results/<run> --out ../report/generated
+\end{Verbatim}
+
+Wszystkie liczby w~tabelach i~na wykresach pochodzą z~plików w~katalogu
+\texttt{generated/}, które \texttt{tbench report} tworzy z~surowych wyników
+w~\texttt{data/results}. CI repozytorium \texttt{ticketbench} generuje te pliki
+ponownie i~sprawdza, czy są identyczne z~zatwierdzonymi. Szczegółowa instrukcja
+uruchomienia jest w~runbooku \texttt{docs/runbook.html}.

@@ -1,0 +1,35 @@
+-- postgres R3 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- SELECT w.id, w.nazwa, w.data_rozpoczecia, o.nazwa, k.nazwa
+			FROM wydarzenia w
+			JOIN obiekty o ON o.id = w.obiekt_id
+			JOIN kategorie k ON k.id = w.kategoria_id
+			WHERE o.miasto = $1 AND w.data_rozpoczecia >= $2 AND w.data_rozpoczecia < $3
+			ORDER BY w.data_rozpoczecia
+Sort  (cost=78.19..78.33 rows=54 width=70) (actual time=0.096..0.098 rows=46 loops=1)
+  Sort Key: w.data_rozpoczecia
+  Sort Method: quicksort  Memory: 29kB
+  Buffers: shared hit=128
+  ->  Hash Join  (cost=3.09..76.64 rows=54 width=70) (actual time=0.015..0.090 rows=46 loops=1)
+        Hash Cond: (w.kategoria_id = k.id)
+        Buffers: shared hit=128
+        ->  Nested Loop  (cost=1.82..75.18 rows=54 width=71) (actual time=0.009..0.080 rows=46 loops=1)
+              Buffers: shared hit=127
+              ->  Bitmap Heap Scan on obiekty o  (cost=1.54..6.01 rows=38 width=28) (actual time=0.006..0.011 rows=38 loops=1)
+                    Recheck Cond: (miasto = 'Warszawa'::text)
+                    Heap Blocks: exact=4
+                    Buffers: shared hit=5
+                    ->  Bitmap Index Scan on idx_obiekty_miasto  (cost=0.00..1.53 rows=38 width=0) (actual time=0.003..0.003 rows=38 loops=1)
+                          Index Cond: (miasto = 'Warszawa'::text)
+                          Buffers: shared hit=1
+              ->  Index Scan using idx_wydarzenia_obiekt_data on wydarzenia w  (cost=0.28..1.81 rows=1 width=59) (actual time=0.001..0.002 rows=1 loops=38)
+                    Index Cond: ((obiekt_id = o.id) AND (data_rozpoczecia >= '2025-10-23 00:00:00+00'::timestamp with time zone) AND (data_rozpoczecia < '2025-11-22 00:00:00+00'::timestamp with time zone))
+                    Buffers: shared hit=122
+        ->  Hash  (cost=1.12..1.12 rows=12 width=15) (actual time=0.005..0.005 rows=12 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 9kB
+              Buffers: shared hit=1
+              ->  Seq Scan on kategorie k  (cost=0.00..1.12 rows=12 width=15) (actual time=0.003..0.004 rows=12 loops=1)
+                    Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=18
+Planning Time: 0.152 ms
+Execution Time: 0.108 ms

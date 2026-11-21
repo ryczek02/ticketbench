@@ -1,0 +1,25 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.008270574
+  },
+  "query_block": {
+    "select_id": 1,
+    "r_total_time_ms": 13.74995416,
+    "table": {
+      "delete": 1,
+      "table_name": "rezerwacje",
+      "access_type": "ALL",
+      "rows": 89453,
+      "r_rows": 88806,
+      "r_total_filtered": 0.0022521,
+      "r_table_time_ms": 12.65335127,
+      "r_other_time_ms": 1.095224462,
+      "r_engine_stats": {
+        "pages_accessed": 767,
+        "pages_updated": 4
+      },
+      "attached_condition": "rezerwacje.klient_id = 21768",
+      "r_filtered": 0.0022521
+    }
+  }
+}

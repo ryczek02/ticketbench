@@ -1,0 +1,202 @@
+{
+  "explainVersion": "1",
+  "queryPlanner": {
+    "namespace": "ticketbench.wydarzenia",
+    "parsedQuery": {
+      "$and": [
+        {
+          "miasto": {
+            "$eq": "Szczecin"
+          }
+        },
+        {
+          "data_rozpoczecia": {
+            "$lt": {
+              "$date": "2026-08-14T00:00:00Z"
+            }
+          }
+        },
+        {
+          "data_rozpoczecia": {
+            "$gte": {
+              "$date": "2026-07-15T00:00:00Z"
+            }
+          }
+        }
+      ]
+    },
+    "indexFilterSet": false,
+    "queryHash": "510E711E",
+    "planCacheShapeHash": "510E711E",
+    "planCacheKey": "619C01DE",
+    "optimizationTimeMillis": 0,
+    "maxIndexedOrSolutionsReached": false,
+    "maxIndexedAndSolutionsReached": false,
+    "maxScansToExplodeReached": false,
+    "prunedSimilarIndexes": false,
+    "winningPlan": {
+      "isCached": false,
+      "stage": "SORT",
+      "sortPattern": {
+        "data_rozpoczecia": 1
+      },
+      "memLimit": 104857600,
+      "type": "simple",
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "miasto": {
+                "$eq": "Szczecin"
+              }
+            },
+            {
+              "data_rozpoczecia": {
+                "$lt": {
+                  "$date": "2026-08-14T00:00:00Z"
+                }
+              }
+            },
+            {
+              "data_rozpoczecia": {
+                "$gte": {
+                  "$date": "2026-07-15T00:00:00Z"
+                }
+              }
+            }
+          ]
+        },
+        "direction": "forward"
+      }
+    },
+    "rejectedPlans": []
+  },
+  "executionStats": {
+    "executionSuccess": true,
+    "nReturned": 2,
+    "executionTimeMillis": 0,
+    "totalKeysExamined": 0,
+    "totalDocsExamined": 291,
+    "executionStages": {
+      "isCached": false,
+      "stage": "SORT",
+      "nReturned": 2,
+      "executionTimeMillisEstimate": 0,
+      "works": 295,
+      "advanced": 2,
+      "needTime": 292,
+      "needYield": 0,
+      "saveState": 0,
+      "restoreState": 0,
+      "isEOF": 1,
+      "sortPattern": {
+        "data_rozpoczecia": 1
+      },
+      "memLimit": 104857600,
+      "type": "simple",
+      "totalDataSizeSorted": 1789,
+      "usedDisk": false,
+      "spills": 0,
+      "spilledDataStorageSize": 0,
+      "inputStage": {
+        "stage": "COLLSCAN",
+        "filter": {
+          "$and": [
+            {
+              "miasto": {
+                "$eq": "Szczecin"
+              }
+            },
+            {
+              "data_rozpoczecia": {
+                "$lt": {
+                  "$date": "2026-08-14T00:00:00Z"
+                }
+              }
+            },
+            {
+              "data_rozpoczecia": {
+                "$gte": {
+                  "$date": "2026-07-15T00:00:00Z"
+                }
+              }
+            }
+          ]
+        },
+        "nReturned": 2,
+        "executionTimeMillisEstimate": 0,
+        "works": 292,
+        "advanced": 2,
+        "needTime": 289,
+        "needYield": 0,
+        "saveState": 0,
+        "restoreState": 0,
+        "isEOF": 1,
+        "direction": "forward",
+        "docsExamined": 291
+      }
+    }
+  },
+  "queryShapeHash": "DAB3BAD0C2552E43E2A4AE8FA66917307511D717789AFCF3134D1A2B28EEB2E1",
+  "command": {
+    "find": "wydarzenia",
+    "filter": {
+      "miasto": "Szczecin",
+      "data_rozpoczecia": {
+        "$gte": {
+          "$date": "2026-07-15T00:00:00Z"
+        },
+        "$lt": {
+          "$date": "2026-08-14T00:00:00Z"
+        }
+      }
+    },
+    "sort": {
+      "data_rozpoczecia": 1
+    },
+    "$db": "ticketbench"
+  },
+  "serverInfo": {
+    "host": "1530989e21e0",
+    "port": 27017,
+    "version": "8.0.38",
+    "gitVersion": "b2f7afe3a6838999fd375c7a7ea678189f795568"
+  },
+  "serverParameters": {
+    "internalQueryFacetBufferSizeBytes": 104857600,
+    "internalQueryFacetMaxOutputDocSizeBytes": 104857600,
+    "internalLookupStageIntermediateDocumentMaxSizeBytes": 104857600,
+    "internalDocumentSourceGroupMaxMemoryBytes": 104857600,
+    "internalQueryMaxBlockingSortMemoryUsageBytes": 104857600,
+    "internalQueryProhibitBlockingMergeOnMongoS": 0,
+    "internalQueryMaxAddToSetBytes": 104857600,
+    "internalDocumentSourceSetWindowFieldsMaxMemoryBytes": 104857600,
+    "internalQueryFrameworkControl": "trySbeRestricted",
+    "internalQueryPlannerIgnoreIndexWithCollationForRegex": 1
+  },
+  "ok": 1.0,
+  "$clusterTime": {
+    "clusterTime": {
+      "$timestamp": {
+        "t": 1795298638,
+        "i": 3
+      }
+    },
+    "signature": {
+      "hash": {
+        "$binary": {
+          "base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+          "subType": "00"
+        }
+      },
+      "keyId": 0
+    }
+  },
+  "operationTime": {
+    "$timestamp": {
+      "t": 1795298638,
+      "i": 3
+    }
+  }
+}

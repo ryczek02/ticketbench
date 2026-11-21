@@ -1,0 +1,8 @@
+-- postgres C4 tickets=10000000 indexes=on trace=d5541ab7c0f418365920263c267cfb7a
+-- INSERT INTO klienci (id, imie, nazwisko, email, telefon, miasto, utworzono, preferencje)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+Insert on klienci  (cost=0.00..0.01 rows=0 width=0) (actual time=0.013..0.014 rows=0 loops=1)
+  Buffers: shared hit=4
+  ->  Result  (cost=0.00..0.01 rows=1 width=208) (actual time=0.001..0.001 rows=1 loops=1)
+Planning Time: 0.013 ms
+Execution Time: 0.020 ms

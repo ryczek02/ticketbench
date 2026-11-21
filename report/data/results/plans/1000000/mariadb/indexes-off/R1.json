@@ -1,0 +1,105 @@
+{
+  "query_optimization": {
+    "r_total_time_ms": 0.040383753
+  },
+  "query_block": {
+    "select_id": 1,
+    "cost": 2105.585534,
+    "r_loops": 1,
+    "r_total_time_ms": 89.42633479,
+    "const_condition": "1",
+    "nested_loop": [
+      {
+        "table": {
+          "table_name": "r",
+          "access_type": "const",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["const"],
+          "r_loops": 0,
+          "rows": 1,
+          "r_rows": null,
+          "r_engine_stats": {
+            "pages_accessed": 3
+          },
+          "filtered": 100,
+          "r_total_filtered": null,
+          "r_filtered": null
+        }
+      },
+      {
+        "table": {
+          "table_name": "b",
+          "access_type": "ALL",
+          "loops": 1,
+          "r_loops": 1,
+          "rows": 1074952,
+          "r_rows": 1075975,
+          "cost": 182.5451188,
+          "r_table_time_ms": 76.53330994,
+          "r_other_time_ms": 12.88396253,
+          "r_engine_stats": {
+            "pages_accessed": 8435
+          },
+          "filtered": 100,
+          "r_total_filtered": 3.717558e-4,
+          "attached_condition": "trigcond(b.rezerwacja_id = 84721)",
+          "r_filtered": 3.717558e-4
+        }
+      },
+      {
+        "table": {
+          "table_name": "m",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.b.miejsce_id"],
+          "loops": 1074952,
+          "r_loops": 4,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 961.5595293,
+          "r_table_time_ms": 0.004009142,
+          "r_other_time_ms": 0.00154519,
+          "r_engine_stats": {
+            "pages_accessed": 8
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "trigcond(trigcond(b.miejsce_id is not null))",
+          "r_filtered": 100
+        }
+      },
+      {
+        "table": {
+          "table_name": "s",
+          "access_type": "eq_ref",
+          "possible_keys": ["PRIMARY"],
+          "key": "PRIMARY",
+          "key_length": "8",
+          "used_key_parts": ["id"],
+          "ref": ["ticketbench.m.sektor_id"],
+          "loops": 1074952,
+          "r_loops": 4,
+          "r_table_loops": 1,
+          "rows": 1,
+          "r_rows": 1,
+          "cost": 961.4808861,
+          "r_table_time_ms": 0.001211095,
+          "r_other_time_ms": 0.001461666,
+          "r_engine_stats": {
+            "pages_accessed": 1
+          },
+          "filtered": 100,
+          "r_total_filtered": 100,
+          "attached_condition": "trigcond(trigcond(m.sektor_id is not null))",
+          "r_filtered": 100
+        }
+      }
+    ]
+  }
+}

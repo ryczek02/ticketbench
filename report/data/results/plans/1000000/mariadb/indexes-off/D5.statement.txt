@@ -1,0 +1,1 @@
+DELETE FROM bilety WHERE wydarzenie_id = ?

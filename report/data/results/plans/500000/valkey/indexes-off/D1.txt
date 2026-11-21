@@ -1,0 +1,3 @@
+-- valkey D1 tickets=500000 indexes=off trace=5845554c18c19dd33cb685a38164103f
+-- EVALSHA release cancel
+O(tickets of reservation)

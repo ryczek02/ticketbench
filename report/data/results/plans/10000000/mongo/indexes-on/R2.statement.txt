@@ -1,0 +1,1 @@
+bilety.find {"find":"bilety","filter":{"wydarzenie_id":2473,"status":"wolny"},"sort":{"sektor_id":1,"rzad":1,"numer":1}}

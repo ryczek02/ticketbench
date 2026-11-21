@@ -1,0 +1,11 @@
+/bin/
+/results/
+report/*.aux
+report/*.log
+report/*.out
+report/*.toc
+report/*.fdb_latexmk
+report/*.fls
+report/*.xdv
+report/*.synctex.gz
+.DS_Store
