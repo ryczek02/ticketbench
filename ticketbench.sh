@@ -105,26 +105,54 @@ cmd_doctor() {
 }
 
 # ---------------------------------------------------------------- install
+# github_api fetches a GitHub API URL, with a token when one is available
+# (unauthenticated calls from shared CI runners hit the rate limit).
+github_api() {
+  local token=${GITHUB_TOKEN:-${GH_TOKEN:-}}
+  if [ -n "$token" ]; then
+    curl -fsSL -H 'Accept: application/vnd.github+json' -H "Authorization: Bearer $token" "$1"
+  else
+    curl -fsSL -H 'Accept: application/vnd.github+json' "$1"
+  fi
+}
+
 download_tbench() {
-  local plat api url sums tmp asset
+  local plat repo=https://github.com/$GH_OWNER/ticketbench-cli url sums asset tag
   plat=$(platform)
   case "$TB_CHANNEL" in
-    latest) api="https://api.github.com/repos/$GH_OWNER/ticketbench-cli/releases/latest" ;;
-    *)      api="https://api.github.com/repos/$GH_OWNER/ticketbench-cli/releases/tags/$TB_CHANNEL" ;;
+    edge)
+      # Snapshot archive names contain the commit, so ask the API.
+      local json
+      json=$(github_api "https://api.github.com/repos/$GH_OWNER/ticketbench-cli/releases/tags/edge") \
+        || die "nie mogę pobrać informacji o wydaniu edge (limit API? ustaw GITHUB_TOKEN)"
+      url=$(printf '%s\n' "$json" | grep -o '"browser_download_url": *"[^"]*"' | sed 's/.*"\(http[^"]*\)"/\1/' \
+            | grep "_${plat}\.\(tar\.gz\|zip\)$" | head -1)
+      sums=$repo/releases/download/edge/checksums.txt
+      ;;
+    *)
+      # Versioned releases: no API call, the tag comes from the redirect of
+      # /releases/latest and the archive name follows the GoReleaser pattern.
+      if [ "$TB_CHANNEL" = latest ]; then
+        tag=$(curl -fsSI "$repo/releases/latest" | tr -d '\r' | awk 'tolower($1)=="location:" {print $2}' | sed 's#.*/tag/##')
+        [ -n "$tag" ] || die "nie mogę ustalić najnowszego wydania tbench"
+      else
+        tag=$TB_CHANNEL
+      fi
+      local ext=tar.gz
+      case "$plat" in windows_*) ext=zip ;; esac
+      url=$repo/releases/download/$tag/tbench_${tag#v}_${plat}.$ext
+      sums=$repo/releases/download/$tag/checksums.txt
+      ;;
   esac
-  local json
-  json=$(curl -fsSL -H 'Accept: application/vnd.github+json' "$api") || die "nie mogę pobrać informacji o wydaniu $TB_CHANNEL"
-  url=$(printf '%s\n' "$json" | grep -o '"browser_download_url": *"[^"]*"' | sed 's/.*"\(http[^"]*\)"/\1/' \
-        | grep "_${plat}\.\(tar\.gz\|zip\)$" | head -1)
-  sums=$(printf '%s\n' "$json" | grep -o '"browser_download_url": *"[^"]*checksums.txt"' | sed 's/.*"\(http[^"]*\)"/\1/' | head -1)
   [ -n "$url" ] || die "wydanie $TB_CHANNEL nie ma archiwum dla $plat"
-  asset=${url##*/}
+  asset=$(printf '%s' "${url##*/}" | sed 's/%2B/+/g')
+  local tmp
   tmp=$(mktemp -d)
-  curl -fsSL -o "$tmp/$asset" "$url"
-  if [ -n "$sums" ]; then
-    curl -fsSL -o "$tmp/checksums.txt" "$sums"
+  curl -fsSL -o "$tmp/$asset" "$url" || die "nie mogę pobrać $url"
+  if curl -fsSL -o "$tmp/checksums.txt" "$sums"; then
     local want got
-    want=$(grep " $asset\$" "$tmp/checksums.txt" | awk '{print $1}')
+    want=$(grep " $asset\$" "$tmp/checksums.txt" | awk '{print $1}' || true)
+    [ -n "$want" ] || die "brak $asset w checksums.txt"
     if have sha256sum; then got=$(sha256sum "$tmp/$asset" | awk '{print $1}'); else got=$(shasum -a 256 "$tmp/$asset" | awk '{print $1}'); fi
     [ "$want" = "$got" ] || die "suma kontrolna $asset się nie zgadza"
     ok "suma SHA-256 zgodna"

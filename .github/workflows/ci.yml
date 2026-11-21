@@ -63,6 +63,8 @@ jobs:
           submodules: recursive
       - run: ./ticketbench.sh doctor
       - run: ./ticketbench.sh install
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: ./ticketbench.sh up
       - run: ./ticketbench.sh smoke
       - name: no errors, consistent contention
