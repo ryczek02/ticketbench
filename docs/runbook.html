@@ -210,7 +210,11 @@ wynikami.</p>
   Valkey.</li>
   <li><strong>Grafana</strong> (<a href="http://localhost:3000">localhost:3000</a>, pulpit
   <em>ticketbench</em>): p95 czasu scenariuszy per baza, czas prób rezerwacji, konflikty na
-  sekundę.</li>
+  sekundę. Panele liczą tempo z ostatniej minuty, więc pokazują ruch, który <em>trwa</em>:
+  krótki smoke test to na skali godziny tylko kreska przy prawej krawędzi. Do oglądania na żywo
+  uruchom <code>./ticketbench.sh demo</code> (kilka minut obciążenia) i ustaw zakres
+  <em>Last 15 minutes</em> z odświeżaniem co 10&nbsp;s. Filtr <em>db</em> na górze zawęża
+  panele do wybranych baz.</li>
   <li><strong>Prometheus</strong> (<a href="http://localhost:9090">localhost:9090</a>): metryki
   <code>tb_store_scenario_duration_milliseconds</code>, <code>tb_store_contention_attempt_milliseconds</code>,
   <code>tb_store_contention_conflicts_total</code>.</li>

@@ -250,6 +250,13 @@ run_matrix() {
 
 cmd_smoke() { run_matrix "$INFRA/config/smoke.yaml" "$@"; }
 
+# demo: several minutes of load for the Grafana dashboard and Jaeger.
+cmd_demo() {
+  say "Obciążenie demonstracyjne (kilka minut), pulpit:"
+  echo "  http://localhost:3000/d/ticketbench/ticketbench?from=now-15m&to=now&refresh=10s"
+  run_matrix "$INFRA/config/demo.yaml" "$@"
+}
+
 cmd_bench() {
   local config=$INFRA/config/matrix.yaml
   if [ "${1:-}" = "--config" ]; then config=$2; shift 2; fi
@@ -343,6 +350,7 @@ Użycie: $0 <polecenie> [argumenty]
   up                   uruchamia stos i sprawdza wszystkie serwisy
   ping | status | urls stan runnera i store'ów, kontenery, adresy UI
   smoke                krótka macierz (20 tys. biletów, ok. 1 min)
+  demo                 kilka minut ciągłego obciążenia do oglądania w Grafanie i Jaegerze
   bench [--config f]   pełna macierz (domyślnie infra/config/matrix.yaml), dodatkowe
                        flagi idą do tbench matrix, np. --sizes 500k,1M --stores postgres
   security [--config f] wariant z TLS i ograniczonymi rolami (infra/config/security.yaml),
@@ -367,7 +375,7 @@ main() {
   local cmd=${1:-help}
   [ $# -gt 0 ] && shift
   case "$cmd" in
-    doctor|install|up|ping|status|urls|smoke|bench|security|run|contend|report|logs|down|destroy|all|help) "cmd_$cmd" "$@" ;;
+    doctor|install|up|ping|status|urls|smoke|demo|bench|security|run|contend|report|logs|down|destroy|all|help) "cmd_$cmd" "$@" ;;
     -h|--help) cmd_help ;;
     *) cmd_help; die "nieznane polecenie: $cmd" ;;
   esac
