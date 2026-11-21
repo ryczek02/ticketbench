@@ -39,7 +39,7 @@ Autorzy: Łukasz Ryczko, Łukasz Pacholec.</p>
   <li><a href="#wymagania">Wymagania</a></li>
   <li><a href="#instalacja">Instalacja</a></li>
   <li><a href="#stos">Uruchomienie środowiska</a></li>
-  <li><a href="#smoke">Test dymny</a></li>
+  <li><a href="#smoke">Smoke test</a></li>
   <li><a href="#bench">Pełna macierz</a></li>
   <li><a href="#bezpieczenstwo">TLS i ograniczone role</a></li>
   <li><a href="#pojedyncze">Pojedyncze pomiary</a></li>
@@ -56,7 +56,7 @@ Autorzy: Łukasz Ryczko, Łukasz Pacholec.</p>
 <h2 id="szybko">1. Szybki start</h2>
 <pre><code>git clone --recursive https://github.com/ryczek02/ticketbench
 cd ticketbench
-./ticketbench.sh all        # sprawdzenie, instalacja, start stosu, test dymny
+./ticketbench.sh all        # sprawdzenie, instalacja, start stosu, smoke test
 ./ticketbench.sh bench      # pełna macierz (0,5 mln, 1 mln, 10 mln biletów)
 ./ticketbench.sh report     # tabele, wykresy, report/sprawozdanie.pdf</code></pre>
 <p>Bez klonowania: pobierz sam skrypt, a on sklonuje repozytorium do <code>./ticketbench</code>.</p>
@@ -69,7 +69,7 @@ chmod +x ticketbench.sh
   <tr><th>Co</th><th>Minimum</th><th>Uwagi</th></tr>
   <tr><td>System</td><td>macOS lub Linux, amd64 albo arm64</td><td>Windows przez WSL2</td></tr>
   <tr><td>Docker</td><td>Docker Engine 24+ z <code>docker compose</code> v2</td><td>na macOS Docker Desktop</td></tr>
-  <tr><td>Pamięć dla Dockera</td><td>4&nbsp;GB na test dymny, 10&nbsp;GB na pełną macierz</td><td>Valkey trzyma 10 mln biletów w RAM (ok. 3,5&nbsp;GB)</td></tr>
+  <tr><td>Pamięć dla Dockera</td><td>4&nbsp;GB na smoke test, 10&nbsp;GB na pełną macierz</td><td>Valkey trzyma 10 mln biletów w RAM (ok. 3,5&nbsp;GB)</td></tr>
   <tr><td>Dysk</td><td>30&nbsp;GB wolnego</td><td>obrazy, wolumeny baz, wyniki</td></tr>
   <tr><td>Narzędzia</td><td><code>git</code>, <code>curl</code>, <code>tar</code></td><td>opcjonalnie <code>tectonic</code> (PDF), <code>go</code> (budowanie ze źródeł)</td></tr>
   <tr><td>Porty</td><td>5432, 3306, 27017, 6379, 7001–7004, 7070, 4317, 4318, 16686, 9090, 3000</td><td>runner jest na 7070, bo 7000 na macOS zajmuje AirPlay</td></tr>
@@ -113,12 +113,12 @@ valkey    store-valkey:7004    ok      Valkey 8.1.x                   lua,setnx,
 <p>Stan w dowolnej chwili: <code>./ticketbench.sh status</code>, <code>./ticketbench.sh ping</code>,
 adresy interfejsów: <code>./ticketbench.sh urls</code>.</p>
 
-<h2 id="smoke">5. Test dymny</h2>
+<h2 id="smoke">5. Smoke test</h2>
 <pre><code>./ticketbench.sh smoke</code></pre>
 <p>20 tys. biletów, wszystkie 27 scenariuszy z indeksami i bez, plany zapytań, współbieżność 1 i 16
 klientów każdą strategią. Trwa około minuty. Na końcu skrypt wypisuje ścieżkę wyników i powinien
-pokazać <code>0 errors</code> oraz <code>contention: 0 inconsistent groups</code>. Jeśli test
-dymny przechodzi, środowisko jest gotowe do pełnej macierzy.</p>
+pokazać <code>0 errors</code> oraz <code>contention: 0 inconsistent groups</code>. Jeśli smoke
+test przechodzi, środowisko jest gotowe do pełnej macierzy.</p>
 
 <h2 id="bench">6. Pełna macierz</h2>
 <pre><code>./ticketbench.sh bench</code></pre>
