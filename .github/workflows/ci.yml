@@ -36,7 +36,7 @@ jobs:
           go-version: "1.26"
       - name: tables match the raw results
         run: |
-          go install github.com/ryczek02/ticketbench-cli/cmd/tbench@v0.3.1
+          go install github.com/ryczek02/ticketbench-cli/cmd/tbench@v0.3.2
           tbench report report/data/results report/data/security --out /tmp/generated
           diff -r report/generated /tmp/generated
       - uses: xu-cheng/latex-action@v4
