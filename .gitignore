@@ -9,3 +9,8 @@ report/*.fls
 report/*.xdv
 report/*.synctex.gz
 .DS_Store
+
+# internal authors-only documents
+report/mapa-regulaminu.*
+report/fragmenty/
+report/scripts/fragmenty.py

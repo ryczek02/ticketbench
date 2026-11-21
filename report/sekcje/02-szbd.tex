@@ -2,6 +2,8 @@
 \label{sec:szbd}
 
 \subsection{PostgreSQL 17}
+\label{sec:opis}
+%<*opis-pg>
 
 PostgreSQL to relacyjny SZBD rozwijany od 1996 roku na licencji PostgreSQL
 (odmiana BSD/MIT). Każde połączenie obsługuje osobny proces serwera.
@@ -14,7 +16,9 @@ Typ \texttt{JSONB} przechowuje dokumenty JSON w~postaci binarnej z~operatorami
 przez rozszerzenia (PostGIS, TimescaleDB, pgvector, pg\_partman) i~obce
 tabele (FDW).
 
+%</opis-pg>
 \subsection{MariaDB 11.8}
+%<*opis-maria>
 
 MariaDB powstała w~2009 roku jako rozwidlenie MySQL i~jest rozwijana przez
 MariaDB Foundation na licencji GPLv2. Architektura opiera się na wątkach
@@ -27,7 +31,9 @@ aliasem \texttt{LONGTEXT} z~kontrolą poprawności, a~indeksować można go prze
 kolumny wirtualne. Inne silniki to m.in. ColumnStore do analityki, Aria
 i~Spider do shardingu.
 
+%</opis-maria>
 \subsection{MongoDB 8.0}
+%<*opis-mongo>
 
 MongoDB to dokumentowy SZBD przechowujący dokumenty BSON w~kolekcjach, bez
 narzuconego schematu (opcjonalnie z~walidacją JSON Schema). Silnik WiredTiger
@@ -40,7 +46,9 @@ na polach, w~tym zagnieżdżonych i~tablicowych (indeksy wielokluczowe).
 Licencja serwera to SSPL, która ogranicza oferowanie MongoDB jako usługi
 chmurowej przez strony trzecie.
 
+%</opis-mongo>
 \subsection{Valkey 8.1}
+%<*opis-valkey>
 
 Valkey to magazyn klucz--wartość w~pamięci operacyjnej. Powstał w~2024 roku
 jako rozwidlenie Redis 7.2.4 pod opieką Linux Foundation, po zmianie licencji
@@ -52,13 +60,16 @@ indeksów drugorzędnych. Dostęp po atrybucie wymaga struktur utrzymywanych
 przez aplikację. Moduły (valkey-json, valkey-bloom, valkey-search) dodają
 m.in. typ JSON i~wyszukiwanie.
 
+%</opis-valkey>
 \subsection{Zalety i wady}
+\label{sec:zalety}
 
 \begin{table}[H]
 \centering
 \small
 \caption{Udogodnienia i ograniczenia.}
 \label{tab:zalety}
+%<*zalety>
 \begin{tabular}{>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{6.4cm}}
 \toprule
 SZBD & zalety i udogodnienia & wady i ograniczenia \\
@@ -69,15 +80,18 @@ MongoDB & elastyczny schemat, dokumenty zagnieżdżone zamiast złączeń, wbudo
 Valkey & opóźnienia rzędu mikrosekund, atomowe operacje na strukturach danych, TTL na kluczach, skrypty Lua, Pub/Sub, licencja BSD & dane muszą mieścić się w~RAM, brak zapytań po atrybutach bez ręcznie utrzymywanych indeksów, trwałość tylko przez RDB/AOF (możliwa utrata ostatnich zapisów), brak transakcji z~wycofaniem \\
 \bottomrule
 \end{tabular}
+%</zalety>
 \end{table}
 
 \subsection{Awaryjność, bezpieczeństwo, migracje, integracje i skalowalność}
+\label{sec:ops}
 
 \begin{table}[H]
 \centering
 \footnotesize
 \caption{Porównanie cech operacyjnych (część teoretyczna).}
 \label{tab:ops}
+%<*ops>
 \begin{tabular}{>{\raggedright\arraybackslash}p{1.75cm}>{\raggedright\arraybackslash}p{3.45cm}>{\raggedright\arraybackslash}p{3.45cm}>{\raggedright\arraybackslash}p{3.45cm}>{\raggedright\arraybackslash}p{3.45cm}}
 \toprule
 cecha & PostgreSQL & MariaDB & MongoDB & Valkey \\
@@ -89,14 +103,19 @@ integracje & sterowniki dla wszystkich języków, FDW, replikacja logiczna i~Deb
 skalowalność & pionowa; odczyty przez repliki; partycjonowanie deklaratywne; sharding przez rozszerzenia (Citus) & pionowa; odczyty przez repliki; Galera dla wysokiej dostępności; Spider do shardingu & pozioma: wbudowany sharding (klucz haszowy lub zakresowy), balanser, repliki do odczytów & pozioma: Valkey Cluster (16\,384 sloty haszowe), repliki; ograniczenie: pamięć RAM węzłów \\
 \bottomrule
 \end{tabular}
+%</ops>
 \end{table}
+%<*ops-uwaga>
 
 W~naszym środowisku testowym wszystkie bazy działają jako pojedyncze węzły
 (MongoDB jako jednowęzłowy replica set), bez TLS i~bez ról ograniczających
 uprawnienia. Wyniki opisują więc wydajność silnika, a~nie konfiguracji
 produkcyjnej z~replikacją i~szyfrowaniem.
 
+%</ops-uwaga>
 \subsection{Obszary zastosowań biznesowych}
+\label{sec:zastosowania}
+%<*zastosowania>
 
 \begin{description}
   \item[PostgreSQL] systemy transakcyjne wymagające spójności i~złożonych
@@ -119,3 +138,4 @@ W~praktyce system rezerwacji biletów łączy kilka silników: dane transakcyjne
 (rezerwacje, płatności) w~bazie relacyjnej, katalog wydarzeń w~bazie
 dokumentowej, a~dostępność miejsc, blokady i~kolejkę wejścia w~Valkey.
 Wyniki testów w~kolejnych rozdziałach pokazują, gdzie każdy z~nich ma przewagę.
+%</zastosowania>

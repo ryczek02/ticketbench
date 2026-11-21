@@ -1,4 +1,6 @@
 \section{Temat i cel}
+\label{sec:cel}
+%<*cel>
 
 Temat projektu to porównanie wydajności relacyjnych i nierelacyjnych systemów
 zarządzania bazą danych na przykładzie systemu rezerwacji biletów na
@@ -12,10 +14,12 @@ klientów jednocześnie próbuje zarezerwować te same miejsca. Domena łączy
 transakcje, blokady, dane półstrukturalne (metadane wydarzeń i biletów w~JSON)
 i duży ruch równoległy, więc każdy z tych elementów wynika z~zadania, a~nie
 został dopisany na potrzeby testu.
+%</cel>
 
 \begin{table}[H]
 \centering
 \caption{Badane SZBD i ich rola w projekcie.}
+%<*szbd-tab>
 \begin{tabular}{llp{7.4cm}}
 \toprule
 SZBD & model danych & rola \\
@@ -26,16 +30,19 @@ MongoDB 8.0 & dokumentowy & wydarzenie z osadzonym cennikiem, rezerwacja z osadz
 Valkey 8.1 & klucz--wartość w pamięci & zbiory wolnych miejsc, blokady miejsc z TTL, liczniki sprzedaży, rezerwacje jako JSON \\
 \bottomrule
 \end{tabular}
+%</szbd-tab>
 \end{table}
 
 Hipotezy badawcze sformułowane we wstępnej koncepcji:
 
+%<*hipotezy>
 \begin{description}
   \item[H1] Wraz ze wzrostem liczby równoległych klientów rezerwujących te same
   miejsca przewaga wydajnościowa Valkey i MongoDB nad bazami relacyjnymi rośnie.
   \item[H2] (zapasowa) Różnice wydajności między silnikami rosną wraz ze
   wzrostem liczby rekordów.
 \end{description}
+%</hipotezy>
 
 W stosunku do wstępnej koncepcji zmieniliśmy technologię aplikacji testowej.
 Zamiast skryptu w Pythonie powstała aplikacja w języku Go podzielona na

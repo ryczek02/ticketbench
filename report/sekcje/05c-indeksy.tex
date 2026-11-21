@@ -1,3 +1,4 @@
+%<*indeksy-wplyw>
 Indeksy przyspieszają przede wszystkim scenariusze filtrujące po kolumnie
 obcej. Przy 10 mln biletów historia klienta (R4) w~PostgreSQL skraca się
 ze \val{postgres}{10000000}{off}{R4} do \val{postgres}{10000000}{on}{R4}\,ms,
@@ -16,7 +17,10 @@ do dwóch indeksów tabeli \texttt{bilety}. Pojedyncze zapisy po kluczu
 zwiększają też rozmiar bazy (tab.~\ref{tab:storage}) i~wymagają czasu na
 budowę (tab.~\ref{tab:load}).
 
+%</indeksy-wplyw>
 \subsection{Analiza planów zapytań}
+\label{sec:plany}
+%<*plany-intro>
 
 Tabele~\ref{tab:plans-rel} i~\ref{tab:plans-nosql} zestawiają automatycznie
 odczytane z~planów ścieżki dostępu (dla 13 scenariuszy odczytujących dane),
@@ -27,6 +31,7 @@ PostgreSQL, \fullscans{mariadb}{10000000}{off} MariaDB i~\fullscans{mongo}{10000
 MongoDB. Po dodaniu indeksów zostaje ich odpowiednio \fullscans{postgres}{10000000}{on},
 \fullscans{mariadb}{10000000}{on} i~\fullscans{mongo}{10000000}{on}.
 
+%</plany-intro>
 \begin{table}[htbp]
 \centering
 \scriptsize
@@ -45,6 +50,7 @@ i~polecenia Valkey, 10 mln biletów.}
 \resizebox{\linewidth}{!}{\tbinput{generated/tables/plans_mongo_valkey_10000000.tex}}
 \end{table}
 
+%<*plany-wnioski>
 Wnioski z~planów:
 \begin{itemize}
   \item W~R4 PostgreSQL po dodaniu indeksów zastępuje dwa skany sekwencyjne
@@ -69,6 +75,7 @@ Wnioski z~planów:
   \texttt{ix:*} zostaje \texttt{SCAN} po przestrzeni kluczy, z~nimi
   \texttt{ZRANGE} po zbiorze posortowanym.
 \end{itemize}
+%</plany-wnioski>
 
 \begin{figure}[H]
 {\VerbatimInput[firstline=9,frame=single,breaklines=true,breakanywhere=true,fontsize=\tiny,label={bez indeksów}]{data/results/plans/10000000/postgres/indexes-off/R4.txt}}

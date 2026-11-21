@@ -16,6 +16,7 @@ spany tylko dla części operacji.
 
 \subsection{Dane półstrukturalne (JSON)}
 \label{sec:json}
+%<*json>
 
 Metadane wydarzeń, biletów, klientów, rezerwacji i~płatności są zapisane jako
 JSON w~każdej bazie, choć na różne sposoby. PostgreSQL używa \texttt{JSONB}
@@ -36,3 +37,4 @@ MongoDB \val{mongo}{10000000}{on}{J2}\,ms, Valkey \val{valkey}{10000000}{on}{J2}
 (J3) jest operacją punktową we wszystkich bazach. PostgreSQL i~MariaDB
 przepisują wtedy całą wartość kolumny, MongoDB wykonuje \texttt{\$push} na
 miejscu, a~Valkey dekoduje i~koduje JSON w~skrypcie Lua.
+%</json>

@@ -1,6 +1,9 @@
 \section{Model danych}
+\label{sec:model}
 
 \subsection{Schemat relacyjny}
+\label{sec:model-rel}
+%<*model-rel>
 
 PostgreSQL i MariaDB używają tego samego schematu z~12 tabel: \texttt{kategorie},
 \texttt{organizatorzy}, \texttt{obiekty}, \texttt{sektory}, \texttt{miejsca},
@@ -16,6 +19,7 @@ jest warunkową aktualizacją jednego wiersza
 Ta sama operacja istnieje w~każdym z~czterech modeli, co pozwala porównać
 silniki na identycznym problemie.
 
+%</model-rel>
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
@@ -43,6 +47,7 @@ silniki na identycznym problemie.
 \caption{Schemat relacyjny (strzałka: kolumna odwołująca się do klucza głównego).}
 \end{figure}
 
+%<*indeksy-opis>
 Klucze obce zostały celowo pominięte. InnoDB automatycznie tworzy indeks dla
 każdego klucza obcego, więc w~wariancie ,,bez indeksów'' MariaDB miałaby
 kilka indeksów, których PostgreSQL by nie miał. Spójność referencyjną
@@ -56,7 +61,10 @@ i \texttt{rezerwacje(status, wygasa\_o)}. Na danych JSON indeksujemy pole
 i~indeks GIN \texttt{jsonb\_path\_ops}, w~MariaDB przez kolumnę wirtualną
 \texttt{gatunek} z~indeksem B-drzewa.
 
+%</indeksy-opis>
 \subsection{Model dokumentowy (MongoDB)}
+\label{sec:model-doc}
+%<*model-doc>
 
 \begin{itemize}
   \item \texttt{wydarzenia}: wydarzenie z~osadzonym cennikiem (tablica
@@ -79,7 +87,10 @@ transakcje wielodokumentowe wymagają replikacji. Operacje zmieniające kilka
 dokumentów (np. rezerwacja z~biletami, usunięcie konta klienta) wykonujemy
 w~transakcjach, tak jak w~bazach relacyjnych.
 
+%</model-doc>
 \subsection{Model klucz--wartość (Valkey)}
+\label{sec:model-kv}
+%<*model-kv>
 
 \begin{center}
 \small
@@ -109,7 +120,10 @@ dokumentu. Operacje zmieniające kilka kluczy są atomowe dzięki skryptom Lua.
 Liczniki sprzedaży są częścią modelu bazowego, bo w~tej domenie są naturalną
 strukturą, a~nie indeksem.
 
+%</model-kv>
 \subsection{Dane i rozmiary zbiorów}
+\label{sec:dane}
+%<*dane>
 
 Dane tworzy deterministyczny generator. Każda encja wynika z~trójki (ziarno,
 rodzaj, identyfikator), więc każdy serwis generuje dane u~siebie i~wszystkie
@@ -137,3 +151,4 @@ biletów, klientów, rezerwacji i~płatności są zapisane jako JSON. Cztery
 wydarzenia w~każdym zbiorze nie mają sprzedaży (,,piaskownica''). Korzystają
 z~nich scenariusze rezerwujące miejsca i~test współbieżności, więc nigdy nie
 kolidują z~danymi ani ze sobą nawzajem.
+%</dane>

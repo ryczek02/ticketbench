@@ -1,6 +1,9 @@
 \section{Metodyka}
+\label{sec:metodyka}
 
 \subsection{Scenariusze}
+\label{sec:scenariusze}
+%<*scen-intro>
 
 Zgodnie z~koncepcją mamy 24 scenariusze CRUD, po 6 na każdą operację.
 Dodaliśmy do nich 3 scenariusze na danych JSON (tab.~\ref{tab:scen}).
@@ -8,12 +11,14 @@ Parametry każdego wykonania (identyfikatory, miasta, przedziały dat) wynikają
 wyłącznie z~(zbioru, scenariusza, numeru iteracji), więc wszystkie bazy
 wykonują dokładnie te same operacje na tych samych wierszach.
 
+%</scen-intro>
 \begin{table}[H]
 \centering
 \small
 \caption{Scenariusze. ,,F'' oznacza scenariusz z~fiksturą: dane, na których
 działa operacja, są wstawiane przed pomiarem i~nie wliczają się do czasu.}
 \label{tab:scen}
+%<*scen-tab>
 \begin{tabular}{lp{4.6cm}p{8.6cm}}
 \toprule
 ID & nazwa & co dokładnie jest mierzone \\
@@ -51,9 +56,12 @@ J2 & Agregacja po polu JSON & liczba i~suma rezerwacji z~7 dni pogrupowana po \t
 J3 & Modyfikacja tablicy w~JSON & dopisanie tagu do \texttt{metadane.tagi} \\
 \bottomrule
 \end{tabular}
+%</scen-tab>
 \end{table}
 
 \subsection{Przebieg pomiaru}
+\label{sec:przebieg}
+%<*przebieg>
 
 Dla każdego rozmiaru zbioru i~każdej bazy plan wygląda tak:
 \begin{enumerate}
@@ -86,7 +94,10 @@ w~MariaDB (oba w~transakcji wycofywanej po pomiarze) oraz
 \texttt{explain} z~\texttt{executionStats} w~MongoDB. Dla Valkey zapisujemy
 listę wykonywanych poleceń.
 
+%</przebieg>
 \subsection{Test współbieżności}
+\label{sec:test-wsp}
+%<*test-wsp>
 
 Test odpowiada na pytanie z~hipotezy H1. W~serwisie bazy startuje
 $N \in \{1, 10, 100, 1000\}$ gorutyn, każda z~własną sesją bazy. Wszystkie
@@ -114,6 +125,7 @@ Strategie rezerwacji:
 \end{itemize}
 Pierwsza strategia z~listy jest domyślna i~to ona jest używana do weryfikacji H1.
 
+%</test-wsp>
 \subsection{Środowisko}
 
 \begin{itemize}

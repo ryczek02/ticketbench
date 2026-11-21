@@ -1,6 +1,9 @@
 \section{Aplikacja testowa}
+\label{sec:aplikacja}
 
 \subsection{Wymagania}
+\label{sec:wymagania}
+%<*wymagania>
 
 Wymagania funkcjonalne:
 \begin{enumerate}[label=F\arabic*.]
@@ -30,12 +33,15 @@ Wymagania niefunkcjonalne:
   \item Jakość: testy automatyczne na prawdziwych bazach w~CI przy każdej zmianie.
 \end{enumerate}
 
+%</wymagania>
 \subsection{Technologie i narzędzia}
+\label{sec:technologie}
 
 \begin{table}[H]
 \centering
 \small
 \caption{Wykorzystane technologie.}
+%<*technologie>
 \begin{tabular}{>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{11cm}}
 \toprule
 obszar & technologie \\
@@ -49,9 +55,11 @@ CI/CD i~wdrożenie & GitHub Actions, GoReleaser, Ansible, skrypt \texttt{ticketb
 raport & LaTeX (XeLaTeX, tectonic), pgfplots, siunitx; tabele generowane przez \texttt{tbench report} \\
 \bottomrule
 \end{tabular}
+%</technologie>
 \end{table}
 
 \subsection{Architektura}
+\label{sec:architektura}
 
 Aplikacja \emph{ticketbench} jest napisana w~Go (1.26) i~podzielona na
 mikroserwisy komunikujące się przez gRPC (rys.~\ref{fig:arch}). Kontrakty
@@ -92,6 +100,7 @@ definicje scenariuszy i~konfiguracja OpenTelemetry tworzą wspólny moduł
 \label{fig:arch}
 \end{figure}
 
+%<*dzialanie>
 \begin{description}
   \item[store-*] Jeden serwis na bazę, wspólny interfejs \texttt{Engine} w~Go.
   Serwis generuje dane z~ziarna, ładuje je hurtowo (PostgreSQL: \texttt{COPY}
@@ -105,8 +114,11 @@ definicje scenariuszy i~konfiguracja OpenTelemetry tworzą wspólny moduł
   wyniki do CSV na bieżąco, generuje tabele i~dane wykresów do tego
   sprawozdania (\texttt{tbench report}).
 \end{description}
+%</dzialanie>
 
 \subsection{Śledzenie i trace id}
+\label{sec:sledzenie}
+%<*sledzenie>
 
 CLI rozpoczyna span główny dla każdego segmentu (jeden rozmiar zbioru na
 jednej bazie). Kontekst śladu trafia do runnera jako nagłówek W3C
@@ -127,17 +139,21 @@ współbieżności śledzimy 1\% prób rezerwacji. Metryki (histogramy czasu
 scenariuszy i~prób rezerwacji, licznik konfliktów) trafiają przez kolektor do
 Prometheusa i~na pulpit Grafany.
 
+%</sledzenie>
 \subsection{Automatyzacja}
 \label{sec:testy}
 
+%<*automatyzacja>
 \begin{itemize}
   \item \textbf{Docker Compose} uruchamia 4 bazy, 4 serwisy, runner, kolektor
   OTel, Jaeger, Prometheus i~Grafanę. Obrazy serwisów są oparte na
   \texttt{distroless/static} (ok.~30\,MB) i~mają kontrolę zdrowia przez
   gRPC Health.
-  \item \textbf{Jeden skrypt} (\texttt{scripts/bench.sh}) uruchamia środowisko,
-  całą macierz testów, generuje tabele i~wykresy, a~na koniec kompiluje to
-  sprawozdanie.
+  \item \textbf{Jeden program} (\texttt{ticketbench.sh}) pobiera wszystkie
+  serwisy z~GitHuba (repozytoria, obrazy, binarkę \texttt{tbench}), uruchamia
+  środowisko i~całą macierz testów, generuje tabele i~wykresy, a~na koniec
+  kompiluje to sprawozdanie i~prezentację. Instrukcja: runbook
+  \texttt{docs/runbook.html}.
   \item \textbf{Testy automatyczne}: testy jednostkowe generatora (determinizm,
   spójność rezerwacji i~biletów), scenariuszy, generatora raportu i~CLI,
   a~także test zgodności (\texttt{enginetest}) uruchamiany na prawdziwych
@@ -156,3 +172,4 @@ Prometheusa i~na pulpit Grafany.
   \texttt{bench} (uruchomienie macierzy i~pobranie wyników)
   i~\texttt{teardown}.
 \end{itemize}
+%</automatyzacja>

@@ -1,5 +1,7 @@
 \section{Wnioski}
+\label{sec:wnioski}
 
+%<*wnioski>
 \begin{enumerate}
   \item \textbf{Nie ma jednej najszybszej bazy.} Valkey wygrywa w~operacjach
   po kluczu, w~licznikach i~w~rezerwacji miejsc przy dużej współbieżności.
@@ -31,8 +33,11 @@
   Lua). Katalog wydarzeń może być w~MongoDB, jeśli jego struktura często się
   zmienia.
 \end{enumerate}
+%</wnioski>
 
 \subsection{Zagrożenia dla trafności wyników}
+\label{sec:zagrozenia}
+%<*zagrozenia>
 
 \begin{itemize}
   \item Wszystkie bazy działały na jednym komputerze w~maszynie wirtualnej
@@ -55,3 +60,4 @@
   (np. \texttt{innodb\_thread\_concurrency}, pooler połączeń dla PostgreSQL)
   zmieniłoby wyniki przy 1000 klientach.
 \end{itemize}
+%</zagrozenia>
