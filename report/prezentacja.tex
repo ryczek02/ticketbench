@@ -301,26 +301,4 @@
   \end{enumerate}
 \end{frame}
 
-\begin{frame}{Wymagania na ocenę 5.0}
-  \small
-  \begin{tabular}{>{\raggedright\arraybackslash}p{0.38\textwidth}>{\raggedright\arraybackslash}p{0.55\textwidth}}
-    \toprule
-    wymaganie & realizacja \\
-    \midrule
-    4 SZBD, 3 modele danych, 12 tabel & PostgreSQL, MariaDB, MongoDB, Valkey \\
-    24 scenariusze, 6 na CRUD, $\geq3$ próby & 24 + 3 JSON, 5 prób + rozgrzewka \\
-    0,5 / 1 / 10 mln rekordów & tak \\
-    indeksy, przed/po, EXPLAIN & 15 indeksów, oba warianty, zestawienie planów \\
-    testy skalowalności & 1--1000 klientów, 13 strategii \\
-    dane półstrukturalne & JSONB, JSON, BSON, JSON w~Valkey, J1--J3 \\
-    analiza bezpieczeństwa & TLS i~role we wszystkich bazach, wpływ na CRUD \\
-    automatyzacja & \texttt{ticketbench.sh}, Docker, CI, Ansible, \texttt{tbench report} \\
-    hipoteza & H1 zweryfikowana (+ H2) \\
-    \bottomrule
-  \end{tabular}
-
-  \vspace{3mm}
-  Kod: \texttt{github.com/ryczek02/ticketbench} · runbook: \texttt{docs/runbook.html}
-\end{frame}
-
 \end{document}
