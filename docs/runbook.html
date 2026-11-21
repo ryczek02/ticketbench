@@ -212,9 +212,18 @@ wynikami.</p>
   <em>ticketbench</em>): p95 czasu scenariuszy per baza, czas prób rezerwacji, konflikty na
   sekundę. Panele liczą tempo z ostatniej minuty, więc pokazują ruch, który <em>trwa</em>:
   krótki smoke test to na skali godziny tylko kreska przy prawej krawędzi. Do oglądania na żywo
-  uruchom <code>./ticketbench.sh demo</code> (kilka minut obciążenia) i ustaw zakres
-  <em>Last 15 minutes</em> z odświeżaniem co 10&nbsp;s. Filtr <em>db</em> na górze zawęża
-  panele do wybranych baz.</li>
+  służą dwa polecenia:
+  <ul>
+    <li><code>./ticketbench.sh live 15</code> stawia stos, jeśli nie działa, otwiera pulpit
+    w przeglądarce (zakres 15 minut, odświeżanie co 10&nbsp;s) i przez podaną liczbę minut
+    (domyślnie 15) generuje ruch na wszystkich czterech bazach naraz. Każda baza jest raz
+    ładowana (100 tys. biletów, z indeksami), potem w pętli idą odczyty, powtarzalne aktualizacje
+    i test rezerwacji przy 10 i 100 klientach. Ctrl-C przerywa. Log i wyniki trafiają do
+    <code>results/live-*</code>, ale nie są używane w sprawozdaniu;</li>
+    <li><code>./ticketbench.sh demo</code> to kilka minut obciążenia bazami po kolei (pełne
+    scenariusze i od 1 do 1000 klientów). Zakres ustaw na <em>Last 15 minutes</em>.</li>
+  </ul>
+  Filtr <em>db</em> na górze zawęża panele do wybranych baz.</li>
   <li><strong>Prometheus</strong> (<a href="http://localhost:9090">localhost:9090</a>): metryki
   <code>tb_store_scenario_duration_milliseconds</code>, <code>tb_store_contention_attempt_milliseconds</code>,
   <code>tb_store_contention_conflicts_total</code>.</li>

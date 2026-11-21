@@ -278,6 +278,55 @@ cmd_security() {
   ok "wyniki: $RESULTS/security-latest (dołączane przez: $0 report)"
 }
 
+# live [minuty]: Grafana in the browser and continuous load on all four
+# databases at once for the given time (default 15 minutes). Every store is
+# loaded once (100k tickets, indexes on); then reads, idempotent updates and
+# the booking contention test run in a loop until the time is up. Repeatable
+# scenarios only, so nothing fails on the second round. Ctrl-C stops it.
+LIVE_SCENARIOS=R1,R2,R3,R4,R5,R6,U1,U3,U4,U5,J1,J2
+
+open_url() {
+  if have open; then open "$1"
+  elif have xdg-open; then xdg-open "$1" >/dev/null 2>&1
+  else echo "  otwórz: $1"; fi
+}
+
+cmd_live() {
+  local minutes=${1:-15}
+  case "$minutes" in ''|*[!0-9]*) die "użycie: $0 live [minuty]" ;; esac
+  if ! tb ping >/dev/null 2>&1; then
+    say "Stos nie działa, uruchamiam"
+    compose up -d --wait --wait-timeout 300
+  fi
+  local out dash="http://localhost:3000/d/ticketbench/ticketbench?orgId=1&from=now-15m&to=now&refresh=10s"
+  out=$RESULTS/live-$(date -u +%Y%m%d-%H%M%S)
+  mkdir -p "$out"
+  say "Grafana: $dash"
+  open_url "$dash"
+  local end=$(( $(date +%s) + minutes * 60 ))
+  say "Ruch na 4 bazach przez $minutes min (log: $out/live.log), Ctrl-C przerywa"
+  local pids=() st
+  trap 'kill "${pids[@]}" 2>/dev/null; wait 2>/dev/null; echo; say "Przerwano"; exit 130' INT TERM
+  for st in postgres mariadb mongo valkey; do
+    (
+      tb run --stores "$st" --tickets 100k --scenarios R1 --reps 1 --warmup 0 --indexes on --out "$out/$st" >>"$out/live.log" 2>&1
+      local round=0
+      while [ "$(date +%s)" -lt "$end" ]; do
+        round=$((round + 1))
+        tb run --stores "$st" --tickets 100k --scenarios "$LIVE_SCENARIOS" --reps 5 --warmup 0 \
+          --indexes off --load=false --out "$out/$st" >>"$out/live.log" 2>&1
+        tb contend --stores "$st" --tickets 100k --clients 10,100 --strategies default --rounds 2 \
+          --load=false --out "$out/$st" >>"$out/live.log" 2>&1
+        printf '  %-8s runda %d\n' "$st" "$round"
+      done
+    ) &
+    pids+=($!)
+  done
+  wait "${pids[@]}"
+  trap - INT TERM
+  ok "koniec ruchu, wyniki: $out"
+}
+
 cmd_contend() { tb contend "$@"; }
 cmd_run()     { tb run "$@"; }
 
@@ -351,6 +400,7 @@ Użycie: $0 <polecenie> [argumenty]
   ping | status | urls stan runnera i store'ów, kontenery, adresy UI
   smoke                krótka macierz (20 tys. biletów, ok. 1 min)
   demo                 kilka minut ciągłego obciążenia do oglądania w Grafanie i Jaegerze
+  live [minuty]        otwiera Grafanę i generuje ruch na wszystkich bazach naraz (domyślnie 15 min)
   bench [--config f]   pełna macierz (domyślnie infra/config/matrix.yaml), dodatkowe
                        flagi idą do tbench matrix, np. --sizes 500k,1M --stores postgres
   security [--config f] wariant z TLS i ograniczonymi rolami (infra/config/security.yaml),
@@ -375,7 +425,7 @@ main() {
   local cmd=${1:-help}
   [ $# -gt 0 ] && shift
   case "$cmd" in
-    doctor|install|up|ping|status|urls|smoke|demo|bench|security|run|contend|report|logs|down|destroy|all|help) "cmd_$cmd" "$@" ;;
+    doctor|install|up|ping|status|urls|smoke|demo|live|bench|security|run|contend|report|logs|down|destroy|all|help) "cmd_$cmd" "$@" ;;
     -h|--help) cmd_help ;;
     *) cmd_help; die "nieznane polecenie: $cmd" ;;
   esac
